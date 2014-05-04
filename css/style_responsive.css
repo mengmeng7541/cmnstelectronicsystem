@@ -1,0 +1,19 @@
+/* sidebar */
+#sidebar {
+	position: absolute;
+width: 215px;
+}
+
+#sidebar ul{
+	margin-top:50px;
+	width: 215px;
+}
+
+/* body container */
+#main-content {
+	margin-top: 0px !important;
+}
+
+.fixed-top #main-content {
+	margin-top: 20px;
+} 
