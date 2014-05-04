@@ -38,7 +38,6 @@
 	<link rel="stylesheet" href="/assets/bootstrap-toggle-buttons/static/stylesheets/bootstrap-toggle-buttons.css" />
 	<link rel="stylesheet" href="/assets/data-tables/DT_bootstrap.css" />
 	<link rel="stylesheet" href="/assets/FixedHeader-2.1.0/css/dataTables.fixedHeader.min.css" />
-	<link rel="stylesheet" href="/assets/TableTools-2.2.0/css/dataTables.tableTools.min.css" />
 	
 	<link rel="stylesheet" type="text/css" href="/assets/bootstrap-daterangepicker/daterangepicker.css" />
 	

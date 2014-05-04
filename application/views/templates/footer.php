@@ -60,7 +60,6 @@
    <script type="text/javascript" src="/assets/data-tables/jquery.dataTables.js"></script>
    <script type="text/javascript" src="/assets/data-tables/DT_bootstrap.js"></script>
    <script type="text/javascript" src="/assets/FixedHeader-2.1.0/js/dataTables.fixedHeader.min.js"></script>
-   <script type="text/javascript" src="/assets/TableTools-2.2.0/js/dataTables.tableTools.min.js"></script>
 
    <script type="text/javascript" src="/assets/bootstrap-wysihtml5/wysihtml5-0.3.0.js"></script> 
    <script type="text/javascript" src="/assets/bootstrap-wysihtml5/bootstrap-wysihtml5.js"></script>
