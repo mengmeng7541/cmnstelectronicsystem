@@ -18,12 +18,12 @@ Website: http://thevectorlab.net/
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <meta content="" name="description" />
   <meta content="" name="author" />
-  <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="/assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
-  <link href="/css/style.css" rel="stylesheet" />
-  <link href="/css/style_responsive.css" rel="stylesheet" />
-  <link href="/css/style_default.css" rel="stylesheet" id="style_color" />
-  <link rel="stylesheet" type="text/css" href="/assets/uniform/css/uniform.default.css">
+  <link href="<?=base_url();?>assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="<?=base_url();?>assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
+  <link href="<?=base_url();?>css/style.css" rel="stylesheet" />
+  <link href="<?=base_url();?>css/style_responsive.css" rel="stylesheet" />
+  <link href="<?=base_url();?>css/style_default.css" rel="stylesheet" id="style_color" />
+  <link rel="stylesheet" type="text/css" href="<?=base_url();?>assets/uniform/css/uniform.default.css">
 </head>
 <!-- END HEAD -->
 <!-- BEGIN BODY -->
@@ -31,14 +31,14 @@ Website: http://thevectorlab.net/
   <div class="login-header">
       <!-- BEGIN LOGO -->
       <div id="logo2" class="center">
-          <img src="/img/logo-login.png" alt="logo" class="center" />
+          <img src="<?=base_url();?>img/logo-login.png" alt="logo" class="center" />
       </div>
       <!-- END LOGO -->
   </div>
   <!-- BEGIN LOGIN -->
   <div id="login">
     <!-- BEGIN LOGIN FORM -->
-    <form action="/index.php/user/login" method="post" class="form-vertical no-padding no-margin" id="loginform">
+    <form action="<?=site_url();?>/user/login" method="post" class="form-vertical no-padding no-margin" id="loginform">
       <div class="lock">
           <i class="icon-lock"></i>
       </div>
@@ -104,11 +104,11 @@ Website: http://thevectorlab.net/
   </div>
   <!-- END COPYRIGHT -->
   <!-- BEGIN JAVASCRIPTS -->
-  <script src="/js/jquery-1.8.3.min.js"></script>
-  <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-  <script src="/js/jquery.blockui.js"></script>
-  <script type="text/javascript" src="/assets/uniform/jquery.uniform.min.js"></script>
-  <script src="/js/scripts.js"></script>
+  <script src="<?=base_url();?>js/jquery-1.8.3.min.js"></script>
+  <script src="<?=base_url();?>assets/bootstrap/js/bootstrap.min.js"></script>
+  <script src="<?=base_url();?>js/jquery.blockui.js"></script>
+  <script type="text/javascript" src="<?=base_url();?>assets/uniform/jquery.uniform.min.js"></script>
+  <script src="<?=base_url();?>js/scripts.js"></script>
   <script>
     jQuery(document).ready(function() {     
       App.initLogin();
