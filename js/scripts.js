@@ -6,9 +6,9 @@ var App = function () {
     var isMapPage = false;
     var isIE8 = false;
 
-    var site_url = '/cmnst_trunk/index.php/';
-    var base_url = '/cmnst_trunk/';
-
+    var base_url = document.location.href.split('index.php').first();
+	var site_url = base_url+'index.php/';
+	
     var handleJQVMAP = function () {
 
         if (!sample_data) {
