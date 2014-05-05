@@ -252,7 +252,17 @@ class Admin extends MY_Controller {
 			if(!$this->form_validation->run()) throw new Exception(validation_errors(),WARNING_CODE);
 			
 			$input_data = $this->input->post(NULL,TRUE);
-		
+			
+			
+			if(isset($input_data['clock_end_date'])&&isset($input_data['clock_end_time']))
+			{
+				//檢查起始時間必須小於結束時間
+				if(strtotime($input_data['clock_end_date'].' '.$input_data['clock_end_time'])<=strtotime($input_data['clock_start_date'].' '.$input_data['clock_start_time']))
+				{
+					throw new Exception("起始時間不可大於結束時間",WARNING_CODE);
+				}
+			}		
+	
 			$data = array(
 				"clock_user_ID"=>isset($input_data['clock_user_ID'])&&$this->admin_clock_model->is_super_admin()?$input_data['clock_user_ID']:$this->session->userdata('ID'),
 				"clock_start_time"=>date("Y-m-d H:i:s",strtotime($input_data['clock_start_date'].' '.$input_data['clock_start_time'])),
