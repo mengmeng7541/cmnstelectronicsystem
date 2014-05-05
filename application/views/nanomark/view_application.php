@@ -33,7 +33,7 @@
     <th width="180"></th>
   </tr>
   <tr>
-    <th colspan="2" rowspan="2" align="right"><img src="/img/CMNST.png" alt="" name="cmnst_logo" style="width:80px;height:80px;" id="cmnst_logo" /></th>
+    <th colspan="2" rowspan="2" align="right"><img src="<?=base_url();?>img/CMNST.png" alt="" name="cmnst_logo" style="width:80px;height:80px;" id="cmnst_logo" /></th>
     <th colspan="2" rowspan="2" align="left">國立成功大學 <br>
       微奈米科技研究中心</th>
     <th colspan="2" rowspan="2" align="center"><h3>奈米技術產品測試實驗室<br>

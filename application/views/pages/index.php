@@ -2,7 +2,7 @@
   <div class="login-header">
       <!-- BEGIN LOGO -->
       <div id="logo" class="center">
-          <img src="/img/logo.png" alt="logo" class="center">
+          <img src="<?=base_url();?>img/logo.png" alt="logo" class="center">
       </div>
       <!-- END LOGO -->
   </div>

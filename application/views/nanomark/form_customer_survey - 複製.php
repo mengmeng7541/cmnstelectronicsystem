@@ -44,7 +44,7 @@
 	    <td width="184"></td>
 	  </tr>
 	  <tr>
-	    <td align="right"><img src="/img/CMNST.png" alt="" name="cmnst_logo" width="80" height="80" id="cmnst_logo" /></td>
+	    <td align="right"><img src="<?=base_url();?>img/CMNST.png" alt="" name="cmnst_logo" width="80" height="80" id="cmnst_logo" /></td>
 	    <td colspan="3"><h2>顧客滿意度調查表 <strong>Customer Survey Form</strong></h2></td>
 	  </tr>
 	  <tr>

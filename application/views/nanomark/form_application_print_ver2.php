@@ -13,7 +13,7 @@ td {
 </style> 
   <thead>
   <tr>
-    <th colspan="2" rowspan="2" align="right"><img name="cmnst_logo" src="/img/CMNST.png" width="80" height="80" alt=""></th>
+    <th colspan="2" rowspan="2" align="right"><img name="cmnst_logo" src="<?=base_url();?>img/CMNST.png" width="80" height="80" alt=""></th>
     <th colspan="2" rowspan="2" align="left">國立成功大學 <br>
       微奈米科技研究中心</th>
     <th colspan="2" rowspan="2" align="center"><h3>奈米技術產品測試實驗室<br>
