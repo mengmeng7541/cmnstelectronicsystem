@@ -6,6 +6,8 @@ var App = function () {
     var isMapPage = false;
     var isIE8 = false;
 
+    var site_url = '/cmnst_trunk/index.php/';
+    var base_url = '/cmnst_trunk/';
 
     var handleJQVMAP = function () {
 
@@ -1271,7 +1273,7 @@ var App = function () {
             jQuery('#loginform').submit(function(e){
 				if($(this).find("input:checked").val()=='admin')
 				{
-					$(this).prop("action","/index.php/admin/login");
+					$(this).prop("action",site_url+"admin/login");
 				}
 			});
         });
@@ -1766,7 +1768,7 @@ var App = function () {
     }
 	var handleOrganization = function(){
 		$("#table_org_list").dataTable({
-	        "sAjaxSource": "/index.php/org/query",
+	        "sAjaxSource": site_url+"org/query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -1793,7 +1795,7 @@ var App = function () {
 		$("#table_list_quotation").dataTable({
 			"bProcessing": true,
 	        "bServerSide": true,
-	        "sAjaxSource": "/index.php/nanomark/list_quotation_query",
+	        "sAjaxSource": site_url+"nanomark/list_quotation_query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -1814,7 +1816,7 @@ var App = function () {
 
         $("#table_list_application").dataTable({
 			"bProcessing": true,
-	        "sAjaxSource": "/index.php/nanomark/query_application",
+	        "sAjaxSource": site_url+"nanomark/query_application",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -1837,7 +1839,7 @@ var App = function () {
 		$("#table_list_outsourcing").dataTable({
 			"bProcessing": true,
 	        "bServerSide": true,
-	        "sAjaxSource": "/index.php/nanomark/list_outsourcing_query",
+	        "sAjaxSource": site_url+"nanomark/list_outsourcing_query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -1861,7 +1863,7 @@ var App = function () {
 		$("#table_list_customer_survey").dataTable({
 			"bProcessing": true,
 	        "bServerSide": true,
-	        "sAjaxSource": "/index.php/nanomark/list_customer_survey_query",
+	        "sAjaxSource": site_url+"nanomark/list_customer_survey_query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -1885,7 +1887,7 @@ var App = function () {
 		$("#table_list_report_revision").dataTable({
 			"bProcessing": true,
 	        "bServerSide": true,
-	        "sAjaxSource": "/index.php/nanomark/list_report_revision_query",
+	        "sAjaxSource": site_url+"nanomark/list_report_revision_query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -1907,7 +1909,7 @@ var App = function () {
 		});
 		
 		var table_specimen_facility_booking_list = $("#table_specimen_facility_booking_list").dataTable({
-	        "sAjaxSource": "/index.php/nanomark/query_booking",
+	        "sAjaxSource": site_url+"nanomark/query_booking",
             "sDom": "t",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -1924,7 +1926,7 @@ var App = function () {
 		});
 		$("#table_specimen_facility_booking_list").on("click","button[name='del']",function(){
 			$.ajax({
-				url: '/index.php/nanomark/del_booking/'+$(this).val(),
+				url: site_url+'nanomark/del_booking/'+$(this).val(),
 				beforeSend: function(){
 					showRequest();
 				}
@@ -2277,7 +2279,7 @@ var App = function () {
 		$('#user_list_table').dataTable({
 			"bProcessing": true,
 	        "bServerSide": true,
-	        "sAjaxSource": "/index.php/user/list/query",
+	        "sAjaxSource": site_url+"user/list/query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2293,14 +2295,14 @@ var App = function () {
 				  "bSortable": false,
 				  "mData": null,
 			      "mRender": function ( data, type, full ) {
-			        return '<a href="/index.php/user/edit/'+full[0]+'" class="btn btn-warning">編輯</a>';
+			        return '<a href=site_url+"user/edit/'+full[0]+'" class="btn btn-warning">編輯</a>';
 			      }
 			    }
 			],
         });
 		
 		$('#admin_list_table').dataTable({
-	        "sAjaxSource": "/index.php/admin/list/query",
+	        "sAjaxSource": site_url+"admin/list/query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2407,7 +2409,7 @@ var App = function () {
 			"bFilter": false,
 			"bProcessing": true,
 			"sServerMethod": "GET",
-	        "sAjaxSource": "/index.php/facility/time/query/",
+	        "sAjaxSource": site_url+"facility/time/query/",
             "sDom": "<'row-fluid'r>t<'row-fluid'>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2482,7 +2484,7 @@ var App = function () {
 		//-------------------儀器設備列表----------------------------
         $("#table_list_facility").dataTable({
 			"bProcessing": true,
-	        "sAjaxSource": "/index.php/facility/admin/facility/query/",
+	        "sAjaxSource": site_url+"facility/admin/facility/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2499,7 +2501,7 @@ var App = function () {
         $("#table_list_user_privilege").dataTable({
             "bProcessing": true,
 	        "bServerSide": true,
-	        "sAjaxSource": "/index.php/facility/admin/privilege/query/",
+	        "sAjaxSource": site_url+"facility/admin/privilege/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2520,7 +2522,7 @@ var App = function () {
 		//-------------------門禁設備列表----------------------------
 		$("#table_list_door").dataTable({
 			"bProcessing": true,
-			"sAjaxSource": "/index.php/facility/admin/door/query/",
+			"sAjaxSource": site_url+"facility/admin/door/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2534,7 +2536,7 @@ var App = function () {
 		});
 		//------------------------可預約儀器列表-------------------------
 		var facility_booking_available_table = $("#table_list_booking_available").dataTable({
-			"sAjaxSource": "/index.php/facility/user/available/query/",
+			"sAjaxSource": site_url+"facility/user/available/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2550,7 +2552,7 @@ var App = function () {
 		var facility_booking_table = $("#table_list_booking").dataTable({
 			"bProcessing": true,
 			"sServerMethod": "POST",
-			"sAjaxSource": "/index.php/facility/booking/query/",
+			"sAjaxSource": site_url+"facility/booking/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2589,7 +2591,7 @@ var App = function () {
 		});
 		//--------------------預約不計費列表------------------------
 		var facility_booking_nocharge_table = $("#table_list_nocharge").dataTable({
-			"sAjaxSource": "/index.php/facility/admin/nocharge/query/",
+			"sAjaxSource": site_url+"facility/admin/nocharge/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2605,7 +2607,7 @@ var App = function () {
 		//------------------------儀器維修調校烈表-----------------------
 		var facility_maintenance = $("#table_list_maintenance").dataTable({
 			"bProcessing": true,
-			"sAjaxSource": "/index.php/facility/admin/maintenance/query/",
+			"sAjaxSource": site_url+"facility/admin/maintenance/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2621,7 +2623,7 @@ var App = function () {
 		var facility_card_application = $("#table_list_card_application").dataTable({
 			"bAutoWidth": false,
 			"bProcessing": true,
-			"sAjaxSource": "/index.php/facility/admin/card/query/",
+			"sAjaxSource": site_url+"facility/admin/card/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2640,7 +2642,7 @@ var App = function () {
 			$("#form_facility_card_application_modal form").attr("action",url+$(this).val());
 		});
 		$("#table_list_card_application").delegate("button[name='issue']","click",function(){
-			$.ajax("/index.php/facility/admin/card/update/"+$(this).val())
+			$.ajax(site_url+"facility/admin/card/update/"+$(this).val())
 			.done(function(){
 				facility_card_application.fnReloadAjax(null,null,true);
 			});
@@ -2650,7 +2652,7 @@ var App = function () {
 		var access_card_table = $("#table_list_access_card").dataTable({
             "bProcessing": true,
 	        "bServerSide": true,
-	        "sAjaxSource": "/index.php/facility/admin/access/card/query/",
+	        "sAjaxSource": site_url+"facility/admin/access/card/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2672,7 +2674,7 @@ var App = function () {
         });
 		var access_ctrl_table = $("#table_list_access_ctrl").dataTable({
             "bProcessing": true,
-	        "sAjaxSource": "/index.php/facility/admin/access/ctrl/query/",
+	        "sAjaxSource": site_url+"facility/admin/access/ctrl/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2693,7 +2695,7 @@ var App = function () {
         });
         $("#table_list_access_ctrl ").on("click","button[name='access_ctrl_del']",function(){
         	$.ajax(
-        		"/index.php/facility/admin/access/ctrl/del/"+$(this).val()
+        		site_url+"facility/admin/access/ctrl/del/"+$(this).val()
         	).always(function(data){
         		alert(data);
 	        	access_ctrl_table.fnReloadAjax(null,null,true);
@@ -2701,7 +2703,7 @@ var App = function () {
         });
         $("#table_list_access_ctrl ").on("click","button[name='access_ctrl_update']",function(){
         	$.ajax(
-        		"/index.php/facility/admin/access/ctrl/update/"+$(this).val()
+        		site_url+"facility/admin/access/ctrl/update/"+$(this).val()
         	).always(function(data){
         		alert(data);
 	        	access_ctrl_table.fnReloadAjax(null,null,true);
@@ -2717,7 +2719,7 @@ var App = function () {
 		});
 		//-----------------------卡機連線列表------------------------------
 		var access_link_table = $("#table_list_access_link").dataTable({
-            "sAjaxSource": "/index.php/facility/admin/access/link/query/",
+            "sAjaxSource": site_url+"facility/admin/access/link/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2731,7 +2733,7 @@ var App = function () {
         });
         
         $("#table_list_access_link").delegate("button[name='del']","click",function(){
-        	$.ajax("/index.php/facility/admin/access/link/del/"+$(this).val())
+        	$.ajax(site_url+"facility/admin/access/link/del/"+$(this).val())
         	.always(function(data){
         		access_link_table.fnReloadAjax(null,null,true);
         	});
@@ -2742,7 +2744,7 @@ var App = function () {
 	var handleClock = function(){
 		//------------------------手動打卡(中心人員)-----------------------------
         var table_admin_manual_clock_list = $("#table_admin_manual_clock_list").dataTable({
-            "sAjaxSource": "/index.php/admin/clock/query/manual",
+            "sAjaxSource": site_url+"admin/clock/query/manual",
             "sDom": "<'row-fluid'<'span12'f>r>t<'row-fluid'>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2768,7 +2770,7 @@ var App = function () {
 		});
 		//------------------------自動打卡(使用者)-----------------------------
 		$("#table_user_clock_list").dataTable({
-            "sAjaxSource": "/index.php/user/clock/query",
+            "sAjaxSource": site_url+"user/clock/query",
             "sDom": "<'row-fluid'<'span12'f>r>t<'row-fluid'>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2790,7 +2792,7 @@ var App = function () {
 
 		//course
 		var table_curriculum_list = $("#table_curriculum_list").dataTable({
-            "sAjaxSource": "/index.php/curriculum/course/query/",
+            "sAjaxSource": site_url+"curriculum/course/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2811,7 +2813,7 @@ var App = function () {
         //class
         var table_curriculum_class_list = $("#table_curriculum_class_list").dataTable({
         	"bProcessing": true,
-            "sAjaxSource": "/index.php/curriculum/class/query/",
+            "sAjaxSource": site_url+"curriculum/class/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2838,7 +2840,7 @@ var App = function () {
         //管理者刪除所開之課程
         $("#table_curriculum_class_list").on("click","button[name='del_class']",function(){
         	$.ajax({
-        		url:"/index.php/curriculum/class/del/"+$(this).val(),
+        		url:site_url+"curriculum/class/del/"+$(this).val(),
         		beforeSend:function(xhr){
 					showRequest();
 				}
@@ -2850,7 +2852,7 @@ var App = function () {
         //使用者方的註冊
         $("#table_curriculum_class_list").on("click","button[name='reg']",function(){
         	$.ajax({
-        		url:"/index.php/curriculum/reg/add/"+$(this).val(),
+        		url:site_url+"curriculum/reg/add/"+$(this).val(),
         		beforeSend:function(xhr){
 					showRequest();
 				}
@@ -2862,7 +2864,7 @@ var App = function () {
         //使用者方的刪除
         $("#table_curriculum_class_list").on("click","button[name='del']",function(){
         	$.ajax({
-        		url:"/index.php/curriculum/reg/del/"+$(this).val(),
+        		url:site_url+"curriculum/reg/del/"+$(this).val(),
         		beforeSend:function(xhr){
 					showRequest();
 				}
@@ -2873,7 +2875,7 @@ var App = function () {
         });
         //registration
         var table_curriculum_reg_list = $("#table_curriculum_reg_list").dataTable({
-            "sAjaxSource": "/index.php/curriculum/reg/query/",
+            "sAjaxSource": site_url+"curriculum/reg/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2921,7 +2923,7 @@ var App = function () {
 	    });
         $("#table_curriculum_reg_list").on("click","button[name='update']",function(){
         	$.ajax({
-        		url:"/index.php/curriculum/reg/update/"+$(this).val(),
+        		url:site_url+"curriculum/reg/update/"+$(this).val(),
         		beforeSend:function(xhr){
 					showRequest();
 				}
@@ -2932,7 +2934,7 @@ var App = function () {
         });
         $("#table_curriculum_reg_list").on("click","button[name='del']",function(){
         	$.ajax({
-        		url:"/index.php/curriculum/reg/del/"+$(this).val(),
+        		url:site_url+"curriculum/reg/del/"+$(this).val(),
         		beforeSend:function(xhr){
 					showRequest();
 				}
@@ -2957,7 +2959,7 @@ var App = function () {
         //signature
 //        var table_curriculum_signature_list = $("#table_curriculum_signature_list").dataTable({
 //        	"bProcessing": true,
-//            "sAjaxSource": "/index.php/curriculum/signature/query/",
+//            "sAjaxSource": site_url+"curriculum/signature/query/",
 //            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
 //            "sPaginationType": "bootstrap",
 //            "oLanguage": {
@@ -3040,7 +3042,7 @@ var App = function () {
 //        });
         //lesson
         var table_curriculum_lesson_list = $("#table_curriculum_lesson_list").dataTable({
-            "sAjaxSource": "/index.php/curriculum/lesson/query/",
+            "sAjaxSource": site_url+"curriculum/lesson/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -3068,7 +3070,7 @@ var App = function () {
         });
         //booking
         var table_curriculum_booking_list = $("#table_curriculum_booking_list").dataTable({
-            "sAjaxSource": "/index.php/curriculum/booking/query/",
+            "sAjaxSource": site_url+"curriculum/booking/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -3110,7 +3112,7 @@ var App = function () {
 				data:{serial_no: $(this).closest("tr").find("input[name='serial_no']").val(), 
 					  name: $(this).closest("tr").find("input[name='name']").val(),
 					  facility_ID: $(this).closest("tr").find("select[name='facility_ID']").val()},
-				url: "/index.php/nanomark/add_test_item",
+				url: site_url+"nanomark/add_test_item",
 	    	}; 
 			$(this).ajaxSubmit(ajaxSubmitOptions);
 		});
@@ -3122,7 +3124,7 @@ var App = function () {
 				data:{serial_no: $(this).closest("tr").find("input[name='serial_no']").val(), 
 					  name: $(this).closest("tr").find("input[name='name']").val(),
 					  facility_ID: $(this).closest("tr").find("select[name='facility_ID']").val()},
-				url: "/index.php/nanomark/update_test_item",
+				url: site_url+"nanomark/update_test_item",
 	    	}; 
 			$(this).ajaxSubmit(ajaxSubmitOptions);
 		});
@@ -3138,7 +3140,7 @@ var App = function () {
 					{
 						name: $(this).closest("tr").find("input[name='name']").val(),
 					},
-				url: "/index.php/nanomark/add_verification_norm",
+				url: site_url+"nanomark/add_verification_norm",
 	    	}; 
 			$(this).ajaxSubmit(ajaxSubmitOptions);
 		});
@@ -3343,7 +3345,7 @@ var App = function () {
 
         // begin first table
         $('#reward_list_table').dataTable({
-        	"sAjaxSource": "/index.php/reward/query",
+        	"sAjaxSource": site_url+"reward/query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
