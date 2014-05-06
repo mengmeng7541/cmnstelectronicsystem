@@ -184,9 +184,7 @@ class Curriculum_model extends MY_Model {
 		
 		if(isset($options['group_class_suite'])&&$options['group_class_suite']==TRUE)
 		{
-			$this->curriculum_db->group_by("$sTable.course_ID");
-			$this->curriculum_db->group_by("$sTable.class_code");
-			$this->curriculum_db->group_by("$sTable.class_ID");
+			$this->curriculum_db->group_by("$sTable.course_ID,$sTable.class_code");
 		}
 		
 		return $this->curriculum_db->get($sTable);
