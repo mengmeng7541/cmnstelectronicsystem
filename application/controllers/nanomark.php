@@ -222,12 +222,14 @@ class Nanomark extends MY_Controller {
 					}
 				}
 				$this->data['action_btn'][] = form_submit("update","更新","class='btn btn-primary'");
+				$this->data['action_btn'][] = anchor("/nanomark/list_application","取消","class='btn btn-primary'");
 				$this->data['action_btn'][] = form_submit("submit","蓋章","class='btn btn-warning'");
 				$this->data['action_btn'][] = form_button("del","刪除","class='btn btn-danger'");
 				$this->data['action_btn'][] = form_reset("reset","重設","class='btn btn-inverse'");
 			}else if(	$application['checkpoint']=='Case_Officer_2nd' &&
 						$this->nanomark_model->is_application_case_officer_2nd()){
 				$this->data['action_btn'][] = form_submit("submit","蓋章","class='btn btn-warning'");
+				$this->data['action_btn'][] = anchor("/nanomark/list_application","取消","class='btn btn-primary'");
 				$this->data['readonly'] = 'disabled="disabled"';
 			}else if(	$application['checkpoint']=='Facility_Admin' &&
 						in_array($this->session->userdata('ID'),$unsigned_facility_admin_ID))
@@ -249,6 +251,7 @@ class Nanomark extends MY_Controller {
 						$this->nanomark_model->is_application_case_officer_final())
 			{
 				$this->data['action_btn'][] = form_submit("submit","完工","class='btn btn-warning'");
+				$this->data['action_btn'][] = anchor("/nanomark/list_application","取消","class='btn btn-primary'");
 				$this->data['readonly'] = 'disabled="disabled"';
 			}else if($this->nanomark_model->is_super_admin())
 			{
@@ -271,6 +274,7 @@ class Nanomark extends MY_Controller {
 					}
 				}
 				$this->data['action_btn'][] = form_submit("update","更新","class='btn btn-primary'");
+				$this->data['action_btn'][] = anchor("/nanomark/list_application","取消","class='btn btn-primary'");
 				$this->data['action_btn'][] = form_button("del","刪除","class='btn btn-danger'");
 				$this->data['action_btn'][] = form_reset("reset","重設","class='btn btn-inverse'");
 			}else{

@@ -26,13 +26,13 @@
 					 	<table class="table table-striped table-bordered" id="table_list_application">
                            <thead>
                               <tr>
-                                 <th>編號</th>
+                                 <th width="70">編號</th>
                                  <th>公司名稱</th>
-								 <th>聯絡人</th>
-								 <th>申請日期</th>
-								 <th>工作起始日</th>
-								 <th>預定完工日</th>
-								 <th>狀態</th>
+								 <th width="70">聯絡人</th>
+								 <th width="70">申請日期</th>
+								 <th width="80">工作起始日</th>
+								 <th width="80">預定完工日</th>
+								 <th width="100">狀態</th>
                               </tr>
                            </thead>
                            <tbody>
