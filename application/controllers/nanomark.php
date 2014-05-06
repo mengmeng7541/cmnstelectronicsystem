@@ -1594,37 +1594,34 @@ class Nanomark extends MY_Controller {
 	
 	public function list_outsourcing_query()
 	{
-		$this->is_admin_login();
-		
-		$input_data = $this->input->get(NULL,TRUE);
-		
-		$result = $this->nanomark_model->get_outsourcing_list_array($input_data);
-		
-		$output = array(
-			"sEcho" => intval($_GET['sEcho']),
-			"iTotalRecords" => $result['iTotal'],
-			"iTotalDisplayRecords" => $result['iFilteredTotal'],
-			"aaData" => array()
-		);
-		
-		foreach ( $result['rResult'] as $aRow )
-		{
-			$row = array();
+		try{
+			$this->is_admin_login();
 			
-			$row[] = $aRow['specimen_ID'];
-			$row[] = $aRow['specimen_name'];
-			$row[] = $aRow['verification_norm_name'];
-			$row[] = $aRow['outsourcing_organization'];
+			$outsourcings = $this->nanomark_model->get_outsourcing_list()->result_array();
 			
-			if($aRow['client_signature'])
-				$row[] = anchor("nanomark/view_outsourcing/{$aRow['serial_no']}","已同意","class='btn btn-success'");
-			else
-				$row[] = anchor("nanomark/edit_outsourcing/{$aRow['serial_no']}","等待中","class='btn btn-info '");
+			$output['aaData'] = array();
+			foreach($outsourcings as $outsourcing)
+			{
+				$row = array();
+			
+				$row[] = $outsourcing['specimen_ID'];
+				$row[] = $outsourcing['specimen_name'];
+				$row[] = $outsourcing['verification_norm_name'];
+				$row[] = $outsourcing['outsourcing_organization'];
+				
+				if(!empty($outsourcing['client_signature']))
+					$row[] = anchor("nanomark/view_outsourcing/{$outsourcing['serial_no']}","已同意","class='btn btn-success'");
+				else
+					$row[] = anchor("nanomark/edit_outsourcing/{$outsourcing['serial_no']}","等待中","class='btn btn-info '");
 
-			$output['aaData'][] = $row;
+				$output['aaData'][] = $row;
+			}
+			
+			echo json_encode($output);
+		}catch(Exception $e){
+			
+			echo json_encode($output);
 		}
-		
-		echo json_encode( $output );
 	}
 	
 	
