@@ -2295,7 +2295,7 @@ var App = function () {
 				  "bSortable": false,
 				  "mData": null,
 			      "mRender": function ( data, type, full ) {
-			        return '<a href='+site_url+'"user/edit/'+full[0]+'" class="btn btn-warning">編輯</a>';
+			        return '<a href='+site_url+'user/edit/'+full[0]+' class="btn btn-warning">編輯</a>';
 			      }
 			    }
 			],
