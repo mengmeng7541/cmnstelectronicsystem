@@ -49,18 +49,32 @@ class Class_model extends MY_Model {
 			$class_total_secs += $c['class_total_secs'];
 		}
 		
-		
-		
 		foreach($classes as $c){
-			if(empty($class_start_time)){
-				$class_reg_end_time = $c['class_reg_start_time'];
-			}else{
-				if($class_total_secs/3600 < 10){//小於十小時
-					$class_reg_end_time = date("Y-m-d 00:00:00",strtotime($class_start_time.' -2day'));
+			//注意如果有單獨的認證，那堂就不用考量全套課程的起始時間
+			$tmp_class_type = explode(',',$c['class_type']);
+			if(count($tmp_class_type)==1 && $tmp_class_type[0]=='certification')
+			{
+				if(empty($class_start_time)){
+					$class_reg_end_time = $c['class_reg_start_time'];
 				}else{
-					$class_reg_end_time = date("Y-m-d 00:00:00",strtotime($class_start_time.' -1week'));
+					if($c['class_total_secs']/3600 < 10){//小於十小時
+						$class_reg_end_time = date("Y-m-d 00:00:00",strtotime($c['class_start_time'].' -2day'));
+					}else{
+						$class_reg_end_time = date("Y-m-d 00:00:00",strtotime($c['class_start_time'].' -1week'));
+					}
+				}
+			}else{
+				if(empty($class_start_time)){
+					$class_reg_end_time = $c['class_reg_start_time'];
+				}else{
+					if($class_total_secs/3600 < 10){//小於十小時
+						$class_reg_end_time = date("Y-m-d 00:00:00",strtotime($class_start_time.' -2day'));
+					}else{
+						$class_reg_end_time = date("Y-m-d 00:00:00",strtotime($class_start_time.' -1week'));
+					}
 				}
 			}
+			
 			
 			$this->curriculum_model->update_class(
 				array(

@@ -369,54 +369,63 @@ class Curriculum extends MY_Controller {
 					$display = array();
 					if(isset($course_ID) && $course_ID == $class['course_ID'] && isset($class_code) && $class_code == $class['class_code'])
 					{
-						continue;
-					}else{
-						//先確認未停開
-						if($class['class_state']!='canceled')
+						$tmp_class_type = explode(',',$class['class_type']);
+						if(count($tmp_class_type)==1 && $tmp_class_type[0] == 'certification')//如果只有認證課，就可以顯示
 						{
-							//取得開課的報名資訊
-							$reg = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID'],"user_ID"=>$this->session->userdata('ID')))->row_array();
 							
-							if(time()<strtotime($class['class_reg_start_time'])){
-								$display[] = form_label("尚未開放報名","",array("class"=>"label label-info"));
-							}else if(time()>strtotime($class['class_reg_end_time'])){
-								$display[] = form_label("報名已截止","",array("class"=>"label label-important"));
-							}else{
-								if(!$reg){
-									$display[] = form_button("reg","報名","class='btn btn-primary' value='{$class['class_ID']}'");
-								}
-							}
-							
-							if($reg){
-								
-								//判斷正取還是備取
-								if(empty($class['class_max_participants'])||$reg['reg_rank']<=$class['class_max_participants'])
-								{
-									$display[] = form_label("正取{$reg['reg_rank']}","",array("class"=>"label label-success"));
-									
-								}else{
-									$display[] = form_label("備取".($reg['reg_rank']-$class['class_max_participants']),"",array("class"=>"label label-warning"));
-									
-								}
-								
-								if($reg['reg_state']=='selected'){
-									$display[] = form_button("del","取消","class='btn btn-danger btn-small' value='{$reg['reg_ID']}'");
-								}else if($reg['reg_state']=='confirmed')
-								{
-									$display[] = form_label("已確認","",array("class"=>"label label-info"));
-								}else if($reg['reg_state']=='certified'){
-									$display[] = form_label("已認證","",array("class"=>"label label-success"));
-								}
-								
-							}
-							
-							$display[] = anchor("/curriculum/lesson/list/".$class['class_ID'],"瀏覽課表","class='btn btn-primary btn-mini'");
+						}else{
+							continue;
 						}
 						
-						
-						$course_ID = $class['course_ID'];
-						$class_code = $class['class_code'];
 					}
+					
+					//先確認未停開
+					if($class['class_state']!='canceled')
+					{
+						//取得開課的報名資訊
+						$reg = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID'],"user_ID"=>$this->session->userdata('ID')))->row_array();
+						
+						if(time()<strtotime($class['class_reg_start_time'])){
+							$display[] = form_label("尚未開放報名","",array("class"=>"label label-info"));
+						}else if(time()>strtotime($class['class_reg_end_time'])){
+							$display[] = form_label("報名已截止","",array("class"=>"label label-important"));
+						}else{
+							if(!$reg){
+								$display[] = form_button("reg","報名","class='btn btn-primary' value='{$class['class_ID']}'");
+							}
+						}
+						
+						if($reg){
+							
+							//判斷正取還是備取
+							if(empty($class['class_max_participants'])||$reg['reg_rank']<=$class['class_max_participants'])
+							{
+								$display[] = form_label("正取{$reg['reg_rank']}","",array("class"=>"label label-success"));
+								
+							}else{
+								$display[] = form_label("備取".($reg['reg_rank']-$class['class_max_participants']),"",array("class"=>"label label-warning"));
+								
+							}
+							
+							if($reg['reg_state']=='selected'){
+								$display[] = form_button("del","取消","class='btn btn-danger btn-small' value='{$reg['reg_ID']}'");
+							}else if($reg['reg_state']=='confirmed')
+							{
+								$display[] = form_label("已確認","",array("class"=>"label label-info"));
+							}else if($reg['reg_state']=='certified'){
+								$display[] = form_label("已認證","",array("class"=>"label label-success"));
+							}
+							
+						}
+						
+						$display[] = anchor("/curriculum/lesson/list/".$class['class_ID'],"瀏覽課表","class='btn btn-primary btn-mini'");
+					}
+					
+					
+					$course_ID = $class['course_ID'];
+					$class_code = $class['class_code'];
+					$class_type = $class['class_type'];
+					
 					
 					$row[] = implode(' ',$display);
 					

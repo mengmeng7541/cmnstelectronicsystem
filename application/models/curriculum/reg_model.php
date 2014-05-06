@@ -156,23 +156,42 @@ class Reg_model extends MY_Model {
 		$class = $this->curriculum_model->get_class_list(array("class_ID"=>$reg['class_ID']))->row_array();
 		if(!$class) throw new Exception("無開此課！",ERROR_CODE);
 		
-		//課程管理者不受限制
-		if(!$this->curriculum_model->is_super_admin())
-		{
-			//先檢查是否在可選課日期內
-			if(time()<strtotime($class['class_reg_start_time'])){
-				throw new Exception("尚未到選課開放時間",ERROR_CODE);
-			}
-			if(time()>strtotime($class['class_reg_end_time'])){
-				throw new Exception("已超過選課截止時間",ERROR_CODE);
-			}
-		}
+		
 		
 		if($reg['reg_state'] != "selected"){
 			throw new Exception("報名已確認，不可刪除",ERROR_CODE);
 		}
 		
 		//連同相關報名之課程一起刪除
+		//注意若已過第一堂課的報名期限，就不可以再取消(只報名認證除外)
+		$reg = $this->curriculum_model->get_reg_list(array(
+			"user_ID"=>$reg['user_ID'],
+			"course_ID"=>$reg['course_ID'],
+			"class_code"=>$reg['class_code'],
+			"group_class_suite"=>TRUE
+		))->row_array();
+		$tmp_class_type = explode(',',$reg['class_type']);
+		if(count($tmp_class_type)==1 && $tmp_class_type=='certification')
+		{
+			//只報名認證的
+			
+		}else{
+			//報名全套的
+			//(取得第一堂課的開課資訊)
+			$class = $this->curriculum_model->get_class_list(array("class_ID"=>$reg['class_ID']))->row_Array();
+			//課程管理者不受限制
+			if(!$this->curriculum_model->is_super_admin())
+			{
+				//先檢查是否在可選課日期內
+				if(time()<strtotime($class['class_reg_start_time'])){
+					throw new Exception("尚未到選課開放時間",ERROR_CODE);
+				}
+				if(time()>strtotime($class['class_reg_end_time'])){
+					throw new Exception("已超過選課截止時間",ERROR_CODE);
+				}
+			}
+		}
+		
 		$data = array(	"user_ID"=>$reg['user_ID'],
 						"course_ID"=>$reg['course_ID'],
 						"class_code"=>$reg['class_code'],
