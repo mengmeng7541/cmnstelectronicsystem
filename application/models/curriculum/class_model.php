@@ -86,6 +86,12 @@ class Class_model extends MY_Model {
 		
 	}
 	
+	public function is_certification_class_only($class_type)
+	{
+		$class_type = explode(',',$class_type);
+		return count($class_type)==1&&$class_type[0]=='certification';
+	}
+	
 	public function get_class_profs_ID($class_ID)
 	{
 		$lessons = $this->curriculum_model->get_lesson_list(array(
