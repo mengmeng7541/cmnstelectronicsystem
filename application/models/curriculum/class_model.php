@@ -51,8 +51,7 @@ class Class_model extends MY_Model {
 		
 		foreach($classes as $c){
 			//注意如果有單獨的認證，那堂就不用考量全套課程的起始時間
-			$tmp_class_type = explode(',',$c['class_type']);
-			if(count($tmp_class_type)==1 && $tmp_class_type[0]=='certification')
+			if($this->is_certification_class_only($c['class_type']))
 			{
 				if(empty($class_start_time)){
 					$class_reg_end_time = $c['class_reg_start_time'];

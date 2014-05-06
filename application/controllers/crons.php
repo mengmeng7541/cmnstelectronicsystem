@@ -70,7 +70,7 @@ class Crons extends MY_Controller {
 				$reg_query = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID']));
 				if($reg_query->num_rows() >= $class['class_min_participants']){
 					foreach($reg_query->result_array() as $reg){
-						if(empty($class['class_min_participants']) || $reg['reg_rank'] <= $class['class_min_participants'])
+						if(empty($class['class_min_participants']) || $reg['reg_rank'] <= $class['class_max_participants'])
 						{
 							//正常開課，發信通知正取學員
 							$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$reg['user_ID']))->row_array();

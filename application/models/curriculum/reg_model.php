@@ -170,8 +170,8 @@ class Reg_model extends MY_Model {
 			"class_code"=>$reg['class_code'],
 			"group_class_suite"=>TRUE
 		))->row_array();
-		$tmp_class_type = explode(',',$reg['class_type']);
-		if(count($tmp_class_type)==1 && $tmp_class_type=='certification')
+		$this->load->model('curriculum/class_model');
+		if($this->class_model->is_certification_class_only($reg['class_type']))
 		{
 			//只報名認證的
 			
