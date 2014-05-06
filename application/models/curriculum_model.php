@@ -145,8 +145,7 @@ class Curriculum_model extends MY_Model {
 							->join($sJoinTable['lesson'],"{$sJoinTable['lesson']}.class_ID = $sTable.class_ID","LEFT")
 							
 							->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = {$sJoinTable['lesson']}.lesson_prof_ID","LEFT")
-							->join($sJoinTable['location'],"{$sJoinTable['location']}.location_ID = $sTable.class_location","LEFT")
-							->group_by("$sTable.class_ID");
+							->join($sJoinTable['location'],"{$sJoinTable['location']}.location_ID = $sTable.class_location","LEFT");
 		if(isset($options['course_ID']))
 			$this->curriculum_db->where("$sTable.course_ID",$options['course_ID']);
 		if(isset($options['class_ID']))
@@ -185,6 +184,8 @@ class Curriculum_model extends MY_Model {
 		if(isset($options['group_class_suite'])&&$options['group_class_suite']==TRUE)
 		{
 			$this->curriculum_db->group_by("$sTable.course_ID,$sTable.class_code");
+		}else{
+			$this->curriculum_db->group_by("$sTable.class_ID");
 		}
 		
 		return $this->curriculum_db->get($sTable);
