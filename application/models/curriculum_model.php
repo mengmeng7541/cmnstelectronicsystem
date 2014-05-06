@@ -459,7 +459,7 @@ class Curriculum_model extends MY_Model {
 		if(isset($options['class_ID']))
 			$this->curriculum_db->where("$sTable.class_ID",$options['class_ID']);
 		if(isset($options['reg_state']))
-			$this->curriculum_db->where("$sTable.reg_state",$options['reg_state']);
+			$this->curriculum_db->where_in("$sTable.reg_state",$options['reg_state']);
 		if(isset($options['reg_ID']))
 			$this->curriculum_db->where("$sTable.reg_ID",$options['reg_ID']);
 		$this->curriculum_db->order_by("{$sJoinTable['course']}.course_ID","ASC");

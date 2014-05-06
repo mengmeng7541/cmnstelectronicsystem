@@ -62,12 +62,35 @@ class Reg_model extends MY_Model {
 			}
 		}
 		
-		
-		
 		//判斷class有否一連串的課
 		if(in_array('certification',explode(",",$class['class_type'])))
 		{
-			//只選這堂課
+			//只選這堂課之前先確認已有權限，只是因為過期所以才要重報，或者曾經選過只是最後認證未過
+			
+			//先判斷有沒有選過，>=confirmed
+			$reg = $this->curriculum_model->get_reg_list(array(
+				"course_ID"=>$class['course_ID'],
+				"reg_state"=>array('confirmed','certified')
+			))->row_array();
+			if(!$reg)
+			{
+				//沒選過就要判斷是否已有權限
+				$this->load->model('curriculum/course_model');
+				$facility_IDs = $this->course_model->get_course_map_facility_ID($class['course_ID']);
+				$this->load->model('facility_model');
+				foreach($facility_IDs as $facility_ID)
+				{
+					$privilege = $this->facility_model->get_user_privilege_list(array(
+						"facility_ID"=>$facility_ID,
+						"user_ID"=>$user_ID
+					))->row_array();
+					if(!$privilege)
+					{
+						throw new Exception("您未曾通過本課程，不可直接報名認證",ERROR_CODE);
+					}
+				}
+			}
+			
 			$data = array("class_ID"=>$class_ID,"user_ID"=>$user_ID,"reg_by"=>$reg_by);
 			$this->curriculum_model->add_reg($data);
 		}else{
