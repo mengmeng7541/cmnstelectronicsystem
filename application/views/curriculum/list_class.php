@@ -30,6 +30,7 @@
 				            <label class="control-label">開課月份</label>
 				            <div class="controls">
 								<input id="query_curriculum_class_month" type="text" value="<?=date("Y-m");?>" class="date-picker-mm"/>
+								<input type="hidden" id="query_curriculum_class_type" value="<?=isset($class_type)?$class_type:""?>"/>
 							</div>
 						</div>
                  		<table id="table_curriculum_class_list" class="table table-striped table-bordered">

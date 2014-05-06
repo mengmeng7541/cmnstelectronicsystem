@@ -2825,7 +2825,10 @@ var App = function () {
             },
 			"aaSorting": [],
 			"fnServerParams": function ( aoData ) {
-		      aoData.push(  {"name": "class_code", "value": $("#query_curriculum_class_month").val() } );
+		      aoData.push(  
+		      	{"name": "class_code", "value": $("#query_curriculum_class_month").val() },
+		      	{"name": "class_type", "value": $("#query_curriculum_class_type").val() }
+		      );
 		    }
         });
         $("#query_curriculum_class_month").datepicker()

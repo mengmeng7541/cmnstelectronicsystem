@@ -282,11 +282,12 @@ class Curriculum extends MY_Controller {
 		
 	}
 	//-----------------------CLASS--------------------------
-	public function list_class()
+	public function list_class($class_type=NULL)
 	{
 		$this->is_user_login();
 		
 		$this->data['bulletin'] = $this->curriculum_model->get_bulletin_list(array("bulletin_ID"=>"reg_warning"))->row_array();
+		$this->data['class_type'] = $class_type;
 		
 		if($this->is_admin_login(FALSE)){
 			$action_btn[] = anchor("/curriculum/class/form","單一新增","class='btn btn-warning'");
@@ -355,16 +356,19 @@ class Curriculum extends MY_Controller {
 					$output['aaData'][] = $row;
 				}
 			}else{
-				$options = array(
-					"class_code"=>$input_data['class_code'],
-					"group_class_suite"=>TRUE
-				);
+				if(isset($input_data['class_type'])&&$input_data['class_type']=='certification')
+				{
+					$options = array(
+						"class_code"=>$input_data['class_code'],
+						"class_type"=>'certification'
+					);
+				}else{
+					$options = array(
+						"class_code"=>$input_data['class_code'],
+						"group_class_suite"=>TRUE
+					);
+				}
 				$classes = $this->curriculum_model->get_class_list($options)->result_array();
-				$options = array(
-					"class_code"=>$input_data['class_code'],
-					"class_type"=>'certification'
-				);
-				$classes = array_merge($classes,$this->curriculum_model->get_class_list($options)->result_array());
 				
 				foreach($classes as $class)
 				{

@@ -186,6 +186,7 @@ $route['curriculum/course/update'] = 'curriculum/update_course';
 $route['curriculum/course/del/(:num)'] = 'curriculum/del_course/$1';
 
 $route['curriculum/class/list'] = 'curriculum/list_class';
+$route['curriculum/class/list/(:any)'] = 'curriculum/list_class/$1';
 $route['curriculum/class/query'] = 'curriculum/query_class';
 $route['curriculum/class/form'] = 'curriculum/form_class';
 $route['curriculum/class/form/batch'] = 'curriculum/form_batch_class';

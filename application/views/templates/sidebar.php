@@ -87,7 +87,8 @@
 					<span class="arrow"></span>
 					</a>
 					<ul class="sub">
-						<li><a class="" href="<?=site_url();?>/curriculum/class/list">課程報名</a></li>
+						<li><a class="" href="<?=site_url();?>/curriculum/class/list">一般課程報名</a></li>
+						<li><a class="" href="<?=site_url();?>/curriculum/class/list/certification">認證課程報名</a></li>
 						<li><a class="" href="<?=site_url();?>/curriculum/reg/list">選課紀錄</a></li>
 	                </ul>
 				</li>
