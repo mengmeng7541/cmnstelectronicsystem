@@ -164,13 +164,13 @@
 						if(location_name==null)
 						{
 							location_name = '老師辦公室';//把老師的位置送回自己的辦公室
-							
+							location_tel ='';
 						}else{
 							if(access_state=="01"){
 								if(Date.parse("-10minutes") > Date.parse(access_date+' '+access_time)){
 									//已離開太久，判定已回預設地點
 									location_name='老師辦公室';
-									
+									location_tel ='';
 								}
 							}
 						}

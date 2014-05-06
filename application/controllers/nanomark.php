@@ -129,6 +129,8 @@ class Nanomark extends MY_Controller {
 			$row[] = $aRow['report_title'];
 			$row[] = $aRow['contact_name'];
 			$row[] = $aRow['application_date'];
+			$row[] = $aRow['work_start_date'];
+			$row[] = $aRow['scheduled_completion_date'];
 			
 			if($aRow['checkpoint'] == "Case_Officer_1st" && 
 			   $this->nanomark_model->get_admin_privilege_list(array("admin_ID"=>$this->session->userdata('ID'),"privilege"=>'application_case_officer_1st'))->row_array() )

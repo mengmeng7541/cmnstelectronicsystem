@@ -89,7 +89,7 @@ class Crons extends MY_Controller {
 				if($reg_query->num_rows()-$original_canceled_reg_nums >= $class['class_min_participants']){
 					foreach($reg_query->result_array() as $reg){
 						if(
-							empty($class['class_min_participants']) || 
+							empty($class['class_max_participants']) || 
 							$reg['reg_rank']-$original_canceled_reg_nums <= $class['class_max_participants']
 						)
 						{
@@ -230,7 +230,7 @@ class Crons extends MY_Controller {
 			{
 				//通知正取生
 				if(
-					empty($class['class_min_participants'])||
+					empty($class['class_max_participants'])||
 					$reg['reg_rank']-$original_canceled_reg_nums<=$class['class_max_participants']
 				)
 				{
