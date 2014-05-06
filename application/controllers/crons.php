@@ -209,53 +209,77 @@ class Crons extends MY_Controller {
 		{
 			$class = $this->curriculum_model->get_class_list(array("class_ID"=>$lesson['class_ID']))->row_array();
 			$regs = $this->curriculum_model->get_reg_list(array("class_ID"=>$lesson['class_ID']))->result_array();
+			
+			//認證課程用特殊處理方式
+			$original_canceled_reg_nums = 0;
+			$original_canceled_reg_user_IDs = array();
+			if($this->class_model->is_certification_class_only($class['class_type']))
+			{
+				//先取得原本沒開課的報名人數
+				$original_canceled_regs = $this->curriculum_model->get_reg_list(
+					"course_ID"=>$class['course_ID'],
+					"class_code"=>$class['class_code'],
+					"class_state"=>"canceled",
+					"group_class_suite"=>TRUE
+				);
+				$original_canceled_reg_nums = $original_canceled_regs->num_rows();
+				$original_canceled_reg_user_IDs = sql_result_to_column($original_canceled_regs->result_array(),"user_ID");
+			}
+			
 			foreach($regs as $reg)
 			{
 				//通知正取生
-				if(empty($class['class_min_participants'])||$reg['reg_rank']<=$class['class_max_participants'])
+				if(
+					empty($class['class_min_participants'])||
+					$reg['reg_rank']-$original_canceled_reg_nums<=$class['class_max_participants']
+				)
 				{
-					//幫他們開門禁權限
-					$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$reg['user_ID']))->row_array();
-					if(!empty($user_profile['card_num']))//如果沒有卡片就沒辦法開門禁
+					if(!in_array($reg['user_ID'],$original_canceled_reg_user_IDs))
 					{
-						$facility_IDs = $this->course_model->get_course_map_facility_ID($reg['course_ID']);
-						if(!empty($facility_IDs))
+						//幫他們開門禁權限
+						$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$reg['user_ID']))->row_array();
+						if(!empty($user_profile['card_num']))//如果沒有卡片就沒辦法開門禁
 						{
-							foreach($facility_IDs as $facility_ID)
+							$facility_IDs = $this->course_model->get_course_map_facility_ID($reg['course_ID']);
+							if(!empty($facility_IDs))
 							{
-								$this->access_ctrl_model->add($facility_ID,$user_profile['ID'],strtotime($lesson['lesson_start_time']),strtotime($lesson['lesson_end_time']),TRUE);
+								foreach($facility_IDs as $facility_ID)
+								{
+									$this->access_ctrl_model->add($facility_ID,$user_profile['ID'],strtotime($lesson['lesson_start_time']),strtotime($lesson['lesson_end_time']),TRUE);
+								}
 							}
 						}
+						
+	//					//取得簽到單(後來又不要了!@#$%^&)
+	//					$signature = $this->curriculum_model->get_signature_list(array(
+	//						"lesson_ID"=>$lesson['lesson_ID'],
+	//						"reg_ID"=>$reg['reg_ID']
+	//					))->row_array();
+	//					if(empty($signature['signature_ID']))
+	//					{
+	//						//新增一筆
+	//						$this->load->model('curriculum/signature_model');
+	//						$signature_ID = $this->signature_model->add($lesson['lesson_ID'],$reg['reg_ID']);
+	//						$signature = $this->curriculum_model->get_signature_list(array(
+	//							"signature_ID"=>$signature_ID
+	//						))->row_array();
+	//					}
+
+						$this->email->to($user_profile['email']);
+						$this->email->subject("成大微奈米科技研究中心 -課程系統通知- [明天上課]");
+						$this->email->message(
+							"{$user_profile['name']} 您好，<br>
+							<br>
+							明日是 {$lesson['course_cht_name']} 課程 ".$this->curriculum_model->get_class_type_str($lesson['lesson_type'])." 的上課日，請準時出席，謝謝。<br>
+							日期：".date("Y-m-d",strtotime($lesson['lesson_start_time']))."<br>
+							時間：".date("H:i:s",strtotime($lesson['lesson_start_time']))."<br>
+							課程名稱：{$lesson['course_cht_name']}<br>
+							地點：{$lesson['location_cht_name']}<br>
+							授課者：{$lesson['lesson_prof_name']}<br>"
+						);
+						$this->email->send();
 					}
 					
-//					//取得簽到單(後來又不要了!@#$%^&)
-//					$signature = $this->curriculum_model->get_signature_list(array(
-//						"lesson_ID"=>$lesson['lesson_ID'],
-//						"reg_ID"=>$reg['reg_ID']
-//					))->row_array();
-//					if(empty($signature['signature_ID']))
-//					{
-//						//新增一筆
-//						$this->load->model('curriculum/signature_model');
-//						$signature_ID = $this->signature_model->add($lesson['lesson_ID'],$reg['reg_ID']);
-//						$signature = $this->curriculum_model->get_signature_list(array(
-//							"signature_ID"=>$signature_ID
-//						))->row_array();
-//					}
-
-					$this->email->to($user_profile['email']);
-					$this->email->subject("成大微奈米科技研究中心 -課程系統通知- [明天上課]");
-					$this->email->message(
-						"{$user_profile['name']} 您好，<br>
-						<br>
-						明日是 {$lesson['course_cht_name']} 課程 ".$this->curriculum_model->get_class_type_str($lesson['lesson_type'])." 的上課日，請準時出席，謝謝。<br>
-						日期：".date("Y-m-d",strtotime($lesson['lesson_start_time']))."<br>
-						時間：".date("H:i:s",strtotime($lesson['lesson_start_time']))."<br>
-						課程名稱：{$lesson['course_cht_name']}<br>
-						地點：{$lesson['location_cht_name']}<br>
-						授課者：{$lesson['lesson_prof_name']}<br>"
-					);
-					$this->email->send();
 				}
 			}
 		}
