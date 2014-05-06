@@ -179,8 +179,6 @@ class Reg_model extends MY_Model {
 		$class = $this->curriculum_model->get_class_list(array("class_ID"=>$reg['class_ID']))->row_array();
 		if(!$class) throw new Exception("無開此課！",ERROR_CODE);
 		
-		
-		
 		if($reg['reg_state'] != "selected"){
 			throw new Exception("報名已確認，不可刪除",ERROR_CODE);
 		}
@@ -218,7 +216,6 @@ class Reg_model extends MY_Model {
 		$data = array(	"user_ID"=>$reg['user_ID'],
 						"course_ID"=>$reg['course_ID'],
 						"class_code"=>$reg['class_code'],
-						"reg_state"=>"selected",
 						"reg_canceled_by"=>$reg_canceled_by);
 		$this->curriculum_model->del_reg($data);
 	}

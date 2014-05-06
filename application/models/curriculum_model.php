@@ -418,6 +418,7 @@ class Curriculum_model extends MY_Model {
 				{$sJoinTable['class']}.class_code,
 				GROUP_CONCAT({$sJoinTable['class']}.class_type ) AS class_type,
 				MIN({$sJoinTable['class']}.class_max_participants) AS class_max_participants,
+				{$sJoinTable['class']}.class_state,
 				{$sJoinTable['course']}.course_ID,
 				{$sJoinTable['course']}.course_cht_name,
 				{$sJoinTable['course']}.course_eng_name
@@ -430,6 +431,7 @@ class Curriculum_model extends MY_Model {
 				{$sJoinTable['class']}.class_code,
 				{$sJoinTable['class']}.class_type,
 				{$sJoinTable['class']}.class_max_participants,
+				{$sJoinTable['class']}.class_state,
 				{$sJoinTable['course']}.course_ID,
 				{$sJoinTable['course']}.course_cht_name,
 				{$sJoinTable['course']}.course_eng_name
@@ -462,6 +464,10 @@ class Curriculum_model extends MY_Model {
 			$this->curriculum_db->where_in("$sTable.reg_state",$options['reg_state']);
 		if(isset($options['reg_ID']))
 			$this->curriculum_db->where("$sTable.reg_ID",$options['reg_ID']);
+		if(isset($options['class_type']))
+		{
+			$this->curriculum_db->where("{$sJoinTable['class']}.class_type",$options['class_type']);
+		}
 		$this->curriculum_db->order_by("{$sJoinTable['course']}.course_ID","ASC");
 		$this->curriculum_db->order_by("{$sJoinTable['class']}.class_code","ASC");
 		$this->curriculum_db->order_by("{$sJoinTable['class']}.class_type","ASC");
