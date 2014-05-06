@@ -1610,9 +1610,9 @@ class Nanomark extends MY_Controller {
 				$row[] = $outsourcing['outsourcing_organization'];
 				
 				if(!empty($outsourcing['client_signature']))
-					$row[] = anchor("nanomark/view_outsourcing/{$outsourcing['serial_no']}","已同意","class='btn btn-success'");
+					$row[] = anchor("nanomark/view_outsourcing/{$outsourcing['specimen_SN']}","已同意","class='btn btn-success'");
 				else
-					$row[] = anchor("nanomark/edit_outsourcing/{$outsourcing['serial_no']}","等待中","class='btn btn-info '");
+					$row[] = anchor("nanomark/edit_outsourcing/{$outsourcing['specimen_SN']}","等待中","class='btn btn-info '");
 
 				$output['aaData'][] = $row;
 			}
