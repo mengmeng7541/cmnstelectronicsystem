@@ -109,7 +109,7 @@ class Curriculum_model extends MY_Model {
 				$sTable.class_ID,
 				$sTable.course_ID,
 				$sTable.class_code,
-				GROUP_CONCAT($sTable.class_type) AS class_type,
+				GROUP_CONCAT(DISTINCT $sTable.class_type) AS class_type,
 				$sTable.class_min_participants,
 				MIN($sTable.class_max_participants) AS class_max_participants,
 				$sTable.class_location,
@@ -184,7 +184,7 @@ class Curriculum_model extends MY_Model {
 		
 		if(isset($options['group_class_suite'])&&$options['group_class_suite']==TRUE)
 		{
-			$this->curriculum_db->group_by("$sTable.course_ID,$sTable.class_code");
+			$this->curriculum_db->group_by("$sTable.course_ID,$sTable.class_code,{$sJoinTable['lesson']}.class_ID");
 		}
 		
 		return $this->curriculum_db->get($sTable);
