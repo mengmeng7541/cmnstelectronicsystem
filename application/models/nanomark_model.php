@@ -732,11 +732,13 @@ class Nanomark_model extends MY_Model {
 									$sTable.recommendation AS recommendation,
 									$sTable.completed_by AS completed_by,
 									$sTable.completed_date AS completed_date,
+									{$sJoinTable['application']}.serial AS application_SN,
 									{$sJoinTable['application']}.ID AS application_ID,
 									{$sJoinTable['application']}.applicant_ID AS applicant_ID,
 									{$sJoinTable['application']}.report_title AS report_title")
 						  ->from($sTable)
-						  ->join($sJoinTable['application'],"{$sJoinTable['application']}.serial_no = $sTable.application_SN","LEFT");
+						  ->join($sJoinTable['application'],"{$sJoinTable['application']}.serial_no = $sTable.application_SN","RIGHT");
+		$this->nanomark_db->where("{$sJoinTable['application']}.checkpoint",'Client_Final');
 		if(isset($options['customer_survey_SN']))
 		{
 			$this->nanomark_db->where("$sTable.serial_no",$options['customer_survey_SN']);

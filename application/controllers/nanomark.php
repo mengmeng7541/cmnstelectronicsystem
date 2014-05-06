@@ -1828,33 +1828,34 @@ class Nanomark extends MY_Controller {
 	}
 	public function list_customer_survey_query()
 	{
-		$this->is_admin_login();
-		
-		$input_data = $this->input->get(NULL,TRUE);
-		
-		$result = $this->nanomark_model->get_customer_survey_list_array($input_data);
-		
-		$output = array(
-			"sEcho" => intval($_GET['sEcho']),
-			"iTotalRecords" => $result['iTotal'],
-			"iTotalDisplayRecords" => $result['iFilteredTotal'],
-			"aaData" => array()
-		);
-		
-		foreach ( $result['rResult'] as $aRow )
-		{
-			$row = array();
+		try{
+			$this->is_admin_login();
 			
-			$row[] = $aRow['application_ID'];
-			$row[] = $aRow['completed_by'];
-			$row[] = $aRow['completed_date'];
+			$surveys = $this->nanomark_model->get_customer_survey_list()->result_array();
 			
-			$row[] = anchor("nanomark/view_customer_survey/{$aRow['serial_no']}","已完成","class='btn btn-success'");
-
-			$output['aaData'][] = $row;
+			$output['aaData'] = array();
+			foreach($surveys as $survey)
+			{
+				$row = array();
+			
+				$row[] = $survey['application_ID'];
+				$row[] = $survey['completed_by'];
+				$row[] = $survey['completed_date'];
+				
+				if(empty($survey['customer_survey_SN']))
+				{
+					$row[] = anchor("nanomark/view_application/{$survey['application_SN']}","待填寫","class='btn btn-info'");
+				}else{
+					$row[] = anchor("nanomark/view_customer_survey/{$survey['customer_survey_SN']}","已完成","class='btn btn-success'");
+				}
+				$output['aaData'][] = $row;
+			}
+			
+			echo json_encode($output);
+			
+		}catch(Exception $e){
+			echo json_encode($output);
 		}
-		
-		echo json_encode( $output );
 	}
 	public function list_report_revision()
 	{

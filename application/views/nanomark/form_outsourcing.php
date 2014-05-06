@@ -53,6 +53,7 @@
 						 
 							<div class="form-actions">
 							   <?=isset($action_btn)?implode(' ',(array)$action_btn):"";?>
+							   <?=anchor($this->agent->referrer(),"回上頁","class='btn btn-primary'");?>
 							</div>
 
 						</form>
