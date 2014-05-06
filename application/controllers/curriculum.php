@@ -368,16 +368,16 @@ class Curriculum extends MY_Controller {
 					$row[] = "{$class['course_cht_name']} ({$class['course_eng_name']})";
 					$row[] = end(explode("-",$class['class_code']));
 					
-					if(isset($course_ID) && $course_ID == $class['course_ID'] && isset($class_code) && $class_code == $class['class_code'])
-					{
-						$tmp_class_type = explode(',',$class['class_type']);
-						if(count($tmp_class_type)==1 && $tmp_class_type[0] == 'certification')//如果只有認證課，就可以顯示
-						{
-							
-						}else{
-							continue;
-						}
-					}
+//					if(isset($course_ID) && $course_ID == $class['course_ID'] && isset($class_code) && $class_code == $class['class_code'])
+//					{
+//						$tmp_class_type = explode(',',$class['class_type']);
+//						if(count($tmp_class_type)==1 && $tmp_class_type[0] == 'certification')//如果只有認證課，就可以顯示
+//						{
+//							
+//						}else{
+//							continue;
+//						}
+//					}
 					
 					$row[] = $this->curriculum_model->get_class_type_str($class['class_type']);
 					$row[] = $class['class_start_time'];
@@ -431,10 +431,9 @@ class Curriculum extends MY_Controller {
 						$display[] = anchor("/curriculum/lesson/list/".$class['class_ID'],"瀏覽課表","class='btn btn-primary btn-mini'");
 					}
 					
-					
-					$course_ID = $class['course_ID'];
-					$class_code = $class['class_code'];
-					$class_type = $class['class_type'];
+//					$course_ID = $class['course_ID'];
+//					$class_code = $class['class_code'];
+//					$class_type = $class['class_type'];
 					
 					
 					$row[] = implode(' ',$display);
