@@ -103,17 +103,44 @@ class Curriculum_model extends MY_Model {
 	{
 		$sTable = "class_list";
 		$sJoinTable = array("course"=>"course_list","lesson"=>"lesson_list","user"=>"cmnst_common.user_profile","reg"=>"class_registration","location"=>"cmnst_common.location");
-		$this->curriculum_db->select(
-			"$sTable.*,
-			{$sJoinTable['course']}.course_ID,
-			{$sJoinTable['course']}.course_cht_name,
-			{$sJoinTable['course']}.course_eng_name,
-			MIN({$sJoinTable['lesson']}.lesson_start_time) AS class_start_time,
-			MAX({$sJoinTable['lesson']}.lesson_end_time) AS class_end_time,
-			SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time)) AS class_total_secs,
-			{$sJoinTable['user']}.name AS prof_name,
-			{$sJoinTable['location']}.location_cht_name AS location_cht_name"
-		,FALSE);
+		if(isset($options['group_class_suite'])&&$options['group_class_suite']==TRUE)
+		{
+			$sSelect = "
+				$sTable.class_ID,
+				$sTable.course_ID,
+				$sTable.class_code,
+				GROUP_CONCAT($sTable.class_type) AS class_type,
+				$sTable.class_min_participants,
+				MIN($sTable.class_max_participants) AS class_max_participants,
+				$sTable.class_location,
+				$sTable.class_reg_start_time,
+				$sTable.class_reg_end_time,
+				$sTable.class_reg_end_time_auto,
+				$sTable.class_state,
+				$sTable.class_remark,
+				{$sJoinTable['course']}.course_ID,
+				{$sJoinTable['course']}.course_cht_name,
+				{$sJoinTable['course']}.course_eng_name,
+				MIN({$sJoinTable['lesson']}.lesson_start_time) AS class_start_time,
+				MAX({$sJoinTable['lesson']}.lesson_end_time) AS class_end_time,
+				SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time)) AS class_total_secs,
+				{$sJoinTable['user']}.name AS prof_name,
+				{$sJoinTable['location']}.location_cht_name AS location_cht_name
+			";
+		}else{
+			$sSelect = "
+				$sTable.*,
+				{$sJoinTable['course']}.course_ID,
+				{$sJoinTable['course']}.course_cht_name,
+				{$sJoinTable['course']}.course_eng_name,
+				MIN({$sJoinTable['lesson']}.lesson_start_time) AS class_start_time,
+				MAX({$sJoinTable['lesson']}.lesson_end_time) AS class_end_time,
+				SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time)) AS class_total_secs,
+				{$sJoinTable['user']}.name AS prof_name,
+				{$sJoinTable['location']}.location_cht_name AS location_cht_name
+			";
+		}
+		$this->curriculum_db->select($sSelect,FALSE);
 		$this->curriculum_db->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = $sTable.course_ID","LEFT")
 							->join($sJoinTable['lesson'],"{$sJoinTable['lesson']}.class_ID = $sTable.class_ID","LEFT")
 							
@@ -155,8 +182,10 @@ class Curriculum_model extends MY_Model {
 			$this->curriculum_db->where("DATE(class_reg_end_time)",$options['class_reg_end_date']);
 		}
 		
-//		$this->curriculum_db->group_by("$sTable.course_ID");
-//		$this->curriculum_db->group_by("$sTable.class_code");
+		if(isset($options['group_class_suite'])&&$options['group_class_suite']==TRUE)
+		{
+			$this->curriculum_db->group_by("$sTable.course_ID,$sTable.class_code");
+		}
 		
 		return $this->curriculum_db->get($sTable);
 	}

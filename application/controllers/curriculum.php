@@ -306,15 +306,16 @@ class Curriculum extends MY_Controller {
 		
 			$input_data = $this->input->get(NULL,TRUE);
 			
-			$options = array(
-				"class_code"=>$input_data['class_code']
-			);
-			//get class list
-			$classes = $this->curriculum_model->get_class_list($options)->result_array();
+			
 			$output['aaData'] = array();
 			
 			if($this->is_admin_login(FALSE))
 			{
+				$options = array(
+					"class_code"=>$input_data['class_code']
+				);
+				$classes = $this->curriculum_model->get_class_list($options)->result_array();
+				
 				$this->load->model('facility_model');
 				foreach($classes as $class)
 				{
@@ -354,19 +355,19 @@ class Curriculum extends MY_Controller {
 					$output['aaData'][] = $row;
 				}
 			}else{
+				$options = array(
+					"class_code"=>$input_data['class_code'],
+					"group_class_suite"=>TRUE
+				);
+				$classes = $this->curriculum_model->get_class_list($options)->result_array();
+				
 				foreach($classes as $class)
 				{
 					
 					$row = array();
 					$row[] = "{$class['course_cht_name']} ({$class['course_eng_name']})";
 					$row[] = end(explode("-",$class['class_code']));
-					$row[] = $class['class_start_time'];
-					$reg_participants = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID']))->num_rows();
-					$row[] = "$reg_participants/{$class['class_max_participants']}";
-					$row[] = self::$class_state[$class['class_state']];
-					$row[] = $class['class_remark'];
 					
-					$display = array();
 					if(isset($course_ID) && $course_ID == $class['course_ID'] && isset($class_code) && $class_code == $class['class_code'])
 					{
 						$tmp_class_type = explode(',',$class['class_type']);
@@ -376,8 +377,17 @@ class Curriculum extends MY_Controller {
 						}else{
 							continue;
 						}
-						
 					}
+					
+					$row[] = $this->curriculum_model->get_class_type_str($class['class_type']);
+					$row[] = $class['class_start_time'];
+					$reg_participants = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID']))->num_rows();
+					$row[] = "$reg_participants/{$class['class_max_participants']}";
+					$row[] = self::$class_state[$class['class_state']];
+					$row[] = $class['class_remark'];
+					
+					$display = array();
+					
 					
 					//先確認未停開
 					if($class['class_state']!='canceled')

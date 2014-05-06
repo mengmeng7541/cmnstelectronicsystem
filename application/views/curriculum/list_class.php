@@ -50,6 +50,7 @@
 								<? } else { ?>
 									<th>課程名稱</th>
 	                 				<th width="30">班別</th>
+	                 				<th width="40">類別</th>
 	                 				<th width="70">上課時間</th>
 	                 				<th width="30">人數</th>
 	                 				<th width="40">狀況</th>
