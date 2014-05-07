@@ -719,7 +719,7 @@ class Nanomark_model extends MY_Model {
 	
 	public function delete_outsourcing($SN)
 	{
-		$this->nanomark_db->where("serial_no",$SN);
+		$this->nanomark_db->where("specimen_SN",$SN);
 		$this->nanomark_db->delete("Nanomark_outsourcing");
 		return $this->nanomark_db->affected_rows();
 	}

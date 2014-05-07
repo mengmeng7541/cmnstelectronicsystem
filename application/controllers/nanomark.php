@@ -221,7 +221,7 @@ class Nanomark extends MY_Controller {
 						$this->data['specimens'][$key]['action_btn'][] = form_button("del_row","刪除","class='btn btn-mini btn-danger'");
 					}
 				}
-				$this->data['action_btn'][] = form_submit("update","更新","class='btn btn-primary'");
+				$this->data['action_btn'][] = form_submit("update","更新","class='btn btn-warning'");
 				$this->data['action_btn'][] = form_submit("submit","蓋章","class='btn btn-warning'");
 				$this->data['action_btn'][] = form_button("del","刪除","class='btn btn-danger'");
 				$this->data['action_btn'][] = form_reset("reset","重設","class='btn btn-inverse'");
@@ -273,7 +273,7 @@ class Nanomark extends MY_Controller {
 						$this->data['specimens'][$key]['action_btn'][] = form_button("del_row","刪除","class='btn btn-mini btn-danger'");
 					}
 				}
-				$this->data['action_btn'][] = form_submit("update","更新","class='btn btn-primary'");
+				$this->data['action_btn'][] = form_submit("update","更新","class='btn btn-warning'");
 				$this->data['action_btn'][] = anchor($this->agent->referrer(),"回上頁","class='btn btn-primary'");
 				$this->data['action_btn'][] = form_button("del","刪除","class='btn btn-danger'");
 				$this->data['action_btn'][] = form_reset("reset","重設","class='btn btn-inverse'");
