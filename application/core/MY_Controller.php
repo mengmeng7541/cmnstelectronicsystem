@@ -116,7 +116,7 @@ class MY_Controller extends CI_Controller
 			    <div class='modal-body'>
 					<div class='alert alert-{$state}'><strong>".strtoupper($state)."!</strong> {$str}</div>
 			    </div>
-			    <div class='modal-footer'>".anchor(site_url().$link,"OK","class='btn btn-primary' {$data_dismiss}")."
+			    <div class='modal-footer'>".anchor($link,"OK","class='btn btn-primary' {$data_dismiss}")."
 			    </div>";
 	}
 	public function confirm_modal()
