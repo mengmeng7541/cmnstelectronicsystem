@@ -135,7 +135,7 @@
 	<div class="form-actions">
 		<? if($this->nanomark_model->is_application_case_officer_1st()){ ?>
 			<button type="submit" name="save" class="btn btn-warning">儲存</button>
-			<a href="<?=$this->agent->referrer();?>" class="btn btn-danger">取消</a>
+			<?=anchor($this->agent->referrer(),"取消","class='btn btn-danger'");?>
 		<? } ?>
 		<button type="submit" name="submit" class="btn btn-primary">送出</button>
 	</div>

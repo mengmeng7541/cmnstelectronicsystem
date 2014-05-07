@@ -146,7 +146,9 @@ border:1px solid black;
 	   <button type="button" name="print_btn" class="btn">列印</button>
 	   <? if($this->nanomark_model->is_super_admin()||$this->nanomark_model->is_application_case_officer_1st()){ ?>
 		<button type="submit" name="send_email" class="btn btn-warning">重送Email</button>
+		
 	   <? } ?>
+	   <?=anchor($this->agent->referrer(),"回上頁","class='btn btn-primary'");?>
 	</div>
 
 </form>

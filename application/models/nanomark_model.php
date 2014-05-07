@@ -240,7 +240,7 @@ class Nanomark_model extends MY_Model {
 	public function add_outsourcing($input_data)
 	{
 		$this->nanomark_db->set("specimen_SN",$input_data['specimen_SN']);
-		$this->nanomark_db->set("verification_norm_name",$input_data['verification_norm_name']);
+		$this->nanomark_db->set("verification_norm_no",$input_data['verification_norm_no']);
 		$this->nanomark_db->set("test_items_name_1",$input_data['test_items_name_1']);
 		$this->nanomark_db->set("test_items_name_2",$input_data['test_items_name_2']);
 		$this->nanomark_db->set("test_items_1_amount",$input_data['test_items_1_amount']);
@@ -440,8 +440,16 @@ class Nanomark_model extends MY_Model {
 	public function get_outsourcing_list($options = array())
 	{
 		$sTable = "Nanomark_outsourcing";
-		$sJoinTable = array("specimen"=>"Nanomark_specimen","application"=>"Nanomark_application");
-		$this->nanomark_db->select("$sTable.*,
+		$sJoinTable = array("specimen"=>"Nanomark_specimen","application"=>"Nanomark_application","norm"=>"Nanomark_verification_norm");
+		$this->nanomark_db->select("$sTable.specimen_SN,
+									$sTable.verification_norm_no,
+									$sTable.test_items_name_1,
+									$sTable.test_items_1_amount,
+									$sTable.test_items_name_2,
+									$sTable.outsourcing_organization,
+									$sTable.client_signature,
+									$sTable.signature_date,
+									{$sJoinTable['norm']}.name AS verification_norm_name,
 									{$sJoinTable['application']}.serial_no AS application_SN,
 									{$sJoinTable['application']}.ID AS application_ID,
 									{$sJoinTable['application']}.applicant_ID,
@@ -452,6 +460,7 @@ class Nanomark_model extends MY_Model {
 		$this->nanomark_db->from($sTable);
 		$this->nanomark_db->join($sJoinTable['specimen'],"{$sJoinTable['specimen']}.serial_no = $sTable.specimen_SN");
 		$this->nanomark_db->join($sJoinTable['application'],"{$sJoinTable['application']}.serial_no = {$sJoinTable['specimen']}.application_SN");
+		$this->nanomark_db->join($sJoinTable['norm'],"{$sJoinTable['norm']}.serial_no = $sTable.verification_norm_no","LEFT");
 		if(isset($options['specimen_SN']))
 			$this->nanomark_db->where("specimen_SN",$options['specimen_SN']);
 		if(isset($options['applicant_ID'])){
@@ -465,7 +474,7 @@ class Nanomark_model extends MY_Model {
 	{
 		$sTable = "Nanomark_outsourcing";
 		$sJoinTable = "Nanomark_specimen";
-	  	$aColumns = array( "$sTable.serial_no"=>"serial_no", "$sTable.specimen_ID"=>"specimen_ID", "$sJoinTable.name"=>"specimen_name","$sTable.verification_norm_name"=>"verification_norm_name","$sTable.outsourcing_organization"=>"outsourcing_organization","$sTable.client_signature"=>"client_signature");
+	  	$aColumns = array( "$sTable.serial_no"=>"serial_no", "$sTable.specimen_ID"=>"specimen_ID", "$sJoinTable.name"=>"specimen_name","$sTable.verification_norm_no"=>"verification_norm_no","$sTable.outsourcing_organization"=>"outsourcing_organization","$sTable.client_signature"=>"client_signature");
 		$sJoin = "INNER JOIN $sJoinTable ON $sTable.specimen_ID = $sJoinTable.ID";
 		$result = $this->get_jQ_DTs_array_with_join($this->nanomark_db,$sTable,$sJoin,$aColumns,$input_data);
 		return $result;
@@ -676,8 +685,8 @@ class Nanomark_model extends MY_Model {
 
 	public function update_outsourcing($input_data)
 	{
-		if(isset($input_data['verification_norm_name']))
-			$this->nanomark_db->set("verification_norm_name",$input_data['verification_norm_name']);
+		if(isset($input_data['verification_norm_no']))
+			$this->nanomark_db->set("verification_norm_no",$input_data['verification_norm_no']);
 		if(isset($input_data['test_items_name_1']))
 			$this->nanomark_db->set("test_items_name_1",$input_data['test_items_name_1']);
 		if(isset($input_data['test_items_1_amount']))

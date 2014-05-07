@@ -29,7 +29,7 @@
 							<div class="control-group">
 								<label class="control-label"></label>
 								<div class="controls">
-									根據「 <?=isset($verification_norm_select_options)?form_dropdown("verification_norm_name", $verification_norm_select_options, isset($verification_norm_name)?$verification_norm_name:"", "class='input-xxlarge chosen'"):"";?> 」
+									根據「 <?=isset($verification_norm_select_options)?form_dropdown("verification_norm_no", $verification_norm_select_options, isset($verification_norm_no)?$verification_norm_no:"", "class='input-xxlarge chosen'"):"";?> 」
 								</div>
 							</div>
 							<div class="control-group">

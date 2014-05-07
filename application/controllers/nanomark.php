@@ -1340,7 +1340,7 @@ class Nanomark extends MY_Controller {
 			$this->is_admin_login();
 			
 			$this->form_validation->set_rules("specimen_SN","檢測件編號","required");
-			$this->form_validation->set_rules("verification_norm_name","規範","required");
+			$this->form_validation->set_rules("verification_norm_no","規範","required");
 			$this->form_validation->set_rules("test_items_name_1[]","項目1","required");
 			$this->form_validation->set_rules("test_items_name_2[]","項目2","required");
 			$this->form_validation->set_rules("test_items_1_amount","數量","required");
@@ -1358,7 +1358,7 @@ class Nanomark extends MY_Controller {
 			
 			$data = array(
 				"specimen_SN"=>$input_data['specimen_SN'],
-				"verification_norm_name"=>$input_data['verification_norm_name'],
+				"verification_norm_no"=>$input_data['verification_norm_no'],
 				"test_items_name_1"=>implode(',',$input_data['test_items_name_1']),
 				"test_items_name_2"=>implode(',',$input_data['test_items_name_2']),
 				"test_items_1_amount"=>$input_data['test_items_1_amount'],
@@ -1391,7 +1391,7 @@ class Nanomark extends MY_Controller {
 			
 			
 			if($this->nanomark_model->is_super_admin() || $this->nanomark_model->is_application_case_officer_1st()){
-				$this->form_validation->set_rules("verification_norm_name","規範","required");
+				$this->form_validation->set_rules("verification_norm_no","規範","required");
 				$this->form_validation->set_rules("test_items_name_1[]","項目1","required");
 				$this->form_validation->set_rules("test_items_name_2[]","項目2","required");
 				$this->form_validation->set_rules("test_items_1_amount","數量","required");
@@ -1402,7 +1402,7 @@ class Nanomark extends MY_Controller {
 				}
 				$data = array(
 					"specimen_SN"=>$input_data['specimen_SN'],
-					"verification_norm_name"=>$input_data['verification_norm_name'],
+					"verification_norm_no"=>$input_data['verification_norm_no'],
 					"test_items_name_1"=>implode(',',$input_data['test_items_name_1']),
 					"test_items_name_2"=>implode(',',$input_data['test_items_name_2']),
 					"test_items_1_amount"=>$input_data['test_items_1_amount'],

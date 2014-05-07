@@ -28,15 +28,8 @@
 						   <div class="print_area"><?php echo $app_form; ?></div>
 						   
 						   <div class="form-actions">
-							<?
-							if(isset($action_btn))
-							{
-								foreach((array)$action_btn as $a_btn)
-								{
-									echo $a_btn.' ';
-								}
-							}
-							?>
+							<?=isset($action_btn)?implode(' ',$action_btn):"";?>
+							<?=anchor($this->agent->referrer(),"回上頁","class='btn btn-primary'");?>
 						   </div>
 					    </form>
 						

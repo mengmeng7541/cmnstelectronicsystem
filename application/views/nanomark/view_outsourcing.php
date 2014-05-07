@@ -37,7 +37,7 @@
 						    <td align="center"><h1>委外檢測顧客同意書</h1></td>
 						  </tr>
 						  <tr>
-						    <td><h3>根據「 <?=isset($verification_norm_name)?$verification_norm_select_options[$verification_norm_name]:"";?> 」對於 <?=isset($specimen_name)?$specimen_name:""; ?> 需符合下列 <?=isset($test_items_1_amount)?$test_items_1_amount:"";?> 項（ 
+						    <td><h3>根據「 <?=isset($verification_norm_no)?$verification_norm_select_options[$verification_norm_no]:"";?> 」對於 <?=isset($specimen_name)?$specimen_name:""; ?> 需符合下列 <?=isset($test_items_1_amount)?$test_items_1_amount:"";?> 項（ 
 						    <?
 						    	
 						    	foreach($test_items_name_1 as $key => $val){
