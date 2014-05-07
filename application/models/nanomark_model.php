@@ -606,7 +606,8 @@ class Nanomark_model extends MY_Model {
 		$sJoinTable = array("specimen"=>"Nanomark_specimen","application"=>"Nanomark_application");
 		$this->nanomark_db->select("
 			$sTable.*,
-			{$sJoinTable['application']}.serial_no AS application_SN
+			{$sJoinTable['application']}.serial_no AS application_SN,
+			{$sJoinTable['application']}.ID AS application_ID
 		")
 						  ->from($sTable)
 						  ->join($sJoinTable['specimen'],"{$sJoinTable['specimen']}.serial_no = $sTable.specimen_SN","LEFT")
@@ -625,15 +626,6 @@ class Nanomark_model extends MY_Model {
 		}
 		return $this->nanomark_db->get();
 		
-	}
-	public function get_report_revision_list_array($input_data)
-	{
-		$sTable = "Nanomark_revision";
-		$sJoinTable = "";
-	  	$aColumns = array( "$sTable.application_date"=>"application_date", "$sTable.application_ID"=>"application_ID","$sTable.report_ID"=>"report_ID","$sTable.mistake_description"=>"mistake_description","$sTable.checkpoint"=>"checkpoint","$sTable.serial_no"=>"serial_no");
-		$sJoin = "";
-		$result = $this->get_jQ_DTs_array_with_join($this->nanomark_db,$sTable,$sJoin,$aColumns,$input_data);
-		return $result;
 	}
 	public function get_report_revision_by_applicant_ID($user_ID)
 	{

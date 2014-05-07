@@ -1873,42 +1873,35 @@ class Nanomark extends MY_Controller {
 	{
 		if($this->is_admin_login(FALSE))
 		{
-			$input_data = $this->input->get(NULL,TRUE);
+			$revisions = $this->nanomark_model->get_report_revision_list()->result_array();
 		
-			$result = $this->nanomark_model->get_report_revision_list_array($input_data);
+			$output['aaData'] = array();
 			
-			$output = array(
-				"sEcho" => intval($_GET['sEcho']),
-				"iTotalRecords" => $result['iTotal'],
-				"iTotalDisplayRecords" => $result['iFilteredTotal'],
-				"aaData" => array()
-			);
-			
-			foreach ( $result['rResult'] as $aRow )
+			foreach($revisions as $revision)
 			{
 				$row = array();
 				
-				$row[] = $aRow['application_date'];
-				$row[] = $aRow['application_ID'];
-				$row[] = $aRow['report_ID'];
-				$row[] = $aRow['mistake_description'];
+				$row[] = $revision['application_date'];
+				$row[] = $revision['application_ID'];
+				$row[] = $revision['report_ID'];
+				$row[] = $revision['mistake_description'];
 				
 				
-				if(in_array($this->session->userdata('ID'),$this->nanomark_model->get_report_revision_unsigned_admin_by_checkpoint($aRow['serial_no'],$aRow['checkpoint'])))
+				if(in_array($this->session->userdata('ID'),$this->nanomark_model->get_report_revision_unsigned_admin_by_checkpoint($revision['serial_no'],$revision['checkpoint'])))
 				{
-					$row[] = anchor("/nanomark/edit_report_revision/{$aRow['serial_no']}","請點我","class='btn btn-warning'");
+					$row[] = anchor("/nanomark/edit_report_revision/{$revision['serial_no']}","請點我","class='btn btn-warning'");
 				}
-				else if($aRow['checkpoint'] == "Accepted")
+				else if($revision['checkpoint'] == "Accepted")
 				{
-					$row[] = anchor("/nanomark/view_report_revision/{$aRow['serial_no']}","已完成","class='btn btn-success'");
+					$row[] = anchor("/nanomark/view_report_revision/{$revision['serial_no']}","已完成","class='btn btn-success'");
 				}
-				else if($aRow['checkpoint'] == "Rejected")
+				else if($revision['checkpoint'] == "Rejected")
 				{
-					$row[] = anchor("/nanomark/view_report_revision/{$aRow['serial_no']}","未通過","class='btn btn-error'");
+					$row[] = anchor("/nanomark/view_report_revision/{$revision['serial_no']}","未通過","class='btn btn-error'");
 				}	
 				else
 				{
-					$row[] = anchor("/nanomark/view_report_revision/{$aRow['serial_no']}","進行中","class='btn btn-info'");
+					$row[] = anchor("/nanomark/view_report_revision/{$revision['serial_no']}","進行中","class='btn btn-info'");
 				}
 
 				$output['aaData'][] = $row;
