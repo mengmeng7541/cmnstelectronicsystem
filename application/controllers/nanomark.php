@@ -1430,15 +1430,18 @@ class Nanomark extends MY_Controller {
 	}
 	public function delete_outsourcing($serial_no)
 	{
-		$this->is_admin_login();
+		try{
+			$this->is_admin_login();
+			
+			$serial_no = $this->security->xss_clean($serial_no);
+			
+			$this->nanomark_model->delete_outsourcing($serial_no);
+			
+			echo $this->info_modal("刪除成功",$this->agent->referrer());
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
 		
-		$outsourcing = $this->nanomark_model->get_outsourcing_by_SN($serial_no);
-		$specimen = $this->nanomark_model->get_specimen_by_SN($outsourcing->serial_no);
-		$application = $this->nanomark_model->get_application_by_ID($specimen->application_ID);
-		
-		$this->nanomark_model->delete_outsourcing($serial_no);
-		
-		echo $this->info_modal("刪除成功","/nanomark/edit_application/{$application->ID}");
 	}
 	public function list_progress()
 	{
@@ -1956,9 +1959,11 @@ class Nanomark extends MY_Controller {
 	{
 		$this->is_admin_login();
 		
-		$report_revision = $this->nanomark_model->get_report_revision_by_SN($revision_SN);
-		$application = $this->nanomark_model->get_application_by_ID($report_revision['application_ID']);
-		$applicant_profile = $this->user_model->get_user_profile_by_ID($application->applicant_ID);
+		$revision_SN = $this->security->xss_clean($revision_SN);
+		
+		$report_revision = $this->nanomark_model->get_report_revision_list(array("revision_SN"=>$revision_SN))->row_array();
+		$application = $this->nanomark_model->get_application_list(array("serial_no"=>$report_revision['application_SN']))->row_array();
+		$applicant_profile = $this->user_model->get_user_profile_by_ID($application['applicant_ID']);
 		
 		$checkpoints = array("Quality Manager","Technical Manager","Report Signatory","Lab Manager");
 		foreach($checkpoints as $row)
@@ -2018,9 +2023,9 @@ class Nanomark extends MY_Controller {
 	{
 		$this->is_user_login();
 		
-		$report_revision = $this->nanomark_model->get_report_revision_by_SN($revision_SN);
-		$application = $this->nanomark_model->get_application_by_ID($report_revision['application_ID']);
-		if($application->applicant_ID != $this->session->userdata('ID') && !$this->is_admin_login(FALSE))
+		$report_revision = $this->nanomark_model->get_report_revision_list(array("revision_SN"=>$revision_SN))->row_array();
+		$application = $this->nanomark_model->get_application_list(array("serial_no"=>$report_revision['application_SN']))->row_array();
+		if($application['applicant_ID'] != $this->session->userdata('ID') && !$this->is_admin_login(FALSE))
 		{
 			echo $this->show_error_page();
 			return;
@@ -2077,8 +2082,8 @@ class Nanomark extends MY_Controller {
 		$this->is_admin_login();
 		
 		$input_data = $this->input->post(NULL,TRUE);
-		$report_revision = $this->nanomark_model->get_report_revision_by_SN($input_data['serial_no']);
-		$application = $this->nanomark_model->get_application_by_ID($report_revision['application_ID']);
+		$report_revision = $this->nanomark_model->get_report_revision_list(array("revision_SN"=>$input_data['serial_no']))->row_array();
+		$application = $this->nanomark_model->get_application_list(array("serial_no"=>$report_revision['application_SN']))->row_array();
 		
 		if(in_array($this->session->userdata('ID'),$this->nanomark_model->get_report_revision_unsigned_admin_by_checkpoint($report_revision['serial_no'],$report_revision['checkpoint'])))
 		{

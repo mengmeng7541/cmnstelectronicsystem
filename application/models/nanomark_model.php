@@ -364,37 +364,51 @@ class Nanomark_model extends MY_Model {
 	}
 	public function get_application_list($options = array())
 	{
-		$this->nanomark_db->select("*");
+		$sTable = "Nanomark_application";
+		$sJoinTalbe = array("constant_checkpoint"=>"constant_nanomark_application_checkpoint");
+		$this->nanomark_db->select("
+			$sTable.serial_no,
+			$sTable.ID,
+			$sTable.application_date,
+			$sTable.test_outline,
+			$sTable.priority,
+			$sTable.report_title,
+			$sTable.receipt_title,
+			$sTable.report_address,
+			$sTable.mail_address,
+			$sTable.VAT,
+			$sTable.applicant_ID,
+			$sTable.contact_name,
+			$sTable.contact_tel,
+			$sTable.contact_mobile,
+			$sTable.contact_FAX,
+			$sTable.contact_email,
+			$sTable.work_start_date,
+			$sTable.scheduled_completion_date,
+			$sTable.total_fees,
+			$sTable.when_pay,
+			$sTable.num_report_copies_scale,
+			$sTable.num_report_copies_functionality,
+			$sTable.num_report_copies_biocompatibility,
+			$sTable.report_logo_scale,
+			$sTable.report_logo_functionality,
+			$sTable.report_logo_biocompatibility,
+			$sTable.comments,
+			$sTable.client_signature,
+			$sTable.case_officer_ID,
+			$sTable.case_officer_2_ID,
+			$sTable.consignee_signature,
+			{$sJoinTalbe['constant_checkpoint']}.application_checkpoint_ID AS checkpoint,
+			{$sJoinTalbe['constant_checkpoint']}.application_checkpoint_name AS checkpoint_name
+		");
+		$this->nanomark_db->join($sJoinTalbe['constant_checkpoint'],"{$sJoinTalbe['constant_checkpoint']}.application_checkpoint_no = $sTable.checkpoint");
 		if(isset($options['serial_no']))
 			$this->nanomark_db->where("serial_no",$options['serial_no']);
 		if(isset($options['application_ID']))
 			$this->nanomark_db->where("ID",$options['application_ID']);
 		if(isset($options['applicant_ID']))
 			$this->nanomark_db->where("applicant_ID",$options['applicant_ID']);
-		return $this->nanomark_db->get("Nanomark_application");
-	}
-	public function get_application_list_array($input_data)
-	{
-		$sTable = "Nanomark_application";
-		$sJoinTable = "";
-	  	$aColumns = array( "$sTable.serial_no"=>"serial_no", "$sTable.ID"=>"ID", "$sTable.report_title"=>"report_title","$sTable.contact_name"=>"contact_name","$sTable.application_date"=>"application_date","$sTable.checkpoint"=>"checkpoint");
-		$sJoin = "";
-		$result = $this->get_jQ_DTs_array_with_join($this->nanomark_db,$sTable,$sJoin,$aColumns,$input_data);
-		return $result;
-	}
-	public function get_application_by_SN($SN)
-	{
-		$sql = "SELECT * FROM Nanomark_application WHERE serial_no='{$SN}'";
-		$query = $this->nanomark_db->query($sql);
-		$result = $query->row();
-		return $result;
-	}
-	public function get_application_by_ID($ID)
-	{
-		$sql = "SELECT * FROM Nanomark_application WHERE ID='{$ID}'";
-		$query = $this->nanomark_db->query($sql);
-		$result = $query->row();
-		return $result;
+		return $this->nanomark_db->get($sTable);
 	}
 	public function get_application_by_applicant_ID($ID)
 	{
@@ -581,13 +595,24 @@ class Nanomark_model extends MY_Model {
 	{
 		$sTable = "Nanomark_revision";
 		$sJoinTable = array("specimen"=>"Nanomark_specimen","application"=>"Nanomark_application");
-		$this->nanomark_db->select("$sTable.*")
+		$this->nanomark_db->select("
+			$sTable.*,
+			{$sJoinTable['application']}.serial_no AS application_SN
+		")
 						  ->from($sTable)
 						  ->join($sJoinTable['specimen'],"{$sJoinTable['specimen']}.serial_no = $sTable.specimen_SN","LEFT")
 						  ->join($sJoinTable['application'],"{$sJoinTable['application']}.serial_no = {$sJoinTable['specimen']}.application_SN","LEFT");
 		if(isset($options['applicant_ID']))
 		{
 			$this->nanomark_db->where("{$sJoinTable['application']}.applicant_ID",$options['applicant_ID']);
+		}
+		if(isset($options['specimen_SN']))
+		{
+			$this->nanomark_db->where("{$sJoinTable['specimen']}.serial_no",$options['specimen_SN']);
+		}
+		if(isset($options['revision_SN']))
+		{
+			$this->nanomark_db->where("$sTable.serial_no",$options['revision_SN']);
 		}
 		return $this->nanomark_db->get();
 		
@@ -693,10 +718,9 @@ class Nanomark_model extends MY_Model {
 	
 	public function delete_outsourcing($SN)
 	{
-		$sql = "DELETE FROM Nanomark_outsourcing WHERE serial_no='{$SN}'";
-		$query = $this->nanomark_db->query($sql);
-		
-		return TRUE;
+		$this->nanomark_db->where("serial_no",$SN);
+		$this->nanomark_db->delete("Nanomark_outsourcing");
+		return $this->nanomark_db->affected_rows();
 	}
 	
 	public function add_customer_survey($input_data)
@@ -927,8 +951,8 @@ class Nanomark_model extends MY_Model {
 	}
 	public function get_report_revision_unsigned_admin_by_checkpoint($revision_SN,$checkpoint)
 	{
-		$report_revision = $this->get_report_revision_by_SN($revision_SN);
-		$application = $this->get_application_by_ID($report_revision['application_ID']);
+		$report_revision = $this->get_report_revision_list(array("revision_SN"=>$revision_SN))->row_array();
+		$application = $this->get_application_list(array("serial_no"=>$report_revision['application_SN']))->row_array();
 		$unsigned_admin_ID = array();
 		
 		$checkpoint = str_replace(" ","_",strtolower($checkpoint));
