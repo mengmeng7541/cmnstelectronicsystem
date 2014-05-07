@@ -1882,12 +1882,10 @@ var App = function () {
 		
 		$("#table_list_report_revision").dataTable({
 			"bProcessing": true,
-	        "bServerSide": true,
 	        "sAjaxSource": site_url+"nanomark/list_report_revision_query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
-				"sProcessing": "<img src='/assets/pre-loader/Atom.gif'>",
                 "sLengthMenu": "_MENU_ records per page",
                 "oPaginate": {
                     "sPrevious": "Prev",
