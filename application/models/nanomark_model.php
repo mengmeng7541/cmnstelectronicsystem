@@ -742,7 +742,7 @@ class Nanomark_model extends MY_Model {
 	public function get_customer_survey_list($options = array())
 	{
 		$sTable = "Nanomark_customer_survey";
-		$sJoinTable = array("application"=>"Nanomark_application");
+		$sJoinTable = array("application"=>"Nanomark_application","constant_checkpoint"=>"constant_nanomark_application_checkpoint");
 		$this->nanomark_db->select("$sTable.serial_no AS customer_survey_SN,
 									$sTable.application_SN AS application_SN,
 									$sTable.overall_quality AS overall_quality,
