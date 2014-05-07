@@ -74,12 +74,12 @@ class Crons extends MY_Controller {
 				if($this->class_model->is_certification_class_only($class['class_type']))
 				{
 					//先取得原本沒開課的報名人數
-					$original_canceled_regs = $this->curriculum_model->get_reg_list(
+					$original_canceled_regs = $this->curriculum_model->get_reg_list(array(
 						"course_ID"=>$class['course_ID'],
 						"class_code"=>$class['class_code'],
 						"class_state"=>"canceled",
 						"group_class_suite"=>TRUE
-					);
+					));
 					$original_canceled_reg_nums = $original_canceled_regs->num_rows();
 					$original_canceled_reg_user_IDs = sql_result_to_column($original_canceled_regs->result_array(),"user_ID");
 				}
@@ -216,12 +216,12 @@ class Crons extends MY_Controller {
 			if($this->class_model->is_certification_class_only($class['class_type']))
 			{
 				//先取得原本沒開課的報名人數
-				$original_canceled_regs = $this->curriculum_model->get_reg_list(
+				$original_canceled_regs = $this->curriculum_model->get_reg_list(array(
 					"course_ID"=>$class['course_ID'],
 					"class_code"=>$class['class_code'],
 					"class_state"=>"canceled",
 					"group_class_suite"=>TRUE
-				);
+				));
 				$original_canceled_reg_nums = $original_canceled_regs->num_rows();
 				$original_canceled_reg_user_IDs = sql_result_to_column($original_canceled_regs->result_array(),"user_ID");
 			}
