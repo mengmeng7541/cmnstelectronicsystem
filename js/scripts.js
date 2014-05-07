@@ -2574,7 +2574,7 @@ var App = function () {
 		});
 		$("#confirm_modal button[name='confirm']").click(function(){
 			$.ajax({
-				url: '/index.php/facility/user/booking/del/'+$("#confirm_modal").data("ID"),
+				url: site_url+'facility/user/booking/del/'+$("#confirm_modal").data("ID"),
 				beforeSend: function(){
 					showRequest();
 				}
@@ -2752,7 +2752,7 @@ var App = function () {
 			"iDisplayLength": 100,
         });
 		$("#table_admin_manual_clock_list").on("click","button[name='del']",function(){
-			$.ajax('/index.php/admin/clock/del/'+$(this).val())
+			$.ajax(site_url+'admin/clock/del/'+$(this).val())
 			.always(function(){
 				table_admin_manual_clock_list.fnReloadAjax(null,null,true);
 			});
@@ -2799,7 +2799,7 @@ var App = function () {
 			"aaSorting": [[0,'asc']],
         });
         $("#table_curriculum_list").on("click","button[name='del']",function(){
-        	$.ajax('/index.php/curriculum/course/del/'+$(this).val())
+        	$.ajax(site_url+'curriculum/course/del/'+$(this).val())
         	.always(function(data){
         		table_curriculum_list.fnReloadAjax(null,null,true);
         	});
@@ -3012,7 +3012,7 @@ var App = function () {
 //        });
 //        $("#table_curriculum_signature_list").on("click","button[name='sign']",function(){
 //        	$.ajax({
-//        		url:'/index.php/curriculum/signature/add/'+$(this).val(),
+//        		url:site_url+'curriculum/signature/add/'+$(this).val(),
 //        		beforeSend:function(){
 //					showRequest();	
 //				},
@@ -3023,7 +3023,7 @@ var App = function () {
 //        });
 //        $("#table_curriculum_signature_list").on("click","button[name='del_sign']",function(){
 //        	$.ajax({
-//        		url:'/index.php/curriculum/signature/del/'+$(this).val(),
+//        		url:site_url+'curriculum/signature/del/'+$(this).val(),
 //        		beforeSend:function(){
 //					showRequest();	
 //				},
@@ -3056,7 +3056,7 @@ var App = function () {
         });
         $("#table_curriculum_lesson_list").on("click","button[name='del']",function(){
         	$.ajax({
-        		url: '/index.php/curriculum/lesson/del/'+$(this).val(),
+        		url: site_url+'curriculum/lesson/del/'+$(this).val(),
         		beforeSend: function(){
 					showRequest();
 				}
@@ -3087,7 +3087,7 @@ var App = function () {
         });
         $("#table_curriculum_booking_list").on("click","button[name='del']",function(){
         	$.ajax({
-        		url: '/index.php/curriculum/booking/del/'+$(this).val(),
+        		url: site_url+'curriculum/booking/del/'+$(this).val(),
         		beforeSend: function(){
 					showRequest();
 				}
@@ -3251,7 +3251,7 @@ var App = function () {
 			ajaxSubmitOptions = { 
 		        beforeSubmit:  showRequest,  // pre-submit callback 
 		        success:       showResponse,  // post-submit callback 
-		 		url:       '/index.php/nanomark/delete_application/',        // override for form's 'action' attribute 
+		 		url:       site_url+'nanomark/delete_application/',        // override for form's 'action' attribute 
 	    	}; 
 			
 			$("#form_nanomark_application").ajaxSubmit(ajaxSubmitOptions);
@@ -3280,14 +3280,14 @@ var App = function () {
 	
 		
 		$("#form_nanomark_outsourcing button[name='update']").click(function(){
-			$("#form_nanomark_outsourcing").prop("action",'/index.php/nanomark/update_outsourcing/'+$("input[name='serial_no']").val());
+			$("#form_nanomark_outsourcing").prop("action",site_url+'nanomark/update_outsourcing/'+$("input[name='specimen_SN']").val());
 			$("#form_nanomark_outsourcing").submit();
 		});
 		$("#form_nanomark_outsourcing button[name='del']").click(function(){
 			ajaxSubmitOptions = {
 				beforeSubmit:  showRequest,  // pre-submit callback 
 	        	success:       showResponse,  // post-submit callback 
-				url:       '/index.php/nanomark/delete_outsourcing/'+$("input[name='serial_no']").val(),        // override for form's 'action' attribute 
+				url:       site_url+'nanomark/delete_outsourcing/'+$("input[name='specimen_SN']").val(),        // override for form's 'action' attribute 
 			}
 			$("#form_nanomark_outsourcing").ajaxSubmit(ajaxSubmitOptions);
 
@@ -3304,7 +3304,7 @@ var App = function () {
 			ajaxSubmitOptions = {
 				beforeSubmit:  showRequest,  // pre-submit callback 
 	        	success:       showResponse,  // post-submit callback 
-				url:       '/index.php/nanomark/update_report_revision/',        // override for form's 'action' attribute 
+				url:       site_url+'nanomark/update_report_revision/',        // override for form's 'action' attribute 
 				data:{
 					result:$(this).val(),
 				},
@@ -3366,7 +3366,7 @@ var App = function () {
 			ajaxSubmitOptions = { 
 		        beforeSubmit:  showRequest,  // pre-submit callback 
 		        success:       showResponse,  // post-submit callback 
-		        url:       '/index.php/reward/delete/'+$(this).val(),// override for form's 'action' attribute  
+		        url:       site_url+'reward/delete/'+$(this).val(),// override for form's 'action' attribute  
 	    	}; 	
 			
 			$("#reward_list_table").ajaxSubmit(ajaxSubmitOptions);
@@ -3379,7 +3379,7 @@ var App = function () {
 			ajaxSubmitOptions = { 
 		        beforeSubmit:  showRequest,  // pre-submit callback 
 		        success:       showResponse,  // post-submit callback 
-		        url:       '/index.php/reward/update/'         // override for form's 'action' attribute  
+		        url:       site_url+'reward/update/'         // override for form's 'action' attribute  
 	    	}; 	
 			$("#reward_application").ajaxSubmit(ajaxSubmitOptions);
 		});
