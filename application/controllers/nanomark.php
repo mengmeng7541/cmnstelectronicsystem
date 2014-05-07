@@ -1410,7 +1410,7 @@ class Nanomark extends MY_Controller {
 				);
 				$this->nanomark_model->update_outsourcing($data);
 				
-				echo $this->info_modal("更新成功","/nanomark/edit_application/{$outsourcing['application_SN']}");
+				echo $this->info_modal("更新成功",$this->agent->referrer());
 			}else{
 				//確認是否為自己的外包單		
 				if($outsourcing['applicant_ID'] != $this->session->userdata('ID')){
