@@ -41,12 +41,8 @@ $route['mssql2mysql'] = 'mssql2mysql';
 
 $route['admin'] = 'admin';
 $route['admin/login'] = 'admin/login';
-$route['admin/clock'] = 'admin/clock';
-$route['admin/clock/list'] = 'admin/list_clock';
-$route['admin/clock/query/auto'] = 'admin/query_auto_clock';
-$route['admin/clock/query/manual'] = 'admin/query_manual_clock';
-$route['admin/clock/add'] = 'admin/add_clock';
-$route['admin/clock/del/(:num)'] = 'admin/del_clock/$1';
+
+
 $route['admin/main'] = 'admin/main';
 $route['admin/list'] = 'admin/list_account';
 $route['admin/list/query'] = 'admin/list_account_query';
@@ -54,6 +50,21 @@ $route['admin/form'] = 'admin/edit_account';
 $route['admin/edit/(:any)'] = 'admin/edit_account/$1';
 $route['admin/add'] = 'admin/add_account';
 $route['admin/update'] = 'admin/update_account';
+
+$route['admin/clock'] = 'admin/clock';
+$route['admin/clock/list'] = 'admin/list_clock';
+$route['admin/clock/query/auto'] = 'admin/query_auto_clock';
+$route['admin/clock/query/manual'] = 'admin/query_manual_clock';
+$route['admin/clock/add'] = 'admin/add_clock';
+$route['admin/clock/del/(:num)'] = 'admin/del_clock/$1';
+
+$route['admin/boss/list'] = 'admin/list_clock';
+$route['admin/boss/query'] = 'admin/query_boss';
+$route['admin/boss/form'] = 'admin/form_boss';
+$route['admin/boss/edit/(:num)'] = 'admin/edit_boss/$1';
+$route['admin/boss/add'] = 'admin/add_boss';
+$route['admin/boss/update'] = 'admin/update_boss';
+$route['admin/boss/del/(:num)'] = 'admin/del_clock/$1';
 
 $route['user'] = 'user/form';
 $route['user/login'] = 'user/login';

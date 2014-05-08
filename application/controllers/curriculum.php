@@ -1295,7 +1295,7 @@ class Curriculum extends MY_Controller {
 				}
 				
 				//超級管理員隨時都可以取消
-				if($this->curriculum_model->is_super_admin()){
+				if($this->curriculum_model->is_super_admin() && $reg['reg_state']=='selected'){
 					$display[] = form_button("del","取消","class='btn btn-danger btn-small' value='{$reg['reg_ID']}'");
 				}
 					

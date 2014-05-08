@@ -1779,12 +1779,21 @@ var App = function () {
                 }
             },
 			"aaSorting": [],
-//			"aoColumnDefs": [ 
-//				{
-//			      "aTargets": [ 3 ],
-//				  "bSortable": false,
-//			    }
-//			],
+        });
+	}
+	var handleBoss = function(){
+		$("#table_boss_list").dataTable({
+	        "sAjaxSource": site_url+"boss/query",
+            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+			"aaSorting": [],
         });
 	}
     var handleTablesNanomark = function () {
@@ -3567,6 +3576,7 @@ var App = function () {
 			handleTableAccountList();
 			handleFormAccount();
 			handleOrganization();
+			handleBoss();
 			handleFormFacility();//儀器預約系統
 			handleTablesFacility();
 			handleTablesCurriculum();

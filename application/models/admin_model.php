@@ -160,7 +160,20 @@ class Admin_model extends MY_Model {
 		$this->clock_db->where("clock_ID",$data['clock_ID']);
 		$this->clock_db->delete("clock_admin_manual");
 	}
-	
+	//-------------------------BOSS---------------------------------
+	public function get_boss_list($options)
+	{
+		$sTable = "boss_profile";
+		$sJoinTable = array("org"=>"organization");
+		$this->clock_db->select("*,{$sJoinTable['org']}.name AS org_name");
+		$this->clock_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = $sTable.organization","LEFT");
+		if(isset($options['serial_no']))
+		{
+			$this->clock_db->where("serial_no",$options['serial_no']);
+		}
+		
+		return $this->clock_db->get($sTable);	
+	}
 	//-----------------通用------------------
 	public function get_admin_ID_select_options()
 	{

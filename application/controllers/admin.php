@@ -240,7 +240,7 @@ class Admin extends MY_Controller {
 		{
 			$row = array();
 			$row[] = $clock['clock_time'];
-			$row[] = $clock['clock_remark'];
+			$row[] = $clock['clock_reason'].'@'.$clock['clock_location'];
 			$row[] = $clock['clock_start_time'];
 			$row[] = $clock['clock_end_time'];
 			$row[] = form_button("del","刪除","class='btn btn-warning' value='{$clock['clock_ID']}'");
@@ -300,6 +300,84 @@ class Admin extends MY_Controller {
 		}catch(Exception $e){
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
+	}
+	//---------------------BOSS------------------------------
+	public function list_boss()
+	{
+		$this->is_admin_login();
+		
+		$this->load->view('templates/header');
+	    $this->load->view('templates/sidebar');
+	    $this->load->view('admin/list_boss',$this->data);
+	    $this->load->view('templates/footer');
+	}
+	public function query_boss()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$bosses = $this->admin_model->get_boss_list()->result_array();
+			
+			$output['aaData'] = array();
+			foreach($bosses as $boss)
+			{
+				$row = array();
+				
+				$row[] = $boss['name'];
+				$row[] = $boss['org_name'];
+				$row[] = $boss['department'];
+				$row[] = $boss['tel'];
+				$row[] = $boss['email'];
+				$row[] = anchor('admin/boss/edit'.$boss['serial_no'],"編輯","class='btn btn-small btn-warning'");
+				$output['aaData'][] = $row;	
+			}
+			
+			echo json_encode($output);
+		}catch(Exception $e){
+			echo json_encode($output);
+		}
+	}
+	public function form_boss()
+	{
+		
+	}
+	public function edit_boss($SN)
+	{
+		try{
+			$this->is_admin_login();
+			
+			$SN = $this->security->xss_clean($SN);
+			
+			$boss = $this->admin_model->get_boss_list(array("serial_no"=>$SN))->row_array();
+			if(!$boss)
+			{
+				throw new Exception();
+			}
+			
+			$this->data = $boss;
+			
+			//取得ORG列表
+			$this->data['org_ID_select_options'] = $this->user_model->get_org_ID_select_options();
+			
+			$this->load->view('templates/header');
+		    $this->load->view('templates/sidebar');
+		    $this->load->view('admin/edit_boss',$this->data);
+		    $this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
+	}
+	public function add_boss()
+	{
+		
+	}
+	public function update_boss()
+	{
+		
+	}
+	public function del_boss()
+	{
+		
 	}
   //-------------------------------------------------------------------------------------------------------------
   public function clock(){
