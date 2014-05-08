@@ -16,6 +16,7 @@
 						<li><a class="" href="<?=site_url();?>/admin/clock/list">中心人員所在位置</a></li>
 						<li><a class="" href="<?=site_url();?>/admin/list">管理者資料維護</a></li>
 						<li><a class="" href="<?=site_url();?>/user/list">使用者資料維護</a></li>
+						<li><a class="" href="<?=site_url();?>/boss/list">老師主管資料維護</a></li>
 						<li><a class="" href="<?=site_url();?>/org/list">公司行號資料維護</a></li>
 	                </ul>
 				</li>
