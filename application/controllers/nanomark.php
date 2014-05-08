@@ -1689,7 +1689,7 @@ class Nanomark extends MY_Controller {
 		}
 			
 	}
-	public function view_customer_survey($SN)
+	public function view_customer_survey($SN = '')
 	{
 		try{
 			$this->is_user_login();
