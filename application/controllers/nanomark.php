@@ -1606,9 +1606,10 @@ class Nanomark extends MY_Controller {
 			foreach($outsourcings as $outsourcing)
 			{
 				$row = array();
-			
+				
 				$row[] = $outsourcing['specimen_ID'];
 				$row[] = $outsourcing['specimen_name'];
+				$row[] = $outsourcing['specimen_company_name'];
 				$row[] = $outsourcing['verification_norm_name'];
 				$row[] = $outsourcing['outsourcing_organization'];
 				
@@ -1842,6 +1843,7 @@ class Nanomark extends MY_Controller {
 				$row = array();
 			
 				$row[] = $survey['application_ID'];
+				$row[] = $survey['report_title'];
 				$row[] = $survey['completed_by'];
 				$row[] = $survey['completed_date'];
 				
@@ -1883,6 +1885,7 @@ class Nanomark extends MY_Controller {
 				
 				$row[] = $revision['application_date'];
 				$row[] = $revision['application_ID'];
+				$row[] = $revision['report_title'];
 				$row[] = $revision['report_ID'];
 				$row[] = $revision['mistake_description'];
 				

@@ -456,7 +456,8 @@ class Nanomark_model extends MY_Model {
 									{$sJoinTable['application']}.report_title,
 									{$sJoinTable['application']}.contact_name,
 									{$sJoinTable['specimen']}.ID AS specimen_ID,
-									{$sJoinTable['specimen']}.name AS specimen_name");
+									{$sJoinTable['specimen']}.name AS specimen_name,
+									{$sJoinTable['specimen']}.company_name AS specimen_company_name");
 		$this->nanomark_db->from($sTable);
 		$this->nanomark_db->join($sJoinTable['specimen'],"{$sJoinTable['specimen']}.serial_no = $sTable.specimen_SN");
 		$this->nanomark_db->join($sJoinTable['application'],"{$sJoinTable['application']}.serial_no = {$sJoinTable['specimen']}.application_SN");
@@ -607,7 +608,8 @@ class Nanomark_model extends MY_Model {
 		$this->nanomark_db->select("
 			$sTable.*,
 			{$sJoinTable['application']}.serial_no AS application_SN,
-			{$sJoinTable['application']}.ID AS application_ID
+			{$sJoinTable['application']}.ID AS application_ID,
+			{$sJoinTable['application']}.report_title AS report_title,
 		")
 						  ->from($sTable)
 						  ->join($sJoinTable['specimen'],"{$sJoinTable['specimen']}.serial_no = $sTable.specimen_SN","LEFT")
