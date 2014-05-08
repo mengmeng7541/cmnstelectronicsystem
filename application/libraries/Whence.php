@@ -104,6 +104,7 @@ class Whence
             array_unshift($whencearray,$defaulturi);
         }
         $this->_ci->session->set_userdata('whence',$whencearray);
+        return $whence;
     }
     
     function dump()

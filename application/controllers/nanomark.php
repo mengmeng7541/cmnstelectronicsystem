@@ -1410,7 +1410,7 @@ class Nanomark extends MY_Controller {
 				);
 				$this->nanomark_model->update_outsourcing($data);
 				
-				echo $this->info_modal("更新成功",$this->agent->referrer());
+				echo $this->info_modal("更新成功",$this->whence->pop());
 			}else{
 				//確認是否為自己的外包單		
 				if($outsourcing['applicant_ID'] != $this->session->userdata('ID')){
@@ -1437,7 +1437,7 @@ class Nanomark extends MY_Controller {
 			
 			$this->nanomark_model->delete_outsourcing($serial_no);
 			
-			echo $this->info_modal("刪除成功",$this->agent->referrer());
+			echo $this->info_modal("刪除成功",$this->whence->pop());
 		}catch(Exception $e){
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
