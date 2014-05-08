@@ -416,7 +416,7 @@ class Curriculum_model extends MY_Model {
 				$sTable.reg_state AS reg_state,
 				MIN($sTable.reg_rank) AS reg_rank,
 				{$sJoinTable['class']}.class_code,
-				GROUP_CONCAT({$sJoinTable['class']}.class_type ) AS class_type,
+				GROUP_CONCAT({$sJoinTable['class']}.class_type ORDER BY {$sJoinTable['class']}.class_type ASC) AS class_type,
 				MIN({$sJoinTable['class']}.class_max_participants) AS class_max_participants,
 				{$sJoinTable['class']}.class_state,
 				{$sJoinTable['course']}.course_ID,
