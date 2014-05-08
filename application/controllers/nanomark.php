@@ -492,7 +492,8 @@ class Nanomark extends MY_Controller {
 		try{
 			$this->is_user_login();
 			
-			$this->form_validation->set_rules("test_outline[]","測試主題","required");
+			$this->form_validation->set_rules("test_outline[]","測試摘要","required");
+			$this->form_validation->set_rules("specimen_name[]","樣品名稱","required");
 			$this->form_validation->set_rules("priority","優先權","required");
 			$this->form_validation->set_rules("report_title","報告抬頭","required");
 			$this->form_validation->set_rules("receipt_title","收據抬頭","required");

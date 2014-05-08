@@ -3211,20 +3211,8 @@ var App = function () {
 		(
 			{
 				rules:{
-					report_title:{required:true},
-					receipt_title:{required:true},
-					report_address:{required:true},
-					mail_address:{required:true},
-					VAT:{required:true},
-					contact_name:{required:true},
-					contact_tel:{required:true},
-					contact_mobile:{required:true},
-					contact_email:{required:true},
-					"test_outline[]":{required:true,minlength: 1},
-					"specimen_name[]":{required:true,minlength: 1},
 				},
 				messages:{
-
 				},
 			}
 		);
