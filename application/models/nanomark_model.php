@@ -76,6 +76,8 @@ class Nanomark_model extends MY_Model {
 			$this->nanomark_db->set("report_logo_functionality",$input_data['report_logo_functionality']);
 		if(isset($input_data['report_logo_biocompatibility']))
 			$this->nanomark_db->set("report_logo_biocompatibility",$input_data['report_logo_biocompatibility']);
+		if(isset($input_data['verification_norm']))
+			$this->nanomark_db->set("verification_norm",$input_data['verification_norm']);
 		if(isset($input_data['comments']))
 			$this->nanomark_db->set("comments",$input_data['comments']);
 		if(isset($input_data['client_signature']))

@@ -182,10 +182,12 @@
     </td>
   </tr>
   <tr>
-    <td colspan="3" align="center">備 註</td>
+    <td colspan="2" align="center">檢測方法</td>
+    <td align="center">備 註</td>
     </tr>
   <tr>
-    <td colspan="3" rowspan="3">檢測方法：<br><?=form_textarea("comments",isset($comments)?$comments:"","cols='40' rows='8'".$readonly);?></td>
+    <td colspan="2" rowspan="3"><?=form_textarea("verification_norm",isset($verification_norm)?$verification_norm:"","cols='40' rows='8'".$readonly);?></td>
+    <td owspan="3"><?=form_textarea("comments",isset($comments)?$comments:"","cols='40' rows='8'".$readonly);?></td>
     </tr>
   <tr>
     <td colspan="3" align="center">客 戶 簽 章</td>

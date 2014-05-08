@@ -539,6 +539,7 @@ class Nanomark extends MY_Controller {
 							"report_logo_scale"=>isset($input_data['report_logo_scale'])?$input_data['report_logo_scale']:0,
 							"report_logo_functionality"=>isset($input_data['report_logo_functionality'])?$input_data['report_logo_functionality']:0,
 							"report_logo_biocompatibility"=>isset($input_data['report_logo_biocompatibility'])?$input_data['report_logo_biocompatibility']:0,
+							"verification_norm"=>$input_data['verification_norm'],
 							"comments"=>$input_data['comments'],
 							"client_signature"=>$input_data['contact_name']);
 			$application_SN = $this->nanomark_model->add_application($data);

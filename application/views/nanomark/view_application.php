@@ -154,10 +154,12 @@
     </td>
   </tr>
   <tr>
-    <td colspan="3" align="center">備 註</td>
+    <td colspan="2" align="center">檢測方法</td>
+    <td align="center">備 註</td>
     </tr>
   <tr>
-    <td colspan="3" rowspan="3">檢測方法：<br><?=isset($comments)?$comments:"";?></td>
+  	<td colspan="2" rowspan="3"><?=isset($verification_norm)?$verification_norm:"";?></td>
+    <td rowspan="3"><?=isset($comments)?$comments:"";?></td>
     </tr>
   <tr>
     <td colspan="3" align="center">客 戶 簽 章</td>
