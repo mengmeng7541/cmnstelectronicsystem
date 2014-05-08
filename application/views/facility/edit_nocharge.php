@@ -75,8 +75,8 @@
                  			<div class="control-group ">
                      			<label class="control-label">審查結果</label>
 					            <div class="controls">
-					            	<label class="radio"><input type="radio" name="result" value="1" class="radio" <?=empty($result)?"":"checked";?> <?=($page=="view")?"disabled='disabled'":""?>/>同意</label>
-									<label class="radio"><input type="radio" name="result" value="0" class="radio" <?=empty($result)?"checked":"";?> <?=($page=="view")?"disabled='disabled'":""?>/>退件</label>
+					            	<label class="radio"><input type="radio" name="result" value="1" class="radio" <?=isset($result)&&$result?"checked":"";?> <?=($page=="view")?"disabled='disabled'":""?>/>同意</label>
+									<label class="radio"><input type="radio" name="result" value="0" class="radio" <?=isset($result)&&!$result?"checked":"";?> <?=($page=="view")?"disabled='disabled'":""?>/>退件</label>
 								</div>
                      		</div>
                      		<div class="control-group">

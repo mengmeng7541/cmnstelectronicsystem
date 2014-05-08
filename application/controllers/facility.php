@@ -2283,69 +2283,74 @@ class Facility extends MY_Controller {
 	}
 	public function update_nocharge()
 	{
-		$this->is_admin_login();
+		try{
+			$this->is_admin_login();
 		
-		$input_data = $this->input->post(NULL,TRUE);
-		
-		$this->form_validation->set_rules("result","審查結果","required");
-		
-		if(empty($input_data['result'])){
-			$this->form_validation->set_rules("comment","退件理由","required");
-		}else{
-			$this->form_validation->set_rules("start_date","不計費起始日期","required");
-			$this->form_validation->set_rules("start_time","不計費起始時間","required");
-			$this->form_validation->set_rules("end_date","不計費結束日期","required");
-			$this->form_validation->set_rules("end_time","不計費結束時間","required");
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			$this->form_validation->set_rules("result","審查結果","required");
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			if(empty($input_data['result'])){
+				$this->form_validation->set_rules("comment","退件理由","required");
+			}else{
+				$this->form_validation->set_rules("start_date","不計費起始日期","required");
+				$this->form_validation->set_rules("start_time","不計費起始時間","required");
+				$this->form_validation->set_rules("end_date","不計費結束日期","required");
+				$this->form_validation->set_rules("end_time","不計費結束時間","required");
+			}
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			//取得原預約資料
+			$booking = $this->facility_model->get_facility_booking_list(array("serial_no"=>$input_data['booking_ID']))->row_array();
+			
+			//準備資料
+			$data['admin_ID'] = $this->session->userdata('ID');
+			$data['comment'] = $input_data['comment'];
+			$data['start_time'] = $input_data['start_date']." ".$input_data['start_time'];
+			$data['end_time'] = $input_data['end_date']." ".$input_data['end_time'];
+			//檢查是否超過原預約時段
+			if($data['start_time'] < $booking['start_time'] || $data['end_time'] > $booking['end_time'])
+			{
+				throw new Exception("核可不計費時段超出原預約時段",WARNING_CODE);
+			}
+			//檢查是否為整點時段(30分為單位)
+			if(strtotime($data['start_time'])%1800 != 0 || strtotime($data['end_time'])%1800 != 0)
+			{
+				throw new Exception("核可不計費時段超出原預約時段",WARNING_CODE);
+			}
+			$data['result'] = $input_data['result'];
+			$data['booking_ID'] = $input_data['booking_ID'];
+			$result = $this->facility_model->update_booking_nocharge($data);
+			
+			if(!$result)
+			{
+				throw new Exception("內部錯誤",ERROR_CODE);
+			}
+			
+			//寄信通知使用者
+			$application = $this->facility_model->get_booking_nocharge_list(array("booking_ID"=>$input_data['booking_ID']))->row_array();
+			$this->email->to($application['user_email']);
+			$this->email->subject("成大微奈米科技研究中心 -預約不計費證明審核通知-");
+			$app_result = array("退件","通過");
+			$this->email->message("{$application['user_name']} 您好，您的儀器預約編號{$application['booking_ID']}所申請之不計費證明已完成。<br>
+								   審核結果為：{$app_result[$application['result']]}<br>
+								   核可之不計費時段為：{$input_data['start_date']} {$input_data['start_time']}~{$input_data['end_date']} {$input_data['end_time']}<br>
+								   備註：{$application['comment']}<br>
+								   非常感謝您的使用，若有任何問題歡迎致電本中心，謝謝。");
+			$this->email->send();
+			
+			echo $this->info_modal("審查成功","/facility/admin/nocharge/list");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
-		if(!$this->form_validation->run())
-		{
-			echo $this->info_modal(validation_errors(),"","warning");
-			return;
-		}
 		
-		//取得原預約資料
-		$booking = $this->facility_model->get_facility_booking_list(array("serial_no"=>$input_data['booking_ID']))->row_array();
-		
-		//準備資料
-		$data['admin_ID'] = $this->session->userdata('ID');
-		$data['comment'] = $input_data['comment'];
-		$data['start_time'] = $input_data['start_date']." ".$input_data['start_time'];
-		$data['end_time'] = $input_data['end_date']." ".$input_data['end_time'];
-		//檢查是否超過原預約時段
-		if($data['start_time'] < $booking['start_time'] || $data['end_time'] > $booking['end_time'])
-		{
-			echo $this->info_modal("核可不計費時段超出原預約時段","","warning");
-			return;
-		}
-		//檢查是否為整點時段(30分為單位)
-		if(strtotime($data['start_time'])%1800 != 0 || strtotime($data['end_time'])%1800 != 0)
-		{
-			echo $this->info_modal("請輸入整點時段(30分為單位)","","warning");
-			return;
-		}
-		$data['result'] = $input_data['result'];
-		$data['booking_ID'] = $input_data['booking_ID'];
-		$result = $this->facility_model->update_booking_nocharge($data);
-		
-		if(!$result)
-		{
-			echo $this->info_modal("內部錯誤","","error");
-			return;
-		}
-		
-		//寄信通知使用者
-		$application = $this->facility_model->get_booking_nocharge_list(array("booking_ID"=>$input_data['booking_ID']))->row_array();
-		$this->email->to($application['user_email']);
-		$this->email->subject("成大微奈米科技研究中心 -預約不計費證明審核通知-");
-		$app_result = array("退件","通過");
-		$this->email->message("{$application['user_name']} 您好，您的儀器預約編號{$application['booking_ID']}所申請之不計費證明已完成。<br>
-							   審核結果為：{$app_result[$application['result']]}<br>
-							   核可之不計費時段為：{$input_data['start_date']} {$input_data['start_time']}~{$input_data['end_date']} {$input_data['end_time']}<br>
-							   備註：{$application['comment']}<br>
-							   非常感謝您的使用，若有任何問題歡迎致電本中心，謝謝。");
-		$this->email->send();
-		
-		echo $this->info_modal("審查成功","/facility/admin/nocharge/list");
 	}
 	public function del_nocharge()
 	{
