@@ -148,7 +148,7 @@ class MY_Controller extends CI_Controller
         
         //user tracker plug-in
         $this->load->library('whence',array(
-        	"maxwhence"=>10,
+        	"maxwhence"=>5,
         	"homepage"=>''
         ));
         $this->whence->push();

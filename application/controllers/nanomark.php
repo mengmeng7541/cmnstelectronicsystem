@@ -149,7 +149,7 @@ class Nanomark extends MY_Controller {
 			{
 				$row[] = anchor("nanomark/edit_application/{$aRow['serial_no']}","審核","class='btn btn-warning'");
 				
-			}else if($aRow['checkpoint'] == "Completed"){
+			}else if($aRow['checkpoint'] == "Client_Final" || $aRow['checkpoint'] == "Completed"){
 				$row[] = anchor("nanomark/view_application/{$aRow['serial_no']}","已完成","class='btn btn-success'");
 			}else if($this->nanomark_model->get_admin_privilege_list(array("admin_ID"=>$this->session->userdata('ID'),"privilege"=>'nanomark_super_admin'))->row_array()){
 				$row[] = anchor("nanomark/edit_application/{$aRow['serial_no']}","進行中","class='btn btn-info'");

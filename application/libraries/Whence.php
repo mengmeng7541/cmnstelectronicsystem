@@ -34,7 +34,7 @@ class Whence
         $this->_ci->session->set_userdata(array("whence"=>$whencearray));
     }
  
-     function isajax() 
+    function isajax() 
     {
         return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']=="XMLHttpRequest");
     }
@@ -63,27 +63,6 @@ class Whence
         array_shift($whencearray);
         array_push($whencearray,$uri);
         $this->_ci->session->set_userdata('whence',$whencearray);
-    }
-    
-    function popwhence($n=1)
-    {
-        if(!isset($this->_ci->session->userdata['whence']))
-        {
-            // if the session timed out then start over
-            $this->clearwhence();
-        }
-        $n++;  // last element is where we are NOW,not where we came from
-        $whencearray = $this->_ci->session->userdata['whence'];
-        $defaulturi = $this->homepage;
-        $whence=$defaulturi;
-        for($j=0;$j<$n;$j++)
-        {
-            // shift the array
-            $whence=array_pop($whencearray);
-            array_unshift($whencearray,$defaulturi);
-        }
-        $this->_ci->session->set_userdata('whence',$whencearray);
-        redirect($whence);
     }
     
     function pop($n=1)

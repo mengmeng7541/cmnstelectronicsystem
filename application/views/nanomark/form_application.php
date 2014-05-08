@@ -31,9 +31,6 @@
 							<?=isset($action_btn)?implode(' ',(array)$action_btn):"";?>
 						   </div>
 					    </form>
-						
-						
-						
                      </div>
 					 
 					 <div class="widget-body form hide" id="widget_preview_report">
