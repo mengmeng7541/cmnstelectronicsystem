@@ -169,7 +169,7 @@ class Admin_model extends MY_Model {
 		$this->common_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = $sTable.organization","LEFT");
 		if(isset($options['serial_no']))
 		{
-			$this->common_db->where("serial_no",$options['serial_no']);
+			$this->common_db->where("$sTable.serial_no",$options['serial_no']);
 		}
 		
 		return $this->common_db->get($sTable);	
