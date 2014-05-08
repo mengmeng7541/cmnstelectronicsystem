@@ -186,8 +186,8 @@
     <td align="center">備 註</td>
     </tr>
   <tr>
-    <td colspan="2" rowspan="3"><?=form_textarea("verification_norm",isset($verification_norm)?$verification_norm:"","rows='5'".$readonly);?></td>
-    <td rowspan="3"><?=form_textarea("comments",isset($comments)?$comments:"","rows='5'".$readonly);?></td>
+    <td colspan="2" rowspan="3"><?=form_textarea("verification_norm",isset($verification_norm)?$verification_norm:"","class='span12' rows='5'".$readonly);?></td>
+    <td rowspan="3"><?=form_textarea("comments",isset($comments)?$comments:"","class='span12' rows='5'".$readonly);?></td>
     </tr>
   <tr>
     <td colspan="3" align="center">客 戶 簽 章</td>
