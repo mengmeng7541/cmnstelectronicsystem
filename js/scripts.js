@@ -2887,8 +2887,8 @@ var App = function () {
 			],
             "fnDrawCallback": function () {
 				handleUniform();
-				var check_all_box = $(this).find("thead tr th").eq(9).find("input[type='checkbox']");
-				var check_box = $(this).find("tbody tr td").eq(9).find("input[type='checkbox']");
+				var check_all_box = $(this).find("thead tr th").find("input[type='checkbox'][data-model='check_all']");
+				var check_box = $(this).find("tbody tr td").find("input[type='checkbox'][name='reg_ID[]']");
 				if(check_box.length)
 				{
 					check_all_box.parent().show();
