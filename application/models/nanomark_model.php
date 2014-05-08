@@ -395,6 +395,7 @@ class Nanomark_model extends MY_Model {
 			$sTable.report_logo_scale,
 			$sTable.report_logo_functionality,
 			$sTable.report_logo_biocompatibility,
+			$sTable.verification_norm,
 			$sTable.comments,
 			$sTable.client_signature,
 			$sTable.case_officer_ID,
