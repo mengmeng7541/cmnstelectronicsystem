@@ -43,15 +43,16 @@ class Whence
     {
         if($uri=='')
         {
-            $uri =strtolower(substr(stristr($_SERVER['REQUEST_URI'],'index.php?/'),11));
-            if($uri=='')
-            {
-                $uri = strtolower(substr(stristr($_SERVER['REQUEST_URI'],'index.php/'),10));
+        	$uri = uri_string();
+//            $uri =strtolower(substr(stristr($_SERVER['REQUEST_URI'],'index.php?/'),11));
+//            if($uri=='')
+//            {
+//                $uri = strtolower(substr(stristr($_SERVER['REQUEST_URI'],'index.php/'),10));
                 if($uri=='')
                 {
                     $uri = $this->homepage;
                 }
-            }
+//            }
         }
         if($this->isajax() || $uri==$this->_ci->session->userdata['whence'][$this->maxwhence-1] )
         {

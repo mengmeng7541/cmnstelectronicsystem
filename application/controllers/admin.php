@@ -223,8 +223,16 @@ class Admin extends MY_Controller {
 	{
 		$this->is_admin_login();
 		
-		$data = array("clock_user_ID"=>$this->session->userdata('ID'),
-					  "clock_start_time"=>date("Y-m-d H:i:s"));
+		if($this->admin_clock_model->is_super_admin())
+		{
+			$data = array("clock_start_time"=>date("Y-m-d H:i:s"));
+		}else{
+			$data = array(
+				"clock_user_ID"=>$this->session->userdata('ID'),
+				"clock_start_time"=>date("Y-m-d H:i:s")
+			);
+		}
+		
 		$clocks = $this->admin_model->get_manual_clock_list($data)->result_array();
 		
 		$output['aaData'] = array();
@@ -286,7 +294,7 @@ class Admin extends MY_Controller {
 			
 			$clock_ID = $this->security->xss_clean($clock_ID);
 			
-			$this->admin_model->del_clock(array("clock_ID"=>$clock_ID));
+			$this->admin_clock_model->del($clock_ID);
 			
 			echo $this->info_modal("刪除成功");
 		}catch(Exception $e){
