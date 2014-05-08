@@ -502,12 +502,13 @@ class Nanomark extends MY_Controller {
 			$this->form_validation->set_rules("contact_name","聯絡人","required");
 			$this->form_validation->set_rules("contact_tel","聯絡電話","required");
 			$this->form_validation->set_rules("contact_mobile","手機","required");
-			$this->form_validation->set_rules("contact_email","Email","required");
+			$this->form_validation->set_rules("contact_email","Email","required|valid_email");
 			$this->form_validation->set_rules("when_pay","何時付款","required");
 			if(!$this->form_validation->run()) throw new Exception(validation_errors(),WARNING_CODE);
 			
 			$input_data = $this->input->post(NULL,TRUE);
 			
+			$input_data['specimen_name'] = array_filter($input_data['specimen_name'],"trim");
 			if(empty($input_data['specimen_name']))
 			{
 				throw new Exception("請填寫樣品名稱",WARNING_CODE);
