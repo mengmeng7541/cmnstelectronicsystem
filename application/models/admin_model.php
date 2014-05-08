@@ -161,7 +161,7 @@ class Admin_model extends MY_Model {
 		$this->clock_db->delete("clock_admin_manual");
 	}
 	//-------------------------BOSS---------------------------------
-	public function get_boss_list($options)
+	public function get_boss_list($options = array())
 	{
 		$sTable = "boss_profile";
 		$sJoinTable = array("org"=>"organization");
