@@ -204,7 +204,7 @@
 					show_array = [access_time,user_name,user_tel+'<br>['+user_mobile+']'];
 				}else if(location_name == '其它')
 				{
-					show_array = [clock_reason+'@'+clock_location+'<br>預計直到：<br>'+(clock_end_time==null?'未知':moment(clock_end_time,"MM-DD HH:mm")),user_name,user_mobile];
+					show_array = [clock_reason+'@'+clock_location+'<br>預計直到：<br>'+(clock_end_time==null?'未知':moment(clock_end_time).format('MM-DD HH:mm')),user_name,user_mobile];
 				}else{
 					show_array = [access_time,user_name,user_mobile];
 				}
