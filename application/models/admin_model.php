@@ -165,14 +165,14 @@ class Admin_model extends MY_Model {
 	{
 		$sTable = "boss_profile";
 		$sJoinTable = array("org"=>"organization");
-		$this->clock_db->select("*,{$sJoinTable['org']}.name AS org_name");
-		$this->clock_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = $sTable.organization","LEFT");
+		$this->common_db->select("*,{$sJoinTable['org']}.name AS org_name");
+		$this->common_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = $sTable.organization","LEFT");
 		if(isset($options['serial_no']))
 		{
-			$this->clock_db->where("serial_no",$options['serial_no']);
+			$this->common_db->where("serial_no",$options['serial_no']);
 		}
 		
-		return $this->clock_db->get($sTable);	
+		return $this->common_db->get($sTable);	
 	}
 	//-----------------通用------------------
 	public function get_admin_ID_select_options()
