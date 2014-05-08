@@ -493,7 +493,6 @@ class Nanomark extends MY_Controller {
 			$this->is_user_login();
 			
 			$this->form_validation->set_rules("test_outline[]","測試摘要","required");
-			$this->form_validation->set_rules("specimen_name[]","樣品名稱","required");
 			$this->form_validation->set_rules("priority","優先權","required");
 			$this->form_validation->set_rules("report_title","報告抬頭","required");
 			$this->form_validation->set_rules("receipt_title","收據抬頭","required");
@@ -508,6 +507,11 @@ class Nanomark extends MY_Controller {
 			if(!$this->form_validation->run()) throw new Exception(validation_errors(),WARNING_CODE);
 			
 			$input_data = $this->input->post(NULL,TRUE);
+			
+			if(empty($input_data['specimen_name']))
+			{
+				throw new Exception("請填寫樣品名稱",WARNING_CODE);
+			}
 			
 			//取得委託單編號
 			$application_ID = $this->nanomark_model->get_new_application_ID();
