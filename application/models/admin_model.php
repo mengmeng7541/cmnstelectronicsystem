@@ -165,7 +165,7 @@ class Admin_model extends MY_Model {
 	{
 		$sTable = "boss_profile";
 		$sJoinTable = array("org"=>"organization");
-		$this->common_db->select("*,{$sJoinTable['org']}.name AS org_name");
+		$this->common_db->select("$sTable.*,{$sJoinTable['org']}.name AS org_name");
 		$this->common_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = $sTable.organization","LEFT");
 		if(isset($options['serial_no']))
 		{
