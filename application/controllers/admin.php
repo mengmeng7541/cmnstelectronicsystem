@@ -266,7 +266,7 @@ class Admin extends MY_Controller {
 			$data = array(
 				"clock_user_ID"=>isset($input_data['clock_user_ID'])&&$this->admin_clock_model->is_super_admin()?$input_data['clock_user_ID']:$this->session->userdata('ID'),
 				"clock_start_time"=>date("Y-m-d H:i:s",strtotime($input_data['clock_start_date'].' '.$input_data['clock_start_time'])),
-				"clock_end_time"=>isset($input_data['clock_end_date'])&&isset($input_data['clock_end_time'])?date("Y-m-d H:i:s",strtotime($input_data['clock_end_date'].' '.$input_data['clock_end_time'])):NULL,
+				"clock_end_time"=>!empty($input_data['clock_end_date'])&&!empty($input_data['clock_end_time'])?date("Y-m-d H:i:s",strtotime($input_data['clock_end_date'].' '.$input_data['clock_end_time'])):NULL,
 				"clock_location"=>$input_data['clock_location'],
 				"clock_reason"=>$input_data['clock_reason']
 			);
