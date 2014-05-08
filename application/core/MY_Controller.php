@@ -145,6 +145,12 @@ class MY_Controller extends CI_Controller
         
         
         $this->load->library('session');
+        $this->load->library('whence',array(
+        	"maxwhence"=>10,
+        	"homepage"=>''
+        ));
+        $this->whence->push();
+        $this->whence->dump();//for test
 		
 		//EMAIL設定
 		$email_config['protocol'] = "smtp";
