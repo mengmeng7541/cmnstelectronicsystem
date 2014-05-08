@@ -328,7 +328,7 @@ class Admin extends MY_Controller {
 				$row[] = $boss['department'];
 				$row[] = $boss['tel'];
 				$row[] = $boss['email'];
-				$row[] = anchor('admin/boss/edit'.$boss['serial_no'],"編輯","class='btn btn-small btn-warning'");
+				$row[] = anchor('boss/edit/'.$boss['serial_no'],"編輯","class='btn btn-small btn-warning'");
 				$output['aaData'][] = $row;	
 			}
 			

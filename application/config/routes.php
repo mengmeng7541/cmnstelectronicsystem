@@ -58,13 +58,13 @@ $route['admin/clock/query/manual'] = 'admin/query_manual_clock';
 $route['admin/clock/add'] = 'admin/add_clock';
 $route['admin/clock/del/(:num)'] = 'admin/del_clock/$1';
 
-$route['admin/boss/list'] = 'admin/list_clock';
-$route['admin/boss/query'] = 'admin/query_boss';
-$route['admin/boss/form'] = 'admin/form_boss';
-$route['admin/boss/edit/(:num)'] = 'admin/edit_boss/$1';
-$route['admin/boss/add'] = 'admin/add_boss';
-$route['admin/boss/update'] = 'admin/update_boss';
-$route['admin/boss/del/(:num)'] = 'admin/del_clock/$1';
+$route['boss/list'] = 'admin/list_boss';
+$route['boss/query'] = 'admin/query_boss';
+$route['boss/form'] = 'admin/form_boss';
+$route['boss/edit/(:num)'] = 'admin/edit_boss/$1';
+$route['boss/add'] = 'admin/add_boss';
+$route['boss/update'] = 'admin/update_boss';
+$route['boss/del/(:num)'] = 'admin/del_clock/$1';
 
 $route['user'] = 'user/form';
 $route['user/login'] = 'user/login';

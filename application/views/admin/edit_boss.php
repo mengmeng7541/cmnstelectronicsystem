@@ -23,7 +23,7 @@
                         <h4><i class="icon-reorder"></i>老師/主管資料表單</h4>
                      </div>
                      <div class="widget-body form">
-					 	<form action="<?=site_url('admin/boss/update');?>" id="" class="form-horizontal" method="post">
+					 	<form action="<?=site_url('boss/update');?>" id="" class="form-horizontal" method="post">
 							<div class="control-group">
 	                           <label class="control-label">編號</label>
 	                           <div class="controls">
