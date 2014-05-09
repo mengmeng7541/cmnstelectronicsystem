@@ -25,9 +25,11 @@
 						<table id="table_user_clock_list" class="table table-striped table-bordered">
 							
 							<thead>
-								<th width="80"></th>
+								<th width=""></th>
 								<th width="50">姓名</th>
-								<th >電話</th>
+								<th width="50">電話</th>
+								<th width="100">進入時間</th>
+								<th width="100">最後反應時間</th>
 							</thead>
 							
 						</table>

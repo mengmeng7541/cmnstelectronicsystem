@@ -431,7 +431,7 @@ class User_model extends MY_Model {
 //					   ->having("card.Status","00");
 		
 		$query = $this->clock_db->get();
-		echo $this->clock_db->last_query();
+//		echo $this->clock_db->last_query();
 		return $query;
 		//$this->clock_db->get("clock_user_manual");
 	}
