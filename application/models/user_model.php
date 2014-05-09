@@ -418,7 +418,7 @@ class User_model extends MY_Model {
 			{$sJoinTable['facility']}.location_ID AS location_ID,
 			{$sJoinTable['location']}.location_cht_name AS location_cht_name
 			FROM
-			(SELECT * FROM $sTable WHERE TIMESTAMP(FDate,FTime) BETWEEN NOW() - INTERVAL 1 DAY AND NOW()) card
+			(SELECT * FROM $sTable WHERE TIMESTAMP(FDate,FTime) BETWEEN NOW() - INTERVAL 7 DAY AND NOW()) card
 		",FALSE)
 					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num")
 					   ->join($sJoinTable['facility'],"card.CtrlNo = {$sJoinTable['facility']}.ctrl_no","LEFT")
@@ -431,7 +431,7 @@ class User_model extends MY_Model {
 //					   ->having("card.Status","00");
 		
 		$query = $this->clock_db->get();
-//		echo $this->clock_db->last_query();
+		echo $this->clock_db->last_query();
 		return $query;
 		//$this->clock_db->get("clock_user_manual");
 	}
