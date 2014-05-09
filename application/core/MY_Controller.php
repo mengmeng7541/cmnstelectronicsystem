@@ -146,12 +146,16 @@ class MY_Controller extends CI_Controller
         
         $this->load->library('session');
         
-        //user tracker plug-in
-        $this->load->library('whence',array(
-        	"maxwhence"=>5,
-        	"homepage"=>''
-        ));
-        $this->whence->push();
+        //user tracker plug-in, no use in cli mode.
+        if(!$this->input->is_cli_request())
+        {
+			$this->load->library('whence',array(
+	        	"maxwhence"=>5,
+	        	"homepage"=>''
+	        ));
+	        $this->whence->push();
+		}
+        
 		
 		//EMAIL設定
 		$email_config['protocol'] = "smtp";
