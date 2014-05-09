@@ -418,12 +418,12 @@ class User_model extends MY_Model {
 			{$sJoinTable['facility']}.location_ID AS location_ID,
 			{$sJoinTable['location']}.location_cht_name AS location_cht_name
 			FROM
-			(SELECT * FROM $sTable WHERE TIMESTAMP(FDate,FTime) BETWEEN NOW() - INTERVAL 7 DAY AND NOW()) card
+			(SELECT * FROM $sTable WHERE TIMESTAMP(FDate,FTime) > NOW() - INTERVAL 7 DAY ORDER BY FDate DESC, FTime DESC) card
 		",FALSE)
 					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num")
 					   ->join($sJoinTable['facility'],"card.CtrlNo = {$sJoinTable['facility']}.ctrl_no","LEFT")
 					   ->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT")
-					   ->join("(SELECT FDate,FTime,CardNo FROM (SELECT * FROM $sTable WHERE Status='01' ORDER BY FDate DESC, FTime DESC) aaa GROUP BY CardNo) temp_card","temp_card.CardNo = card.CardNo","LEFT")
+					   ->join("(SELECT MAX(TIMESTAMP(FDate,FTime)) AS access_out_last_datetime,CardNo FROM $sTable WHERE Status='01' GROUP BY CardNo) temp_card","temp_card.CardNo = card.CardNo","LEFT")
 					   ->group_by("card.CardNo");
 		$this->clock_db->where("TIMESTAMP(card.FDate,card.FTime) >","TIMESTAMP(temp_card.FDate,temp_card.FTime)",FALSE);
 		if(isset($options['location_ID']))
