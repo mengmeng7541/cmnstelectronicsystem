@@ -66,11 +66,11 @@
 	                		<div class="span6">
 	                			<table id="table_admin_manual_clock_list" class="table table-striped table-bordered">
 			                		<thead>
-			                			<th width="70">人員</th>
+			                			<th width="50">人員</th>
 			                			<th>地點或事由</th>
 			                			<th width="70">起始時間</th>
 			                			<th width="70">結束時間</th>
-			                			<th width="60"></th>
+			                			<th width="50"></th>
 			                		</thead>
 			                	</table>
 	                		</div>
@@ -239,7 +239,7 @@
 			});
 			//SORTING，根據資料長度由少到多
 			block_obj.sort(function(a,b){
-				return a.content.length - b.content.length;
+				return (a.title=='其它')?100:(a.content.length - b.content.length);
 			});
 			//資料整理完畢，開始產生內容
 			$.each(block_obj,function(idx,i_val){

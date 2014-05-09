@@ -243,7 +243,7 @@ class Admin extends MY_Controller {
 			$row[] = $clock['clock_reason'].'@'.$clock['clock_location'];
 			$row[] = $clock['clock_start_time'];
 			$row[] = $clock['clock_end_time'];
-			$row[] = form_button("del","刪除","class='btn btn-warning' value='{$clock['clock_ID']}'");
+			$row[] = form_button("del","刪除","class='btn btn-warning btn-small' value='{$clock['clock_ID']}'");
 			$output['aaData'][] = $row;
 		}
 		echo json_encode($output);
