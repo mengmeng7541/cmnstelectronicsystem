@@ -427,7 +427,7 @@ class User extends MY_Controller {
 				throw new Exception("該組織已有使用者綁定，不可刪除",ERROR_CODE);
 			}
 			
-			$this->user_model->del_org(array("serial_no"=>$SN));
+			$this->user_model->del_org(array("serial_no"=>$org['serial_no']));
 			
 			echo $this->info_modal("刪除成功");
 						

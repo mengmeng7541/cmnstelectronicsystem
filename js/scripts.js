@@ -1793,7 +1793,7 @@ var App = function () {
         });
 	}
 	var handleBoss = function(){
-		$("#table_boss_list").dataTable({
+		var table_boss_list = $("#table_boss_list").dataTable({
 	        "sAjaxSource": site_url+"boss/query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
