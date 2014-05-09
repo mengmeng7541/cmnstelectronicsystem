@@ -1782,7 +1782,7 @@ var App = function () {
         });
         $("#table_org_list").on("click","button[name='del']",function(){
         	$.ajax({
-        		url: site_url+'boss/del/'+$(this).val(),
+        		url: site_url+'org/del/'+$(this).val(),
         		beforeSend: function(){
 					showRequest();
 				},

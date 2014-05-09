@@ -383,10 +383,23 @@ class User extends MY_Controller {
 			if(empty($input_data['serial_no']))
 			{
 				//ADD
+				
+				$duplicated = $this->user_model->get_org_list(array("name"=>$input_data['name']))->num_rows();
+				if($duplicated)
+				{
+					throw new Exception("該組織單位已存在",ERROR_CODE);
+				}
+				
 				$this->user_model->add_org($input_data);
 				echo $this->info_modal("新增成功","/org/list");
 			}else{
 				//UPDATE
+				$org = $this->user_model->get_org_list(array("serial_no"=>$input_data['serial_no']))->row_array();
+				if(!$org)
+				{
+					throw new Exception("無此筆資料",ERROR_CODE);
+				}
+				
 				$this->user_model->update_org($input_data);
 				echo $this->info_modal("變更成功","/org/list");
 			}
