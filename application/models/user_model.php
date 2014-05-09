@@ -425,7 +425,7 @@ class User_model extends MY_Model {
 					   ->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT")
 					   ->join("(SELECT MAX(TIMESTAMP(FDate,FTime)) AS access_out_last_datetime,CardNo FROM $sTable WHERE Status='01' GROUP BY CardNo) temp_card","temp_card.CardNo = card.CardNo","LEFT")
 					   ->group_by("card.CardNo");
-		$this->clock_db->where("TIMESTAMP(card.FDate,card.FTime) >","TIMESTAMP(temp_card.FDate,temp_card.FTime)",FALSE);
+		$this->clock_db->where("TIMESTAMP(card.FDate,card.FTime) >","temp_card.access_out_last_datetime",FALSE);
 		if(isset($options['location_ID']))
 			$this->clock_db->having("location_ID",$options['location_ID']);
 //					   ->having("card.Status","00");
