@@ -339,7 +339,19 @@ class Admin extends MY_Controller {
 	}
 	public function form_boss()
 	{
-		
+		try{
+			$this->is_admin_login();
+			
+			//取得ORG列表
+			$this->data['org_ID_select_options'] = $this->user_model->get_org_ID_select_options();
+			
+			$this->load->view('templates/header');
+		    $this->load->view('templates/sidebar');
+		    $this->load->view('admin/edit_boss',$this->data);
+		    $this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
 	}
 	public function edit_boss($SN)
 	{
@@ -369,14 +381,13 @@ class Admin extends MY_Controller {
 	}
 	public function add_boss()
 	{
-		
+		$this->update_boss();
 	}
 	public function update_boss()
 	{
 		try{
 			$this->is_admin_login();
 			
-			$this->form_validation->set_rules("serial_no","編號","required");
 			$this->form_validation->set_rules("organization","組織","required");
 			$this->form_validation->set_rules("email","Email","required");
 			if(!$this->form_validation->run())
@@ -386,9 +397,17 @@ class Admin extends MY_Controller {
 			
 			$input_data = $this->input->post(NULL,TRUE);
 			
-			$this->admin_model->update_boss($input_data);
+			if(!isset($input_data['serial_no']))
+			{
+				//ADD
+				$this->admin_model->add_boss($input_data);
+				echo $this->info_modal("新增成功",$this->whence->pop());
+			}else{
+				//UPDATE
+				$this->admin_model->update_boss($input_data);
+				echo $this->info_modal("更新成功",$this->whence->pop());
+			}
 			
-			echo $this->info_modal("更新成功","/boss/list");
 		}catch(Exception $e){
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}

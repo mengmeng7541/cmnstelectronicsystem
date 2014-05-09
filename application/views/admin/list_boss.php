@@ -40,6 +40,7 @@
 						<div class="row-fluid">
 							<div class="span12 form-horizontal">
 								<div class="form-actions">
+									<?=anchor("/boss/form","新增","class='btn btn-warning'");?>
 								</div>
 							</div>
 						</div>
