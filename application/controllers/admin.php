@@ -420,7 +420,7 @@ class Admin extends MY_Controller {
 		try{
 			$this->is_admin_login();
 			
-			$SN = $this->secuity->xss_clean($SN);
+			$SN = $this->security->xss_clean($SN);
 			
 			$boss = $this->admin_model->get_boss_list(array("serial_no"=>$SN))->row_array();
 			if(!$boss)
