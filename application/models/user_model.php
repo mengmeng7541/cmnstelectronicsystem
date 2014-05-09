@@ -236,23 +236,6 @@ class User_model extends MY_Model {
 		return FALSE;
 	}
   }
-  public function add_boss($input_data)
-  {
-  	$sql = "INSERT INTO boss_profile set 
-	name = '{$input_data['boss_name']}',
-	organization = '{$input_data['organization']}',
-	department = '{$input_data['boss_department']}',
-	tel = '{$input_data['boss_tel']}',
-	email = '{$input_data['boss_email']}'";
-	$query = $this->common_db->query($sql);
-	
-	$sql = "SELECT serial_no FROM boss_profile ORDER BY serial_no DESC LIMIT 1";
-	$query = $this->common_db->query($sql);
-	$result = $query->row_array();
-	
-	return $result['serial_no'];//return serial_no 
-  }
-  
   //ORGINIZATION
   public function add_org($org)
   {
@@ -362,7 +345,7 @@ class User_model extends MY_Model {
 	}
 	public function add_boss($data)
 	{
-		$this->update_boss($data);
+		return $this->update_boss($data);
 	}
 	public function update_boss($data)
 	{
