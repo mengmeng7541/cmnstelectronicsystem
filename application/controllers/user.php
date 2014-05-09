@@ -471,7 +471,7 @@ class User extends MY_Controller {
 			
 			$this->load->view('templates/header');
 		    $this->load->view('templates/sidebar');
-		    $this->load->view('admin/edit_boss',$this->data);
+		    $this->load->view('user/edit_boss',$this->data);
 		    $this->load->view('templates/footer');
 		}catch(Exception $e){
 			$this->show_error_page();
@@ -497,7 +497,7 @@ class User extends MY_Controller {
 			
 			$this->load->view('templates/header');
 		    $this->load->view('templates/sidebar');
-		    $this->load->view('admin/edit_boss',$this->data);
+		    $this->load->view('user/edit_boss',$this->data);
 		    $this->load->view('templates/footer');
 		}catch(Exception $e){
 			$this->show_error_page();
