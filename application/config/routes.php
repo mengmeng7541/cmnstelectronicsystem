@@ -64,7 +64,7 @@ $route['boss/form'] = 'admin/form_boss';
 $route['boss/edit/(:num)'] = 'admin/edit_boss/$1';
 $route['boss/add'] = 'admin/add_boss';
 $route['boss/update'] = 'admin/update_boss';
-$route['boss/del/(:num)'] = 'admin/del_clock/$1';
+$route['boss/del/(:num)'] = 'admin/del_boss/$1';
 
 $route['user'] = 'user/form';
 $route['user/login'] = 'user/login';
