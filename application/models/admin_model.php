@@ -174,6 +174,23 @@ class Admin_model extends MY_Model {
 		
 		return $this->common_db->get($sTable);	
 	}
+	
+	public function update_boss($data)
+	{
+		$this->common_db->set("name",$data['name']);
+		$this->common_db->set("organization",$data['organization']);
+		$this->common_db->set("email",$data['email']);
+		if(isset($data['department']))
+		{
+			$this->common_db->set("department",$data['department']);
+		}
+		if(isset($data['tel']))
+		{
+			$this->common_db->set("tel",$data['tel']);
+		}
+		$this->common_db->where("serial_no",$data['serial_no']);
+		$this->common_db->update("boss_profile");
+	}
 	//-----------------通用------------------
 	public function get_admin_ID_select_options()
 	{

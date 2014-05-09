@@ -373,7 +373,25 @@ class Admin extends MY_Controller {
 	}
 	public function update_boss()
 	{
-		
+		try{
+			$this->is_admin_login();
+			
+			$this->form_validation->set_rules("serial_no","編號","required");
+			$this->form_validation->set_rules("organization","組織","required");
+			$this->form_validation->set_rules("email","Email","required");
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			$this->admin_model->update_boss($input_data);
+			
+			echo $this->info_modal("更新成功","/boss/list");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
 	}
 	public function del_boss()
 	{
