@@ -1795,6 +1795,17 @@ var App = function () {
             },
 			"aaSorting": [],
         });
+        $("#table_boss_list").on("click","button[name='del']",function(){
+        	$.ajax({
+        		url: site_url+'boss/del'+$(this).val(),
+        		beforeSend: function(){
+        			showRequest();
+        		},
+        	}).always(function(data){
+        		showResponse(data);
+        		table_boss_list.fnReloadAjax(null,null,true);
+        	});
+        });
 	}
     var handleTablesNanomark = function () {
         if (!jQuery().dataTable) {
