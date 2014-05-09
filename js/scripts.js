@@ -1797,7 +1797,7 @@ var App = function () {
         });
         $("#table_boss_list").on("click","button[name='del']",function(){
         	$.ajax({
-        		url: site_url+'boss/del'+$(this).val(),
+        		url: site_url+'boss/del/'+$(this).val(),
         		beforeSend: function(){
         			showRequest();
         		},
