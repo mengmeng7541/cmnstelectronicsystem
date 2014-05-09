@@ -237,11 +237,9 @@ class User_model extends MY_Model {
 	}
   }
   //ORGINIZATION
-  public function add_org($org)
+  public function add_org($data)
   {
-  	$sql = "INSERT INTO organization SET name = '{$org}'";
-	$query = $this->common_db->query($sql);
-	return $this->common_db->affected_rows();
+  	return $this->update_org($data);
   }
   public function update_org($data)
   {
@@ -258,14 +256,24 @@ class User_model extends MY_Model {
   	{
 		$this->common_db->set("tel",$data['tel']);
 	}
-	$this->common_db->set("status_ID",$data['status_ID']);
+	if(isset($data['status_ID']))
+	{
+		$this->common_db->set("status_ID",$data['status_ID']);
+	}
+	
   	if(isset($data['aliance_no']))
   	{
 		$this->common_db->set("aliance_no",$data['aliance_no']);
 	}
+  	if(!isset($data['serial_no']))
+  	{
+		$this->common_db->insert("organization");
+  		return $this->common_db->insert_id();
+	}else{
+		$this->common_db->where("serial_no",$data['serial_no']);
+  		$this->common_db->update("organization");
+	}
   	
-  	$this->common_db->where("serial_no",$data['serial_no']);
-  	$this->common_db->update("organization");
   }
   public function del_org($data)
   {
@@ -287,6 +295,10 @@ class User_model extends MY_Model {
   	if(isset($options['serial_no']))
   	{
 		$this->common_db->where("serial_no",$options['serial_no']);
+	}
+	if(isset($options['name']))
+	{
+		$this->common_db->where("name",$options['name']);
 	}
 	$query = $this->common_db->get();
 	return $query;

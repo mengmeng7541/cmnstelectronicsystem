@@ -285,7 +285,7 @@ class User extends MY_Controller {
 				$row[] = $org['aliance_name'];
 				$display = array();
 				$display[] = anchor("/org/edit/".$org['serial_no'],"編輯","class='btn btn-warning btn-small'");
-				$display[] = form_button("del","刪除","class='btn btn-danger' value='{$org['serial_no']}'");
+				$display[] = form_button("del","刪除","class='btn btn-danger btn-small' value='{$org['serial_no']}'");
 				$row[] = implode(' ',$display);
 				$output['aaData'][] = $row;
 			}
@@ -345,7 +345,7 @@ class User extends MY_Controller {
 			$org = $this->user_model->get_org_by_name($org_name);
 			if(!empty($org))
 			{
-				echo $this->info_modal("該組織單位已經存在","/user/form","warning");
+				echo $this->info_modal("該組織單位已存在","/user/form","warning");
 				return;
 			}
 			
@@ -371,8 +371,7 @@ class User extends MY_Controller {
 	{
 		try{
 			$this->is_admin_login();
-			
-			$this->form_validation->set_rules("serial_no","組織編號","required");
+
 			$this->form_validation->set_rules("name","名稱","required");
 			$this->form_validation->set_rules("status_ID","地位","required");
 			if(!$this->form_validation->run())
@@ -381,10 +380,18 @@ class User extends MY_Controller {
 			}
 			
 			$input_data = $this->input->post(NULL,TRUE);
+			if(empty($input_data['serial_no']))
+			{
+				//ADD
+				$this->user_model->add_org($input_data);
+				echo $this->info_modal("新增成功","/org/list");
+			}else{
+				//UPDATE
+				$this->user_model->update_org($input_data);
+				echo $this->info_modal("變更成功","/org/list");
+			}
 			
-			$this->user_model->update_org($input_data);
 			
-			echo $this->info_modal("變更成功","/org/list");
 		}catch(Exception $e){
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
@@ -422,7 +429,7 @@ class User extends MY_Controller {
 		
 		$this->load->view('templates/header');
 	    $this->load->view('templates/sidebar');
-	    $this->load->view('admin/list_boss',$this->data);
+	    $this->load->view('user/list_boss',$this->data);
 	    $this->load->view('templates/footer');
 	}
 	public function query_boss()

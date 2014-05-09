@@ -26,12 +26,15 @@
                         
                         <!-- BEGIN FORM-->
                         <form action="<?=site_url();?>/org/update" id="" class="form-horizontal" method="post">
-							<div class="control-group">
-								<label class="control-label">組織編號</label>
-								<div class="controls">
-									<input name="serial_no" type="text" class="span2" value="<?=isset($serial_no)?$serial_no:"";?>" readonly="readonly"/>
+                        	<? if(isset($serial_no)){ ?>
+	                        	<div class="control-group">
+									<label class="control-label">組織編號</label>
+									<div class="controls">
+										<input name="serial_no" type="text" class="span2" value="<?=$serial_no;?>" readonly="readonly"/>
+									</div>
 								</div>
-							</div>
+                        	<? } ?>
+							
 
 							<h4>基本資料</h4>
 							<div class="control-group">
