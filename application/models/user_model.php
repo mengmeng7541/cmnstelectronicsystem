@@ -83,6 +83,10 @@ class User_model extends MY_Model {
 		$this->common_db->where("{$sTable}.email",$input_data['user_email']);
 	if(!empty($input_data['user_card_num']))
 		$this->common_db->where("{$sTable}.card_num",$input_data['user_card_num']);
+	if(isset($input_data['boss_no']))
+	{
+		$this->common_db->where("$sTable.boss_no",$input_data['boss_no']);
+	}
   	return $this->common_db->get();
   }
   public function get_user_status_select_options()

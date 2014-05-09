@@ -200,6 +200,11 @@ class Admin_model extends MY_Model {
 			$this->common_db->update("boss_profile");
 		}
 	}
+	public function del_boss($data)
+	{
+		$this->common_db->where("serial_no",$data['serial_no']);
+		$this->common_db->delete("boss_profile");
+	}
 	//-----------------通用------------------
 	public function get_admin_ID_select_options()
 	{

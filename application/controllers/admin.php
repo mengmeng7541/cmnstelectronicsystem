@@ -412,9 +412,30 @@ class Admin extends MY_Controller {
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
 	}
-	public function del_boss()
+	public function del_boss($SN)
 	{
-		
+		try{
+			$this->is_admin_login();
+			
+			$SN = $this->secuity->xss_clean($SN);
+			
+			$boss = $this->admin_model->get_boss_list(array("serial_no"=>$SN))->row_array();
+			if(!$boss)
+			{
+				throw new Exception("無此筆資料",ERROR_CODE);
+			}
+			$user_profile_nums = $this->user_model->get_user_profile_list(array("boss_no"=>$boss['serial_no']))->num_rows();
+			if($user_profile_nums)
+			{
+				throw new Exception("此位老師/主管有使用者掛名，不可刪除",ERROR_CODE);
+			}
+			
+			$this->admin_model->del_boss(array("serial_no"=>$boss['serial_no']));
+			
+			echo $this->info_modal("刪除成功","boss/list");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
 	}
   //-------------------------------------------------------------------------------------------------------------
   public function clock(){
