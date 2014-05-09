@@ -87,6 +87,10 @@ class User_model extends MY_Model {
 	{
 		$this->common_db->where("$sTable.boss_no",$input_data['boss_no']);
 	}
+	if(isset($input_data['organization']))
+	{
+		$this->common_db->where("$sTable.organization",$input_data['organization']);
+	}
   	return $this->common_db->get();
   }
   public function get_user_status_select_options()
@@ -280,9 +284,10 @@ class User_model extends MY_Model {
   	$this->common_db->where("serial_no",$data['serial_no']);
   	$this->common_db->update("organization");
   }
-  public function del_org()
+  public function del_org($data)
   {
-  	
+  	$this->common_db->where("serial_no",$data['serial_no']);
+  	$this->common_db->delete("organization");
   }
   public function get_org_list($options = array())
   {
@@ -341,6 +346,51 @@ class User_model extends MY_Model {
 	}
 	return $output;
   }
+	//-------------------------BOSS---------------------------------
+	public function get_boss_list($options = array())
+	{
+		$sTable = "boss_profile";
+		$sJoinTable = array("org"=>"organization");
+		$this->common_db->select("$sTable.*,{$sJoinTable['org']}.name AS org_name");
+		$this->common_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = $sTable.organization","LEFT");
+		if(isset($options['serial_no']))
+		{
+			$this->common_db->where("$sTable.serial_no",$options['serial_no']);
+		}
+		
+		return $this->common_db->get($sTable);	
+	}
+	public function add_boss($data)
+	{
+		$this->update_boss($data);
+	}
+	public function update_boss($data)
+	{
+		$this->common_db->set("name",$data['name']);
+		$this->common_db->set("organization",$data['organization']);
+		$this->common_db->set("email",$data['email']);
+		if(isset($data['department']))
+		{
+			$this->common_db->set("department",$data['department']);
+		}
+		if(isset($data['tel']))
+		{
+			$this->common_db->set("tel",$data['tel']);
+		}
+		if(!isset($data['serial_no']))
+		{
+			$this->common_db->insert("boss_profile");
+			return $this->common_db->insert_id();
+		}else{
+			$this->common_db->where("serial_no",$data['serial_no']);
+			$this->common_db->update("boss_profile");
+		}
+	}
+	public function del_boss($data)
+	{
+		$this->common_db->where("serial_no",$data['serial_no']);
+		$this->common_db->delete("boss_profile");
+	}
   //---------------------aliance------------------------
   public function get_aliance_no_select_options()
   {

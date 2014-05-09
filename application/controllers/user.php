@@ -283,7 +283,10 @@ class User extends MY_Controller {
 				$row[] = $org['tel'];
 				$row[] = $org['status_name'];
 				$row[] = $org['aliance_name'];
-				$row[] = anchor("/org/edit/".$org['serial_no'],"編輯","class='btn btn-warning btn-small'");
+				$display = array();
+				$display[] = anchor("/org/edit/".$org['serial_no'],"編輯","class='btn btn-warning btn-small'");
+				$display[] = form_button("del","刪除","class='btn btn-danger' value='{$org['serial_no']}'");
+				$row[] = implode(' ',$display);
 				$output['aaData'][] = $row;
 			}
 			
@@ -294,7 +297,20 @@ class User extends MY_Controller {
 	}
 	public function form_org()
 	{
-		
+		try{
+			$this->is_admin_login();
+			
+			$this->data['status_ID_select_options'] = $this->user_model->get_org_status_ID_select_options();
+			
+			$this->data['aliance_no_select_options'] = $this->user_model->get_aliance_no_select_options();
+			
+			$this->load->view('templates/header');
+			$this->load->view('templates/sidebar');
+			$this->load->view('user/edit_org',$this->data);
+			$this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
 	}
 	public function edit_org($SN)
 	{
@@ -323,28 +339,33 @@ class User extends MY_Controller {
 	}
 	public function add_org()
 	{
-		$org_name = $this->input->post("org",TRUE);
-		//判斷是否已存在
-		$org = $this->user_model->get_org_by_name($org_name);
-		if(!empty($org))
-		{
-			echo $this->info_modal("該組織單位已經存在","/user/form","warning");
-			return;
+		try{
+			$org_name = $this->input->post("org",TRUE);
+			//判斷是否已存在
+			$org = $this->user_model->get_org_by_name($org_name);
+			if(!empty($org))
+			{
+				echo $this->info_modal("該組織單位已經存在","/user/form","warning");
+				return;
+			}
+			
+			$result = $this->user_model->add_org($org_name);
+			//for old db-----
+			$org = $this->user_model->get_org_by_name($org_name);
+			$org_name = $this->utf8_to_big5($org_name);
+			$result = $this->user_model->add_org_for_old_db($org['serial_no'],$org_name);
+			//---------------
+			
+			if($result)
+			{
+				echo $this->info_modal("新增成功","/user/form");
+			}else{
+				echo $this->info_modal("內部錯誤","","error");
+			}
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
 		
-		$result = $this->user_model->add_org($org_name);
-		//for old db-----
-		$org = $this->user_model->get_org_by_name($org_name);
-		$org_name = $this->utf8_to_big5($org_name);
-		$result = $this->user_model->add_org_for_old_db($org['serial_no'],$org_name);
-		//---------------
-		
-		if($result)
-		{
-			echo $this->info_modal("新增成功","/user/form");
-		}else{
-			echo $this->info_modal("內部錯誤","","error");
-		}
 	}
 	public function update_org()
 	{
@@ -368,9 +389,170 @@ class User extends MY_Controller {
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
 	}
-	public function del_org()
+	public function del_org($SN)
 	{
+		try{
+			$this->is_admin_login();
+			
+			$SN = $this->security->xss_clean($SN);
+			
+			$org = $this->user_model->get_org_list(array("serial_no"=>$SN))->row_array();
+			if(!$org)
+			{
+				throw new Exception("無此筆資料",ERROR_CODE);
+			}
+			$user_profile_nums = $this->user_model->get_user_profile_list(array("organization"=>$org['serial_no']))->num_rows();
+			if($user_profile_nums)
+			{
+				throw new Exception("該組織已有使用者綁定，不可刪除",ERROR_CODE);
+			}
+			
+			$this->user_model->del_org(array("serial_no"=>$SN));
+			
+			echo $this->info_modal("刪除成功");
+						
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+	}
+	//---------------------BOSS------------------------------
+	public function list_boss()
+	{
+		$this->is_admin_login();
 		
+		$this->load->view('templates/header');
+	    $this->load->view('templates/sidebar');
+	    $this->load->view('admin/list_boss',$this->data);
+	    $this->load->view('templates/footer');
+	}
+	public function query_boss()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$bosses = $this->user_model->get_boss_list()->result_array();
+			
+			$output['aaData'] = array();
+			foreach($bosses as $boss)
+			{
+				$row = array();
+				
+				$row[] = $boss['name'];
+				$row[] = $boss['org_name'];
+				$row[] = $boss['department'];
+				$row[] = $boss['tel'];
+				$row[] = $boss['email'];
+				$display = array();
+				$display[] = anchor('boss/edit/'.$boss['serial_no'],"編輯","class='btn btn-small btn-warning'");
+				$display[] = form_button("del","刪除","class='btn btn-small btn-danger' value='{$boss['serial_no']}'");
+				$row[] = implode(' ',$display);
+				$output['aaData'][] = $row;	
+			}
+			
+			echo json_encode($output);
+		}catch(Exception $e){
+			echo json_encode($output);
+		}
+	}
+	public function form_boss()
+	{
+		try{
+			$this->is_admin_login();
+			
+			//取得ORG列表
+			$this->data['org_ID_select_options'] = $this->user_model->get_org_ID_select_options();
+			
+			$this->load->view('templates/header');
+		    $this->load->view('templates/sidebar');
+		    $this->load->view('admin/edit_boss',$this->data);
+		    $this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
+	}
+	public function edit_boss($SN)
+	{
+		try{
+			$this->is_admin_login();
+			
+			$SN = $this->security->xss_clean($SN);
+			
+			$boss = $this->user_model->get_boss_list(array("serial_no"=>$SN))->row_array();
+			if(!$boss)
+			{
+				throw new Exception();
+			}
+			
+			$this->data = $boss;
+			
+			//取得ORG列表
+			$this->data['org_ID_select_options'] = $this->user_model->get_org_ID_select_options();
+			
+			$this->load->view('templates/header');
+		    $this->load->view('templates/sidebar');
+		    $this->load->view('admin/edit_boss',$this->data);
+		    $this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
+	}
+	public function add_boss()
+	{
+		$this->update_boss();
+	}
+	public function update_boss()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$this->form_validation->set_rules("organization","組織","required");
+			$this->form_validation->set_rules("email","Email","required");
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			if(empty($input_data['serial_no']))
+			{
+				//ADD
+				$this->user_model->add_boss($input_data);
+				echo $this->info_modal("新增成功",$this->whence->pop());
+			}else{
+				//UPDATE
+				$this->user_model->update_boss($input_data);
+				echo $this->info_modal("更新成功",$this->whence->pop());
+			}
+			
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+	}
+	public function del_boss($SN)
+	{
+		try{
+			$this->is_admin_login();
+			
+			$SN = $this->security->xss_clean($SN);
+			
+			$boss = $this->user_model->get_boss_list(array("serial_no"=>$SN))->row_array();
+			if(!$boss)
+			{
+				throw new Exception("無此筆資料",ERROR_CODE);
+			}
+			$user_profile_nums = $this->user_model->get_user_profile_list(array("boss_no"=>$boss['serial_no']))->num_rows();
+			if($user_profile_nums)
+			{
+				throw new Exception("此位老師/主管有使用者掛名，不可刪除",ERROR_CODE);
+			}
+			
+			$this->user_model->del_boss(array("serial_no"=>$boss['serial_no']));
+			
+			echo $this->info_modal("刪除成功");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
 	}
 	//------------------學生打卡----------------
 	public function list_clock($location_ID = NULL)

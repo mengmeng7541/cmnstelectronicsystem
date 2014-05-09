@@ -21,7 +21,7 @@
                      <div class="widget-title">
                         <h4><i class="icon-reorder"></i>組織列表</h4>
                      </div>
-                     <div class="widget-body">
+                     <div class="widget-body form">
                         <table class="table table-striped table-bordered" id="table_org_list">
                         	<thead>
                         		<th>名稱</th>
@@ -30,9 +30,12 @@
                         		<th>電話</th>
                         		<th>地位</th>
                         		<th>聯盟</th>
-                        		<th width="60"></th>
+                        		<th width="100"></th>
                         	</thead>
                         </table>
+                        <div class="form-actions form-horizontal">
+                        	<?=anchor("org/form","新增","class='btn btn-warning'");?>
+                        </div>
                      </div>
                   </div>
                   <!-- END VALIDATION STATES-->

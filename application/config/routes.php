@@ -58,13 +58,13 @@ $route['admin/clock/query/manual'] = 'admin/query_manual_clock';
 $route['admin/clock/add'] = 'admin/add_clock';
 $route['admin/clock/del/(:num)'] = 'admin/del_clock/$1';
 
-$route['boss/list'] = 'admin/list_boss';
-$route['boss/query'] = 'admin/query_boss';
-$route['boss/form'] = 'admin/form_boss';
-$route['boss/edit/(:num)'] = 'admin/edit_boss/$1';
-$route['boss/add'] = 'admin/add_boss';
-$route['boss/update'] = 'admin/update_boss';
-$route['boss/del/(:num)'] = 'admin/del_boss/$1';
+$route['boss/list'] = 'user/list_boss';
+$route['boss/query'] = 'user/query_boss';
+$route['boss/form'] = 'user/form_boss';
+$route['boss/edit/(:num)'] = 'user/edit_boss/$1';
+$route['boss/add'] = 'user/add_boss';
+$route['boss/update'] = 'user/update_boss';
+$route['boss/del/(:num)'] = 'user/del_boss/$1';
 
 $route['user'] = 'user/form';
 $route['user/login'] = 'user/login';
@@ -83,6 +83,7 @@ $route['user/clock/add'] = 'user/add_clock';
 
 $route['org/list'] = 'user/list_org';
 $route['org/query'] = 'user/query_org';
+$route['org/form'] = 'user/form_org';
 $route['org/edit/(:num)'] = 'user/edit_org/$1';
 $route['org/add'] = 'user/add_org';
 $route['org/update'] = 'user/update_org';

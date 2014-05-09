@@ -1767,7 +1767,7 @@ var App = function () {
 
     }
 	var handleOrganization = function(){
-		$("#table_org_list").dataTable({
+		var table_org_list = $("#table_org_list").dataTable({
 	        "sAjaxSource": site_url+"org/query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
@@ -1779,6 +1779,17 @@ var App = function () {
                 }
             },
 			"aaSorting": [],
+        });
+        $("#table_org_list").on("click","button[name='del']",function(){
+        	$.ajax({
+        		url: site_url+'boss/del/'+$(this).val(),
+        		beforeSend: function(){
+					showRequest();
+				},
+        	}).always(function(data){
+        		showResponse(data);
+        		table_org_list.fnReloadAjax(null,null,true);
+        	});
         });
 	}
 	var handleBoss = function(){
