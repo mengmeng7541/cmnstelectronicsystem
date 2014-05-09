@@ -397,7 +397,7 @@ class Admin extends MY_Controller {
 			
 			$input_data = $this->input->post(NULL,TRUE);
 			
-			if(!isset($input_data['serial_no']))
+			if(empty($input_data['serial_no']))
 			{
 				//ADD
 				$this->admin_model->add_boss($input_data);
