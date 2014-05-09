@@ -418,7 +418,11 @@ class User_model extends MY_Model {
 			{$sJoinTable['facility']}.location_ID AS location_ID,
 			{$sJoinTable['location']}.location_cht_name AS location_cht_name
 			FROM
-			(SELECT * FROM $sTable WHERE TIMESTAMP(card.FDate,card.FTime) BETWEEN NOW() INTERVAL 1 DAY AND NOW() AND TIMESTAMP(card.FDate,card.FTime) > (SELECT TIMESTAMP(FDate,FTime) FROM (SELECT * FROM $sTable WHERE Status='01' ORDER BY FDate DESC, FTime DESC) GROUP BY CardNo) ORDER BY FDate DESC, FTime DESC) card
+			(SELECT * FROM $sTable WHERE TIMESTAMP(card.FDate,card.FTime) BETWEEN NOW() - INTERVAL 1 DAY AND NOW() AND TIMESTAMP(card.FDate,card.FTime) > 
+				(SELECT TIMESTAMP(FDate,FTime) FROM 
+					(SELECT * FROM $sTable WHERE CardNo = card.CardNo AND Status='01' ORDER BY FDate DESC, FTime DESC) aaaaaa 
+				GROUP BY CardNo) 
+			ORDER BY FDate DESC, FTime DESC) card
 		",FALSE)
 					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num")
 					   ->join($sJoinTable['facility'],"card.CtrlNo = {$sJoinTable['facility']}.ctrl_no","LEFT")
