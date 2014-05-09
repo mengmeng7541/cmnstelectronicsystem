@@ -418,17 +418,14 @@ class User_model extends MY_Model {
 			{$sJoinTable['facility']}.location_ID AS location_ID,
 			{$sJoinTable['location']}.location_cht_name AS location_cht_name
 			FROM
-			(SELECT * FROM $sTable WHERE TIMESTAMP(card.FDate,card.FTime) BETWEEN NOW() - INTERVAL 1 DAY AND NOW() AND TIMESTAMP(card.FDate,card.FTime) > 
-				(SELECT TIMESTAMP(FDate,FTime) FROM 
-					(SELECT * FROM $sTable WHERE CardNo = card.CardNo AND Status='01' ORDER BY FDate DESC, FTime DESC) aaaaaa 
-				GROUP BY CardNo) 
-			ORDER BY FDate DESC, FTime DESC) card
+			(SELECT * FROM $sTable WHERE TIMESTAMP(FDate,FTime) BETWEEN NOW() - INTERVAL 1 DAY AND NOW()) card
 		",FALSE)
 					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num")
 					   ->join($sJoinTable['facility'],"card.CtrlNo = {$sJoinTable['facility']}.ctrl_no","LEFT")
 					   ->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT")
+					   ->join("(SELECT FDate,FTime,CardNo FROM (SELECT * FROM $sTable WHERE Status='01' ORDER BY FDate DESC, FTime DESC) aaa GROUP BY CardNo) temp_card","temp_card.CardNo = $sTable.CardNo","LEFT")
 					   ->group_by("card.CardNo");
-		
+		$this->clock_db->where("TIMESTAMP(card.FDate,card.FTime) >","TIMESTAMP(temp_card.FDate,temp_card.FTime)",FALSE);
 		if(isset($options['location_ID']))
 			$this->clock_db->having("location_ID",$options['location_ID']);
 //					   ->having("card.Status","00");
