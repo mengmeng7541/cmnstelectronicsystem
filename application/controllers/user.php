@@ -613,6 +613,8 @@ class User extends MY_Controller {
 			$row[] = "";
 			$row[] = $result['user_name'];
 			$row[] = $result['user_mobile'];
+			$row[] = $result['access_first_datetime'];
+			$row[] = $result['access_last_datetime'];
 			$output['aaData'][] = $row;
 		}
 		echo json_encode($output);
