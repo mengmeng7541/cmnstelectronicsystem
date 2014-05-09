@@ -3521,7 +3521,15 @@ var App = function () {
 	
 	var handleMainMenuInit = function(){
 		//新的寫法
-		$("li a[href='"+$(location).prop("href")+"']").parents("li").addClass("active");
+		for(var url_array = document.location.href.split('/');url_array.length;url_array.pop())
+		{
+			var found = $("li a[href='"+url_array.join('/')+"']").parents("li");
+			if(found.length)
+			{
+				found.addClass("active");
+				break;
+			}
+		}
 	}
 	
 	var handleMyLibrary = function(){
