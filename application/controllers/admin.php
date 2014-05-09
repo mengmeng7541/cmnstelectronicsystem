@@ -435,7 +435,7 @@ class Admin extends MY_Controller {
 			
 			$this->admin_model->del_boss(array("serial_no"=>$boss['serial_no']));
 			
-			echo $this->info_modal("刪除成功","boss/list");
+			echo $this->info_modal("刪除成功");
 		}catch(Exception $e){
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}

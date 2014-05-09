@@ -32,7 +32,7 @@
 									<th>所屬單位</th>
 									<th>電話</th>
 									<th>EMAIL</th>
-									<th width="50"></th>
+									<th width="100"></th>
 								</tr>
 							</thead>
 							
