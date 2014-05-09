@@ -407,24 +407,30 @@ class User_model extends MY_Model {
 	{
 		$sTable = "cmnst_facility.Card";
 		$sJoinTable = array("user"=>"cmnst_common.user_profile","facility"=>"cmnst_facility.facility_list","location"=>"cmnst_common.location");
-		$this->clock_db->select("card.Status AS access_status,
-								 {$sJoinTable['user']}.name AS user_name,
-								 {$sJoinTable['user']}.mobile AS user_mobile,
-								 {$sJoinTable['user']}.card_num AS user_card_num,
-								 {$sJoinTable['facility']}.parent_ID AS facility_parent_ID,
-								 {$sJoinTable['facility']}.location_ID AS location_ID,
-								 {$sJoinTable['location']}.location_cht_name AS location_cht_name")
-					   ->from("(SELECT * FROM $sTable WHERE FDate >= '".date("Y-m-d",strtotime("-1day"))."' AND FDate <= '".date("Y-m-d")."' ORDER BY FDate DESC, FTime DESC) card")
+		$this->clock_db->select("
+			card.Status AS access_status,
+			MAX(TIMESTAMP(card.FDate,card.FTime)) AS access_last_datetime,
+			MIN(TIMESTAMP(card.FDate,card.FTime)) AS access_first_datetime,
+			{$sJoinTable['user']}.name AS user_name,
+			{$sJoinTable['user']}.mobile AS user_mobile,
+			{$sJoinTable['user']}.card_num AS user_card_num,
+			{$sJoinTable['facility']}.parent_ID AS facility_parent_ID,
+			{$sJoinTable['facility']}.location_ID AS location_ID,
+			{$sJoinTable['location']}.location_cht_name AS location_cht_name
+			FROM
+			(SELECT * FROM $sTable WHERE TIMESTAMP(card.FDate,card.FTime) BETWEEN NOW() INTERVAL 1 DAY AND NOW() AND TIMESTAMP(card.FDate,card.FTime) > (SELECT TIMESTAMP(FDate,FTime) FROM (SELECT * FROM $sTable WHERE Status='01' ORDER BY FDate DESC, FTime DESC) GROUP BY CardNo) ORDER BY FDate DESC, FTime DESC) card
+		",FALSE)
 					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num")
 					   ->join($sJoinTable['facility'],"card.CtrlNo = {$sJoinTable['facility']}.ctrl_no","LEFT")
 					   ->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT")
 					   ->group_by("card.CardNo");
+		
 		if(isset($options['location_ID']))
 			$this->clock_db->having("location_ID",$options['location_ID']);
 //					   ->having("card.Status","00");
 		
 		$query = $this->clock_db->get();
-//		echo $this->clock_db->last_query();
+		echo $this->clock_db->last_query();
 		return $query;
 		//$this->clock_db->get("clock_user_manual");
 	}
