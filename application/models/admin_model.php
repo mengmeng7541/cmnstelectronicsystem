@@ -132,6 +132,13 @@ class Admin_model extends MY_Model {
 	}
 	public function get_manual_clock_list($option)
 	{
+		$sTable = "clock_admin_manual";
+		$sJoinTable = array("user"=>"cmnst_common.user_profile");
+		$this->clock_db->select("
+			$sTable.*,
+			{$sJoinTable['user']}.name AS clock_user_name
+		");
+		$this->clock_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.clock_user_ID","LEFT");
 		if(isset($option['clock_user_ID']))
 			$this->clock_db->where("clock_user_ID",$option['clock_user_ID']);
 		if(isset($option['clock_start_time'])){

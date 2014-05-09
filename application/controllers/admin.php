@@ -239,7 +239,7 @@ class Admin extends MY_Controller {
 		foreach($clocks as $clock)
 		{
 			$row = array();
-			$row[] = $clock['clock_time'];
+			$row[] = $clock['clock_user_name'];
 			$row[] = $clock['clock_reason'].'@'.$clock['clock_location'];
 			$row[] = $clock['clock_start_time'];
 			$row[] = $clock['clock_end_time'];
@@ -302,7 +302,7 @@ class Admin extends MY_Controller {
 		}
 	}
 	
-  //-------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
   public function clock(){
   	
 	$this->load->view('admin/clock',$this->data);

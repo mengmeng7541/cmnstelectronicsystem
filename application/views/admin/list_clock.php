@@ -66,7 +66,7 @@
 	                		<div class="span6">
 	                			<table id="table_admin_manual_clock_list" class="table table-striped table-bordered">
 			                		<thead>
-			                			<th width="70">Booking Time</th>
+			                			<th width="70">人員</th>
 			                			<th>地點或事由</th>
 			                			<th width="70">起始時間</th>
 			                			<th width="70">結束時間</th>
