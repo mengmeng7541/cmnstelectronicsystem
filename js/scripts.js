@@ -3647,6 +3647,7 @@ var App = function () {
 			handleFormNanomarkReportRevision();
 			handleRewardListTable();
 			handleRewardApplication();
+			handleRewardPlan();
 			handleClock();
 			/*------------------------------*/
 //            handleFormWizards();

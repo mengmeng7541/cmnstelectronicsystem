@@ -285,6 +285,14 @@ class Reward extends MY_Controller {
 		$this->load->model('admin_model');
 		$this->data['admin_ID_select_options'] = $this->admin_model->get_admin_ID_select_options();
 		
+		//取得管理員名單
+		$admin_list = $this->reward_model->get_admin_privilege_list(array("privilege"=>"reward_super_admin"))->result_array();
+		if($admin_list)
+		{
+			$this->data['admin_ID'] =  sql_result_to_column($admin_list,"admin_ID");
+		}
+		
+		
 		$this->load->view('templates/header');
 		$this->load->view('templates/sidebar');
 	    $this->load->view('reward/config',$this->data);
