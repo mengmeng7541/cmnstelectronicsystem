@@ -237,7 +237,7 @@ class User_model extends MY_Model {
   	{
 		$output[$boss['serial_no']] = $boss['name'];
 	}
-	echo $output;
+	return $output;
   }
   public function get_boss_by_SN($SN)
   {

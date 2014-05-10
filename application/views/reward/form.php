@@ -143,7 +143,7 @@
                            <div class="control-group">
                               <label class="control-label">論文上傳</label>
                               <div class="controls">
-							  	  <?=isset($upload_file)?anchor(base_url("document/{$application['upload_file']}"),$application['upload_file']):form_upload("userfile","","");?>
+							  	  <?=isset($upload_file)?anchor(base_url("document/{$upload_file}"),$upload_file):form_upload("userfile","","");?>
                               </div>
                            </div>
 						   
