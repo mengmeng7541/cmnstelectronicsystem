@@ -77,7 +77,6 @@
 	                    <li><a class="" href="<?=site_url();?>/reward/config/edit">系統設定</a></li>
 	                </ul>
 				</li>
-		        <li><a class="" href="<?=site_url();?>/reward/list"><span class="icon-box"><i class="icon-user"></i></span> 論文獎勵審查</a></li>
 				<li><a class="" href="<?=site_url();?>/logout"><span class="icon-box"><i class="icon-user"></i></span> 登出</a></li>
 	        <?php }else if($this->session->userdata('ID')){ ?>
 				<li><a class="" href="<?=site_url();?>/user/edit"><span class="icon-box"><i class="icon-user"></i></span> 個人資料維護</a></li>

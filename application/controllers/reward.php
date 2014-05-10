@@ -276,7 +276,58 @@ class Reward extends MY_Controller {
 	
 	echo $this->info_modal("刪除成功","/reward/list");
   }
-  
+  //------------CONFIG----------------
+  public function edit_config()
+  {
+  	try{
+		$this->is_admin_login();
+		
+		$this->load->model('admin_model');
+		$this->data['admin_ID_select_options'] = $this->admin_model->get_admin_ID_select_options();
+		
+		$this->load->view('templates/header');
+		$this->load->view('templates/sidebar');
+	    $this->load->view('reward/config',$this->data);
+	  	$this->load->view('templates/footer');
+	}catch(Exception $e){
+		$this->show_error_page();
+	}
+  }
+  public function update_config()
+  {
+  	try{
+		$this->is_admin_login();
+		
+		if(!$this->reward_model->is_super_admin())
+		{
+			throw new Exception("權限不足",ERROR_CODE);
+		}
+		
+		$this->form_validation->set_rules("admin_ID[]","管理員","required");
+		if(!$this->form_validation->run())
+		{
+			throw new Exception(validation_errors(),WARNING_CODE);
+		}
+		
+		$input_data = $this->input->post(NULL,TRUE);
+		
+		//先刪掉
+		$privileges = $this->reward_model->get_admin_privilege_list(array("privilege"=>"reward_super_admin"))->result_array();
+		foreach($privileges as $privilege)
+		{
+			$this->reward_model->del_admin_privilege(array("serial_no"=>$privilege['serial_no']));
+		}
+		//再新增
+		$this->reward_model->add_admin_privilege(array(
+			"admin_ID"=>$input_data['admin_ID'],
+			"privilege"=>"reward_super_admin"
+		));
+		
+		echo $this->info_modal("變更成功");
+	}catch(Exception $e){
+		echo $this->info_modal($e->getMessage(),"",$e->getCode());
+	}
+  }
   //--------------PLAN----------------
   public function query_plan()
   {

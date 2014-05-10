@@ -8,22 +8,7 @@ class Reward_model extends MY_Model {
 		parent::__construct();
 		$this->reward_db = $this->load->database("reward",TRUE);
 	}
-	public function get_admin_by_privilege($privilege)
-	{
-		$sql = "SELECT * FROM Reward_admin_privilege WHERE privilege = '{$privilege}'";
-		$query = $this->reward_db->query($sql);
-		
-		return $query->row_array();
-	}
-	public function get_privilege($privilege,$admin_ID = "")
-	{
-		if(empty($ID))	$ID = $this->session->userdata('ID');
-  	
-	  	$sql = "SELECT * FROM Reward_admin_privilege WHERE admin_ID = '{$ID}' AND privilege = '{$privilege}'";
-		$query = $this->reward_db->query($sql);
-		return $query->num_rows();
-	}
-
+	
   
   public function get_application_by_paper_title($title)
   {
@@ -79,6 +64,63 @@ class Reward_model extends MY_Model {
 		return;
 	}
   
+  //-------------------CONFIG----------------------------
+  public function get_admin_by_privilege($privilege)
+	{
+		$sql = "SELECT * FROM Reward_admin_privilege WHERE privilege = '{$privilege}'";
+		$query = $this->reward_db->query($sql);
+		
+		return $query->row_array();
+	}
+	public function get_privilege($privilege,$admin_ID = "")
+	{
+		if(empty($ID))	$ID = $this->session->userdata('ID');
+  	
+	  	$sql = "SELECT * FROM Reward_admin_privilege WHERE admin_ID = '{$ID}' AND privilege = '{$privilege}'";
+		$query = $this->reward_db->query($sql);
+		return $query->num_rows();
+	}
+	
+	public function get_admin_privilege_list($options = array())
+	{
+		if(isset($options['privilege']))
+		{
+			$this->reward_db->where("privilege"=>$options['privilege']);
+		}
+		if(isset($options['admin_ID']))
+		{
+			$this->reward_db->where("admin_ID"=>$options['admin_ID']);
+		}
+		return $this->reward_db->get("Reward_admin_privilege");
+	}
+	public function is_super_admin($user_ID = NULL)
+	{
+		if(!isset($user_ID))
+		{
+			$user_ID = $this->session->userdata('ID');
+		}
+		return $this->get_admin_privilege_list(array(
+			"privilege"=>"reward_super_admin",
+			"admin_ID"=>$user_ID
+		))->num_rows();
+	}
+  public function add_admin_privilege($data)
+  {
+  	foreach((array)$data['admin_ID'] as $admin_ID)
+  	{
+		$this->reward_db->set("admin_ID",$admin_ID);
+	  	$this->reward_db->set("privilege",$data['privilege']);
+	  	$this->reward_db->insert("Reward_admin_privilege");
+	}
+  	
+  }
+  public function del_admin_privilege($data)
+  {
+  	$this->reward_db->where("serial_no",$data['serial_no']);
+  	$this->reward_db->delete("Reward_admin_privilege");
+  }
+  
+  //--------------------PLAN----------------------------
   public function get_plan_list($options = array())
   {
   	$this->reward_db->select("*");
