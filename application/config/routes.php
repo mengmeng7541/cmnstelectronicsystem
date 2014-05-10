@@ -314,6 +314,11 @@ $route['reward/list'] = 'reward/list_application';
 $route['reward/query'] = 'reward/query_application';
 
 $route['reward/plan/query'] = 'reward/query_plan';
+$route['reward/plan/form'] = 'reward/form_plan';
+$route['reward/plan/edit/(:num)'] = 'reward/edit_plan/$1';
+$route['reward/plan/add'] = 'reward/add_plan';
+$route['reward/plan/update'] = 'reward/update_plan';
+$route['reward/plan/del/(:num)'] = 'reward/del_plan/$1';
 
 $route['reward/config/edit'] = 'reward/edit_config';
 $route['reward/config/update'] = 'reward/update_config';

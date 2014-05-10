@@ -23,7 +23,7 @@
                         <h4><i class="icon-reorder"></i>論文獎勵管理員設置</h4>
                      </div>
                      <div class="widget-body form">
-					 	<form id="" action="<?=site_url();?>/nanomark/update_config" method="post" class="form-horizontal">
+					 	<form id="" action="<?=site_url('/reward/config/update');?>" method="post" class="form-horizontal">
 
 							<div class="control-group">
                             	<label class="control-label">超級管理員</label>
