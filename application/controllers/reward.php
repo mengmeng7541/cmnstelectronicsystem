@@ -413,7 +413,7 @@ class Reward extends MY_Controller {
 		
 		$this->form_validation->set_rules("name","方案名稱","required");
 		$this->form_validation->set_rules("points","獎勵金額","required");
-		$this->form_validation->set_rules("available","是否開放","required");
+//		$this->form_validation->set_rules("available","是否開放","required");
 		if(!$this->form_validation->run())
 		{
 			throw new Exception(validation_errors(),WARNING_CODE);
@@ -423,10 +423,22 @@ class Reward extends MY_Controller {
 		
 		if(empty($input_data['serial_no'])){
 			//ADD
+			$input_data = array(
+				"name"=>$input_data['name'],
+				"points"=>$input_data['points'],
+				"available"=>empty($input_data['available'])?0:1,
+				"serial_no"=>NULL,
+			);
 			$this->reward_model->add_plan($input_data);
 			echo $this->info_modal("新增成功","/reward/config/edit");
 		}else{
 			//UPDATE
+			$input_data = array(
+				"name"=>$input_data['name'],
+				"points"=>$input_data['points'],
+				"available"=>empty($input_data['available'])?0:1,
+				"serial_no"=>$input_data['serial_no'],
+			);
 			$this->reward_model->update_plan($input_data);
 			echo $this->info_modal("變更成功","/reward/config/edit");
 		}

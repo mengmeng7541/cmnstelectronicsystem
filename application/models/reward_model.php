@@ -152,7 +152,7 @@ class Reward_model extends MY_Model {
   }
   public function add_plan($data)
   {
-  	$this->update_plan($data);
+  	return $this->update_plan($data);
   }
   public function update_plan($data)
   {
@@ -162,17 +162,17 @@ class Reward_model extends MY_Model {
   	if(!isset($data['serial_no']))
   	{
 		//add
-		$this->reward_db->insert("reward_plan");
+		$this->reward_db->insert("Reward_plan");
 		return $this->reward_db->insert_id();
 	}else{
 		//update
 		$this->reward_db->where("serial_no",$data['serial_no']);
-		$this->reward_db->update("reward_plan");
+		$this->reward_db->update("Reward_plan");
 	}
   }
   public function del_plan($data)
   {
   	$this->reward_db->where("serial_no",$data['serial_no']);
-  	$this->reward_db->delete("reward_plan");
+  	$this->reward_db->delete("Reward_plan");
   }
 }

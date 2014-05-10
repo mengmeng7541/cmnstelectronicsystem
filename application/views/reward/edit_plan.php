@@ -38,7 +38,7 @@
 							   <div class="control-group">
 	                              <label class="control-label">方案名稱</label>
 	                              <div class="controls">
-	                                 <input type="text" class="span6" value="<?=isset($name)?$name:"";?>" />
+	                                 <input type="text" name="name" class="span6" value="<?=isset($name)?$name:"";?>" />
 	                              </div>
 	                           </div>	
                            <div class="control-group">

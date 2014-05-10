@@ -28,7 +28,7 @@
 							<div class="control-group">
                             	<label class="control-label">超級管理員</label>
                             	<div class="controls">
-									<?=form_multiselect("admin_ID[]",isset($admin_ID_select_options)?$admin_ID_select_options:array(),isset($admin_ID)?$admin_ID:"","class='chosen'")?>
+									<?=form_multiselect("admin_ID[]",isset($admin_ID_select_options)?$admin_ID_select_options:array(),isset($admin_ID)?$admin_ID:"","class='chosen'");?>
                             	</div>
                             </div>
 						   
