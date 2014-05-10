@@ -7,72 +7,28 @@ class Reward extends MY_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-    
-	
 		$this->load->model("user_model","user_model");
 		$this->load->model("reward_model","reward_model");
 		$this->load->model("admin_model","admin_model");
-		
-		
 	}
 
 	public function form()
 	{
-		$this->data['serial_no'] = form_input("serial_no","","class='span6' readonly='readonly'");
 		
-		$this->data['applicant_name'] = form_input("applicant_name","","class='span6'");
+		$this->data['awardees_select_options'] = $this->user_model->get_boss_ID_select_options();
+	    
 		
-		$this->data['department'] = form_input("department","","class='span6'");
+		//載入可以用的選項
+		$this->data['plan_select_options'] = $this->reward_model->get_plan_ID_select_options();
 		
-		$this->data['tel'] = form_input("tel","","class='span6'");
-		
-		$this->data['email'] = form_input("email","","class='span6'");
-		
-		$this->data['research_field'] = "<label class='checkbox'>".form_checkbox("research_field[]","奈米材料","")."奈米材料</label>
-                                 		 <label class='checkbox'>".form_checkbox("research_field[]","奈米檢測","")."奈米檢測</label>
-								 		 <label class='checkbox'>".form_checkbox("research_field[]","奈米精密加工","")."奈米精密加工</label>
-								 		 <label class='checkbox'>".form_checkbox("research_field[]","分子診斷與治療","")."分子診斷與治療</label>
-								 		 <label class='checkbox'>".form_checkbox("research_field[]","其它","")."其它</label>";
-		
-		$this->data['paper_title'] = form_input("paper_title","","class='span6'");
-		
-		$this->data['journal'] = form_input("journal","","class='span6'");
-		
-		$book_year_select_options = array('2010'=>'2010','2011'=>'2011','2012'=>'2012','2013'=>'2013','2014'=>'2014','2015'=>'2015');
-		$this->data['journal_year'] = form_dropdown("journal_year",$book_year_select_options,"","class='span6'");
-		
-		$boss = $this->user_model->get_boss();
-		$awardees_select_options = array(""=>"");
-	    foreach($boss as $row){
-			$awardees_select_options[$row['serial_no']] = $row['name'];
-		}
-		$this->data['awardees'] = form_dropdown("awardees_no",$awardees_select_options,"","class = 'span6 chosen'");
-		
-		$plan = $this->reward_model->get_plan();
-		foreach($plan as $row)
-		{
-			$plan_select_options[$row['serial_no']] = $row['name'];
-		}
-		$this->data['apply_plan'] = form_dropdown("apply_plan_no",$plan_select_options,"","class='span6'");
-		
-		$this->data['file_name'] = form_upload("userfile","","");
-		
-		$this->data['review_date'] = "";
-		
-		$this->data['reviewer'] = "";
-		
-		$this->data['result'] = "";
-		
-		$this->data['action_btn'] = form_submit("","送出","class='btn btn-success'").form_reset("","重設","class='btn'");
+		$this->data['action_btn'][] = form_submit("","送出","class='btn btn-success'");
+		$this->data['action_btn'][] = form_reset("","重設","class='btn'");
 			
 		$this->load->view('templates/header');
 	    $this->load->view('templates/sidebar');
 	  	$this->load->view('reward/form', $this->data);
 	  	$this->load->view('templates/footer');
 	}
-  
-
-
   public function add()
   {
     $input_data = $this->input->post(NULL,TRUE);
@@ -130,8 +86,6 @@ class Reward extends MY_Controller {
 		echo $this->info_modal("您已申請完成，請待本中心審核後通知結果，謝謝！");
 	}
 
-    
-    
   }
   
   public function list_application()
@@ -163,10 +117,10 @@ class Reward extends MY_Controller {
     }
     
   	//取得申請的基本資料列表
-	$applications = $this->reward_model->get_application();
+	$applications = $this->reward_model->get_application_list()->result_array();
 	
 	$output['aaData'] = array();
-	foreach($applications->result_array() as $app)
+	foreach($applications as $app)
 	{
 		$row = array();
 		
@@ -178,7 +132,7 @@ class Reward extends MY_Controller {
 		$row[] = $app['applicant_name'];
 		$row[] = $app['paper_title'];
 		if($app['is_review'])
-			$row[] = anchor("reward/edit/{$app['serial_no']}","結案","class='btn btn-small btn-inverse'");
+			$row[] = anchor("reward/view/{$app['serial_no']}","結案","class='btn btn-small btn-inverse'");
 		else
 			$row[] = anchor("reward/edit/{$app['serial_no']}","審核","class='btn btn-small btn-success'");
 		
@@ -190,65 +144,64 @@ class Reward extends MY_Controller {
   
   public function edit($serial_no)
   {
-  	if($this->session->userdata('status')!="admin")
-    {
-      redirect('/admin');
-      return;
-    }
-    //檢查有否權限
-    if(!$this->reward_model->get_privilege('reward_reviewer'))
-    {
-      redirect('/admin/main');
-      return;
-    }
-    
-    //取得申請者資料
-    $application = $this->reward_model->get_application(array("serial_no"=>$serial_no));
-	$application = $application->row_array();
-	if(!$application)
-	{
-		$this->show_error_page();
-		return;
-	}
-	$this->data['serial_no'] = form_input("serial_no",$application['serial_no'],"class='span6' readonly='readonly'");
-	$this->data['application_date'] = $application['application_date'];
-	$this->data['applicant_name'] = form_input("applicant_name",$application['applicant_name'],"class='span6' readonly='readonly'");
-	$this->data['department'] = form_input("department",$application['department'],"class='span6' readonly='readonly'");
-	$this->data['tel'] = form_input("tel",$application['tel'],"class='span6' readonly='readonly'");
-	$this->data['email'] = form_input("email",$application['email'],"class='span6' readonly='readonly'");
-	$this->data['research_field'] = form_input("research_field",$application['research_field'],"class='span6' readonly='readonly'");
-	$this->data['paper_title'] = form_input("paper_title",$application['paper_title'],"class='span6' readonly='readonly'");
-	$this->data['journal'] = form_input("journal",$application['journal'],"class='span6' readonly='readonly'");
-	$this->data['journal_year'] = form_input("journal_year",$application['journal_year'],"class='span6' readonly='readonly'");
-	$boss = $this->user_model->get_boss_by_SN($application['awardees_no']);
-	$this->data['awardees'] = form_input("awardees_no",isset($boss['name'])?$boss['name']:"","class='span6' readonly='readonly'");
-	$apply_plan = $this->reward_model->get_plan_by_SN($application['apply_plan_no']);
-	$this->data['apply_plan'] = form_input("apply_plan_no",$apply_plan['name'],"class='span6' readonly='readonly'");
-	$this->data['file_name'] = anchor(base_url("document/{$application['upload_file']}"),$application['upload_file']);
-	if($application['is_review'])
-	{
-		$this->data['review_date'] = form_input("review_date",$application['review_date'],"class='span6' readonly='readonly'");
-		$this->data['reviewer'] = form_input("reviewer_name",$application['reviewer_name'],"class='span6' readonly='readonly'");
-		$plan = $this->reward_model->get_plan_by_SN($application['accept_plan_no']);
-		$this->data['result'] = "<label class='radio'>".form_radio("result","1",$application['result']," disabled='disabled'")."符合</label>".form_input("accept_plan_no",$plan['name'],"class='span5' readonly='readonly'")." <label class='radio'>".form_radio("result","0",!$application['result'],"disabled='disabled'")."不符合</label>".form_input("deny_reason",$application['deny_reason'],"class='span4' readonly='readonly'");
-		$this->data['action_btn'] = anchor("reward/list","回前頁","class='btn btn-inverse'");
-	}else{
-		$this->data['review_date'] = "";
-		$this->data['reviewer'] = "";
-		$plan = $this->reward_model->get_plan();
-		foreach($plan as $row)
+  	try{
+		$this->is_admin_login();
+	    //檢查有否權限
+	    if(!$this->reward_model->get_privilege('reward_reviewer'))
+	    {
+			throw new Exception();
+	    }
+	    //取得申請者資料
+	    $application = $this->reward_model->get_application_list(array("serial_no"=>$serial_no))->row_array();
+		if(!$application)
 		{
-			$plan_select_options[$row['serial_no']] = $row['name'];
+			throw new Exception();
 		}
-		$this->data['result'] = "<label class='radio'>".form_radio("result","1")."符合</label>".form_dropdown("accept_plan_no",$plan_select_options,"","class='span5'").nbs(8)."<label class='radio'>".form_radio("result","0")."不符合</label>".form_input("deny_reason","","class='span4'");
-		$this->data['action_btn'] = form_button("update","送出","class='btn btn-success'");
+		$this->data = $application;
+		$this->data['readonly'] = TRUE;
+		
+		$this->data['plan_select_options'] = $this->reward_model->get_plan_ID_select_options(FALSE);
+		
+		if($application['is_review'])
+		{
+			$this->data['action_btn'] = anchor("reward/list","回前頁","class='btn btn-inverse'");
+		}else{
+			$this->data['action_btn'] = form_button("update","送出","class='btn btn-success'");
+		}
+		
+		$this->load->view('templates/header');
+		$this->load->view('templates/sidebar');
+	    $this->load->view('reward/form',$this->data);
+	  	$this->load->view('templates/footer');
+		
+	}catch(Exception $e){
+		$this->show_error_page();
 	}
 	
-	
-	$this->load->view('templates/header');
-	$this->load->view('templates/sidebar');
-    $this->load->view('reward/form',$this->data);
-  	$this->load->view('templates/footer');
+  }
+  public function view($SN)
+  {
+  	try{
+		$this->is_admin_login();
+		
+		$SN = $this->security->xss_clean($SN);
+		
+		$application = $this->reward_model->get_application_list(array("serial_no"=>$SN))->row_array();
+		if(!$application)
+		{
+			throw new Exception();
+		}
+		$this->data = $application;
+		
+		$this->data['readonly'] = TRUE;
+		
+		$this->data['plan_select_options'] = $this->reward_model->get_plan_ID_select_options(FALSE);
+		
+		$this->data['action_btn'] = anchor("reward/list","回前頁","class='btn btn-inverse'");
+	}catch(Exception $e){
+		$this->show_error_page();
+	}
+  	
   }
   
   public function update()

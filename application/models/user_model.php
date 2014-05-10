@@ -214,11 +214,20 @@ class User_model extends MY_Model {
 		return $this->common_db->affected_rows();
 	}
   //BOSS
-  public function get_boss()
+  public function get_boss_list()
   {
-  	$sql = "SELECT * FROM boss_profile";
-	$query = $this->common_db->query($sql);
-	return $query->result_array();
+  	$this->common_db->select("*");
+  	return $this->common_db->get("boss_profile");
+  }
+  public function get_boss_ID_select_options()
+  {
+  	$bosses = $this->get_boss_list()->result_array();
+  	$output = array();
+  	foreach($bosses as $boss)
+  	{
+		$output[$boss['serial_no']] = $boss['name'];
+	}
+	echo $output;
   }
   public function get_boss_by_SN($SN)
   {

@@ -52,7 +52,7 @@ class Reward_model extends MY_Model {
 	* @serial_no the start serial number
 	* @row_num how many rows are requested      
 	*/  
-	public function get_application($input = array())
+	public function get_application_list($input = array())
 	{
 		$this->reward_db->select("*")->from("Reward_application");
 		if(isset($input['serial_no']))
@@ -79,11 +79,24 @@ class Reward_model extends MY_Model {
 		return;
 	}
   
-  public function get_plan()
+  public function get_plan_list($options = array())
   {
-  	$sql = "SELECT * FROM Reward_plan";
-	$query = $this->reward_db->query($sql);
-	return $query->result_array();
+  	$this->reward_db->select("*");
+  	if(isset($options['available']))
+  	{
+		$this->reward_db->where("available",$options['available']);
+	}
+  	return $this->reward_db->get("Reward_plan");
+  }
+  public function get_plan_ID_select_options($only_available = 1)
+  {
+  	$plans = $this->get_plan_list(array("available"=>$only_available?$only_available:NULL))->result_array();
+  	$output = array();
+  	foreach($plans as $plan)
+  	{
+		$output[$plan['serial_no']] = $plan['name'];
+	}
+	return $output;
   }
   public function get_plan_by_SN($SN)
   {

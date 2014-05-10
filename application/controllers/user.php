@@ -589,6 +589,7 @@ class User extends MY_Controller {
 		$input_data = $this->input->get(NULL,TRUE);
 		
 		$data = array("location_ID"=>empty($input_data['location_ID'])?NULL:$input_data['location_ID']);
+		//還要找出此地點最後一道門的卡機編號(還沒做)
 		
 		$results = $this->user_model->get_clock_list($data)->result_array();
 		

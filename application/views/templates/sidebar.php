@@ -67,6 +67,16 @@
 						<li><a class="" href="<?=site_url();?>/nanomark/edit_config">系統設定</a></li>
 	                </ul>
 				</li>
+				<li class="has-sub ">
+					<a href="javascript:;" class="">
+					<span class="icon-box"><i class="icon-cogs"></i></span> 論文獎勵
+					<span class="arrow"></span>
+					</a>
+					<ul class="sub">
+						<li><a class="" href="<?=site_url();?>/reward/list">論文獎勵審查</a></li>
+	                    <li><a class="" href="<?=site_url();?>/reward/config/edit">系統設定</a></li>
+	                </ul>
+				</li>
 		        <li><a class="" href="<?=site_url();?>/reward/list"><span class="icon-box"><i class="icon-user"></i></span> 論文獎勵審查</a></li>
 				<li><a class="" href="<?=site_url();?>/logout"><span class="icon-box"><i class="icon-user"></i></span> 登出</a></li>
 	        <?php }else if($this->session->userdata('ID')){ ?>

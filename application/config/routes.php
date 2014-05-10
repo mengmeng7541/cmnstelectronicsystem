@@ -308,9 +308,17 @@ $route['reward'] = 'reward/form';
 $route['reward/add'] = 'reward/add';
 $route['reward/update'] = 'reward/update';
 $route['reward/edit/(:num)'] = 'reward/edit/$1';
+$route['reward/view/(:num)'] = 'reward/view/$1';
 $route['reward/delete/(:num)'] = 'reward/delete/$1';
 $route['reward/list'] = 'reward/list_application';
 $route['reward/query'] = 'reward/query_application';
+
+$route['reward/plan/query'] = 'reward/query_plan';
+
+$route['reward/config/edit'] = 'reward/edit_config';
+$route['reward/config/update'] = 'reward/update_config';
+
+
 
 //Cron
 $route['cron'] = 'cron';
