@@ -115,7 +115,7 @@
                            <div class="control-group">
                               <label class="control-label">* 出版年</label>
                               <div class="controls">
-                                 <? $book_year_select_options = array('2010'=>'2010','2011'=>'2011','2012'=>'2012','2013'=>'2013','2014'=>'2014','2015'=>'2015'); ?>
+                                 <? $book_year_select_options = array('2010'=>'2010','2011'=>'2011','2012'=>'2012','2013'=>'2013','2014'=>'2014','2015'=>'2015','2016'=>'2016','2017'=>'2017','2018'=>'2018','2019'=>'2019'); ?>
                                  <?=form_dropdown("journal_year",$book_year_select_options,isset($journal_year)?$journal_year:"","class='span6'".$readonly);?>
                               </div>
                               
@@ -124,7 +124,7 @@
                            <div class="control-group">
                               <label class="control-label">* 抵扣機台使用費姓名</label>
                               <div class="controls">
-                                 <?=form_dropdown("awardees_no",$awardees_select_options,isset($awardees_no)?$awardees_no:"","class = 'span6 chosen'".$readonly);?>
+                                 <?=form_dropdown("awardees_no",isset($awardees_select_options)?$awardees_select_options:array(),isset($awardees_no)?$awardees_no:"","class = 'span6 chosen'".$readonly);?>
                                  <span class="help-inline"></span>
                                  <p class="help-block">須在中心設有抵扣帳戶者，若無，請聯絡本中心 林丹琪小姐 分機31382</p>
                               </div>
@@ -176,7 +176,7 @@
 						   <? } ?>
 
                            <div class="form-actions">
-                              <?=isset($action_btn)?implode('',(array)$action_btn):"";?>
+                              <?=isset($action_btn)?implode(' ',(array)$action_btn):"";?>
                            </div>
                         </form>
                         <!-- END FORM-->						

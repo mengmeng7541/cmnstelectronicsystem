@@ -7,9 +7,9 @@ class Reward extends MY_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model("user_model","user_model");
-		$this->load->model("reward_model","reward_model");
-		$this->load->model("admin_model","admin_model");
+		$this->load->model("user_model");
+		$this->load->model("reward_model");
+		$this->load->model("admin_model");
 	}
 
 	public function form()
@@ -162,12 +162,9 @@ class Reward extends MY_Controller {
 		
 		$this->data['plan_select_options'] = $this->reward_model->get_plan_ID_select_options(FALSE);
 		
-		if($application['is_review'])
-		{
-			$this->data['action_btn'] = anchor("reward/list","回前頁","class='btn btn-inverse'");
-		}else{
-			$this->data['action_btn'] = form_button("update","送出","class='btn btn-success'");
-		}
+		
+		$this->data['action_btn'][] = form_button("update","送出","class='btn btn-success'");
+		$this->data['action_btn'][] = anchor("reward/list","回前頁","class='btn btn-inverse'");
 		
 		$this->load->view('templates/header');
 		$this->load->view('templates/sidebar');
@@ -420,25 +417,14 @@ class Reward extends MY_Controller {
 		}
 		
 		$input_data = $this->input->post(NULL,TRUE);
+		$input_data['available'] = empty($input_data['available'])?0:1;
 		
-		if(empty($input_data['serial_no'])){
+		if(!isset($input_data['serial_no'])){
 			//ADD
-			$input_data = array(
-				"name"=>$input_data['name'],
-				"points"=>$input_data['points'],
-				"available"=>empty($input_data['available'])?0:1,
-				"serial_no"=>NULL,
-			);
 			$this->reward_model->add_plan($input_data);
 			echo $this->info_modal("新增成功","/reward/config/edit");
 		}else{
 			//UPDATE
-			$input_data = array(
-				"name"=>$input_data['name'],
-				"points"=>$input_data['points'],
-				"available"=>empty($input_data['available'])?0:1,
-				"serial_no"=>$input_data['serial_no'],
-			);
 			$this->reward_model->update_plan($input_data);
 			echo $this->info_modal("變更成功","/reward/config/edit");
 		}

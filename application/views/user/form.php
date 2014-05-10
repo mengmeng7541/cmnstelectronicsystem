@@ -29,7 +29,7 @@
 						
 						<h3>帳號設定</h3>
 						<div class="control-group">
-                           <label class="control-label">* 身分證字號</label>
+                           <label class="control-label">* 身分證字號<br>(或統一編號)</label>
                            <div class="controls">
                               <input type="text" class="span2" name="ID" maxlength="10"/>
                               <p class="help-block">（此為您登入之使用者帳號）</p>

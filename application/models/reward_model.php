@@ -40,11 +40,17 @@ class Reward_model extends MY_Model {
 	public function get_application_list($input = array())
 	{
 		$this->reward_db->select("*")->from("Reward_application");
+		
+		if(isset($input['apply_plan_no']))
+		{
+			$this->reward_db->where("apply_plan_no",$input['apply_plan_no']);
+		}
+		
 		if(isset($input['serial_no']))
 			$this->reward_db->where("serial_no",$input['serial_no']);
 		else
 			$this->reward_db->order_by("serial_no","DESC");
-			
+		
 		$query = $this->reward_db->get();
 		
 		return $query;
