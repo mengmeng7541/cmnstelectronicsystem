@@ -85,11 +85,11 @@ class Reward_model extends MY_Model {
 	{
 		if(isset($options['privilege']))
 		{
-			$this->reward_db->where("privilege"=>$options['privilege']);
+			$this->reward_db->where("privilege",$options['privilege']);
 		}
 		if(isset($options['admin_ID']))
 		{
-			$this->reward_db->where("admin_ID"=>$options['admin_ID']);
+			$this->reward_db->where("admin_ID",$options['admin_ID']);
 		}
 		return $this->reward_db->get("Reward_admin_privilege");
 	}
