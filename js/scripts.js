@@ -3434,6 +3434,33 @@ var App = function () {
 		
 	}
 	
+	var handleRewardPlan = function(){
+		var table_reward_plan_list = $("#table_reward_plan_list").dataTable({
+        	"sAjaxSource": site_url+"reward/plan/query",
+            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+        });
+        
+        $("#table_reward_plan_list").on("click","button[name='del']",function(){
+        	$.ajax({
+        		url: site_url+'reward/plan/del/'+$(this).val(),
+        		beforeSend: function(){
+					showRequest();	
+				}
+        	}).always(function(data){
+        		showResponse(data);
+        		table_reward_plan_list.fnReloadAjax(null,null,true);
+        	});
+        });
+	}
+	
     var handleFormWizards = function () {
         if (!jQuery().bootstrapWizard) {
             return;

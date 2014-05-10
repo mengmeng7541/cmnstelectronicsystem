@@ -104,5 +104,29 @@ class Reward_model extends MY_Model {
 	$query = $this->reward_db->query($sql);
 	return $query->row_array();
   }
-  
+  public function add_plan($data)
+  {
+  	$this->update_plan($data);
+  }
+  public function update_plan($data)
+  {
+  	$this->reward_db->set("name",$data['name'])
+  					->set("points",$data['points'])
+  					->set("available",$data['available']);
+  	if(!isset($data['serial_no']))
+  	{
+		//add
+		$this->reward_db->insert("reward_plan");
+		return $this->reward_db->insert_id();
+	}else{
+		//update
+		$this->reward_db->where("serial_no",$data['serial_no']);
+		$this->reward_db->update("reward_plan");
+	}
+  }
+  public function del_plan($data)
+  {
+  	$this->reward_db->where("serial_no",$data['serial_no']);
+  	$this->reward_db->delete("reward_plan");
+  }
 }

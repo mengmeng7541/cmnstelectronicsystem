@@ -276,4 +276,122 @@ class Reward extends MY_Controller {
 	
 	echo $this->info_modal("刪除成功","/reward/list");
   }
+  
+  //--------------PLAN----------------
+  public function query_plan()
+  {
+  	try{
+  		$this->is_admin_login();
+  		
+  		$plans = $this->reward_model->get_plan_list()->result_array();
+  		
+		$output['aaData'] = array();
+		foreach($plans as $plan)
+		{
+			$row = array();
+			$row[] = $plan['name'];
+			$row[] = $plan['points'];
+			$row[] = $plan['available']?"是":"否";
+			$display = array();
+			$display[] = anchor("reward/plan/edit/".$plan['serial_no'],"編輯","class='btn btn-small btn-warning'");
+			$display[] = form_button("del","刪除","class='btn btn-small btn-danger' value='{$plan['serial_no']}'");
+			$row[] = implode(' ',$display);
+			$output['aaData'][] = $row;
+		}
+		echo json_encode($output);
+	}catch(Exception $e){
+		echo json_encode($output);
+	}
+  }
+  public function form_plan()
+  {
+  	try{
+		$this->is_admin_login();
+		
+		$this->load->view('templates/header');
+		$this->load->view('templates/sidebar');
+	    $this->load->view('reward/edit_plan',$this->data);
+	  	$this->load->view('templates/footer');
+	}catch(Exception $e){
+		$this->show_error_page();
+	}
+  }
+  public function edit_plan($SN = "")
+  {
+  	try{
+		$this->is_admin_login();
+		
+		$SN = $this->security->xss_clean($SN);
+		
+		$plan = $this->reward_model->get_plan_list(array("serial_no"=>$SN))->row_array();
+		if(!$plan){
+			throw new Exception();
+		}
+		
+		$this->data = $plan;
+		
+		$this->load->view('templates/header');
+		$this->load->view('templates/sidebar');
+	    $this->load->view('reward/edit_plan',$this->data);
+	  	$this->load->view('templates/footer');
+	}catch(Exception $e){
+		$this->show_error_page();
+	}
+  }
+  public function add_plan()
+  {
+  	$this->update_plan();
+  }
+  public function update_plan()
+  {
+  	try{
+		$this->is_admin_login();
+		
+		$this->form_validation->set_rules("name","方案名稱","required");
+		$this->form_validation->set_rules("points","獎勵金額","required");
+		$this->form_validation->set_rules("available","是否開放","required");
+		if(!$this->form_validation->run())
+		{
+			throw new Exception(validation_errors(),WARNING_CODE);
+		}
+		
+		$input_data = $this->input->post(NULL,TRUE);
+		
+		if(empty($input_data['serial_no'])){
+			//ADD
+			$this->reward_model->add_plan($input_data);
+			echo $this->info_modal("新增成功","/reward/config/edit");
+		}else{
+			//UPDATE
+			$this->reward_model->update_plan($input_data);
+			echo $this->info_modal("變更成功","/reward/config/edit");
+		}
+	}catch(Exception $e){
+		echo $this->info_modal($e->getMessage(),"",$e->getCode());
+	}
+  }
+  public function del_plan($SN = "")
+  {
+  	try{
+		$this->is_admin_login();
+		
+		$SN = $this->security->xss_clean($SN);
+		
+		$plan = $this->reward_model->get_plan_list(array("serial_no"=>$SN))->row_array();
+		if(!$plan){
+			throw new Exception("無此筆資料",ERROR_CODE);
+		}
+		
+		$application_nums = $this->reward_model->get_application_list(array("apply_plan_no"=>$plan['serial_no']))->num_rows();
+		if($application_nums)
+		{
+			throw new Exception("已有申請單使用此方案，不可刪除",ERROR_CODE);
+		}
+		$this->reward_model->del_plan(array("serial_no"=>$plan['serial_no']));
+		
+		echo $this->info_modal("刪除成功");
+	}catch(Exception $e){
+		echo $this->info_modal($e->getMessage(),"",$e->getCode());
+	}
+  }
 }
