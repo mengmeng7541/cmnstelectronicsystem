@@ -52,11 +52,14 @@
 					 	<table id="table_reward_plan_list" class="table table-striped table-bordered">
 					 		<thead>
 					 			<th>方案名稱</th>
-					 			<th>獎金</th>
-					 			<th>開放</th>
-					 			<th></th>
+					 			<th width="100">獎勵金額</th>
+					 			<th width="50">是否開放</th>
+					 			<th width="100"></th>
 					 		</thead>
 					 	</table>
+					 	<div class="form-actions form-horizontal">
+					 		<?=anchor("reward/plan/form","新增","class='btn btn-warning'");?>
+					 	</div>
 					 </div>
                   </div>	
                </div>

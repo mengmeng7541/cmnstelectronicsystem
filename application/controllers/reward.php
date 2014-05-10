@@ -198,6 +198,11 @@ class Reward extends MY_Controller {
 		$this->data['plan_select_options'] = $this->reward_model->get_plan_ID_select_options(FALSE);
 		
 		$this->data['action_btn'] = anchor("reward/list","回前頁","class='btn btn-inverse'");
+		
+		$this->load->view('templates/header');
+		$this->load->view('templates/sidebar');
+	    $this->load->view('reward/form',$this->data);
+	  	$this->load->view('templates/footer');
 	}catch(Exception $e){
 		$this->show_error_page();
 	}

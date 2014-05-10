@@ -128,6 +128,10 @@ class Reward_model extends MY_Model {
   	{
 		$this->reward_db->where("available",$options['available']);
 	}
+	if(isset($options['serial_no']))
+	{
+		$this->reward_db->where("serial_no",$options['serial_no']);
+	}
   	return $this->reward_db->get("Reward_plan");
   }
   public function get_plan_ID_select_options($only_available = 1)
