@@ -213,13 +213,23 @@ class User_model extends MY_Model {
 						->update("user_profile");
 		return $this->common_db->affected_rows();
 	}
-  //BOSS
-  public function get_boss_list()
-  {
-  	$this->common_db->select("*");
-  	return $this->common_db->get("boss_profile");
-  }
-  public function get_boss_ID_select_options()
+  //-------------------------BOSS---------------------------------
+  
+  
+	public function get_boss_list($options = array())
+	{
+		$sTable = "boss_profile";
+		$sJoinTable = array("org"=>"organization");
+		$this->common_db->select("$sTable.*,{$sJoinTable['org']}.name AS org_name");
+		$this->common_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = $sTable.organization","LEFT");
+		if(isset($options['serial_no']))
+		{
+			$this->common_db->where("$sTable.serial_no",$options['serial_no']);
+		}
+		
+		return $this->common_db->get($sTable);	
+	}
+	public function get_boss_ID_select_options()
   {
   	$bosses = $this->get_boss_list()->result_array();
   	$output = array();
@@ -245,6 +255,38 @@ class User_model extends MY_Model {
 		return FALSE;
 	}
   }
+	public function add_boss($data)
+	{
+		return $this->update_boss($data);
+	}
+	public function update_boss($data)
+	{
+		$this->common_db->set("name",$data['name']);
+		$this->common_db->set("organization",$data['organization']);
+		$this->common_db->set("email",$data['email']);
+		if(isset($data['department']))
+		{
+			$this->common_db->set("department",$data['department']);
+		}
+		if(isset($data['tel']))
+		{
+			$this->common_db->set("tel",$data['tel']);
+		}
+		if(!isset($data['serial_no']))
+		{
+			$this->common_db->insert("boss_profile");
+			return $this->common_db->insert_id();
+		}else{
+			$this->common_db->where("serial_no",$data['serial_no']);
+			$this->common_db->update("boss_profile");
+		}
+	}
+	public function del_boss($data)
+	{
+		$this->common_db->where("serial_no",$data['serial_no']);
+		$this->common_db->delete("boss_profile");
+	}
+  
   //ORGINIZATION
   public function add_org($data)
   {
@@ -350,51 +392,7 @@ class User_model extends MY_Model {
 	}
 	return $output;
   }
-	//-------------------------BOSS---------------------------------
-	public function get_boss_list($options = array())
-	{
-		$sTable = "boss_profile";
-		$sJoinTable = array("org"=>"organization");
-		$this->common_db->select("$sTable.*,{$sJoinTable['org']}.name AS org_name");
-		$this->common_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = $sTable.organization","LEFT");
-		if(isset($options['serial_no']))
-		{
-			$this->common_db->where("$sTable.serial_no",$options['serial_no']);
-		}
-		
-		return $this->common_db->get($sTable);	
-	}
-	public function add_boss($data)
-	{
-		return $this->update_boss($data);
-	}
-	public function update_boss($data)
-	{
-		$this->common_db->set("name",$data['name']);
-		$this->common_db->set("organization",$data['organization']);
-		$this->common_db->set("email",$data['email']);
-		if(isset($data['department']))
-		{
-			$this->common_db->set("department",$data['department']);
-		}
-		if(isset($data['tel']))
-		{
-			$this->common_db->set("tel",$data['tel']);
-		}
-		if(!isset($data['serial_no']))
-		{
-			$this->common_db->insert("boss_profile");
-			return $this->common_db->insert_id();
-		}else{
-			$this->common_db->where("serial_no",$data['serial_no']);
-			$this->common_db->update("boss_profile");
-		}
-	}
-	public function del_boss($data)
-	{
-		$this->common_db->where("serial_no",$data['serial_no']);
-		$this->common_db->delete("boss_profile");
-	}
+	
   //---------------------aliance------------------------
   public function get_aliance_no_select_options()
   {
