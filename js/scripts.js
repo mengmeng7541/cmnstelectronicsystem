@@ -3360,7 +3360,7 @@ var App = function () {
         }
 
         // begin first table
-        $('#reward_list_table').dataTable({
+        var reward_list_table = $('#reward_list_table').dataTable({
         	"sAjaxSource": site_url+"reward/query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
@@ -3381,14 +3381,16 @@ var App = function () {
         });
 
 		
-		$("#reward_list_table button[name='del_row']").click(function(){
-			ajaxSubmitOptions = { 
-		        beforeSubmit:  showRequest,  // pre-submit callback 
-		        success:       showResponse,  // post-submit callback 
-		        url:       site_url+'reward/delete/'+$(this).val(),// override for form's 'action' attribute  
-	    	}; 	
-			
-			$("#reward_list_table").ajaxSubmit(ajaxSubmitOptions);
+		$("#reward_list_table").on("click","button[name='del_row']",function(){
+			$.ajax({
+				url:       site_url+'reward/delete/'+$(this).val(),// override for form's 'action' attribute  
+				beforeSend: function(){
+					showRequest();
+				}
+			}).always(function(data){
+				showResponse(data);
+				reward_list_table.fnReloadAjax(null,null,true);
+			});
 		});
 	}
 	

@@ -273,20 +273,22 @@ class Reward extends MY_Controller {
   
   public function delete($SN)
   {
-  	if($this->session->userdata('status')!="admin")
-    {
-		echo $this->info_modal("沒有權限","/admin");
-		return;
+  	try{
+		$this->is_admin_login();
+		
+		if($this->reward_model->is_super_admin())
+		{
+			throw new Exception("沒有權限",ERROR_CODE);
+		}
+		
+		$SN = $this->security->xss_clean($SN);
+		
+		$this->reward_model->delete_application($SN);
+		
+		echo $this->info_modal("刪除成功");
+	}catch(Exception $e){
+		echo $this->info_modal($e->getMessage(),"",$e->getCode());
 	}
-	//檢查有否權限
-    if(!$this->reward_model->get_privilege('reward_reviewer'))
-    {
-		echo $this->info_modal("沒有權限","/admin/main");
-		return;
-    }
-	$this->reward_model->delete_application($SN);
-	
-	echo $this->info_modal("刪除成功","/reward/list");
   }
   //------------CONFIG----------------
   public function edit_config()
