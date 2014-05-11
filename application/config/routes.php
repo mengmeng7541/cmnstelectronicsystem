@@ -183,6 +183,15 @@ $route['facility/admin/nocharge/del'] = 'facility/del_nocharge';
 
 $route['facility/admin/tracker/list'] = 'admin/list_clock';
 
+//access_system
+$route['access/card/app/temp/list'] = 'access/list_card_temp_application';
+$route['access/card/app/temp/query'] = 'access/query_card_temp_application';
+$route['access/card/app/temp/form'] = 'access/form_card_temp_application';
+$route['access/card/app/temp/edit/(:num)'] = 'access/edit_card_temp_application/$1';
+$route['access/card/app/temp/add'] = 'access/add_card_temp_application';
+$route['access/card/app/temp/update/(:num)'] = 'access/update_card_temp_application/$1';
+$route['access/card/app/temp/del/(:num)'] = 'access/del_card_temp_application/$1';
+
 //curriculum
 $route['curriculum/config/form'] = 'curriculum/edit_config';
 $route['curriculum/config/update'] = 'curriculum/update_config';
