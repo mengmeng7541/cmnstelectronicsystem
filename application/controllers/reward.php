@@ -211,56 +211,63 @@ class Reward extends MY_Controller {
   
   public function update()
   {
-  	if($this->session->userdata('status')!="admin")
-    {
-		redirect('/admin');
-		return;
-	}
-  	//檢查有否權限
-    if(!$this->reward_model->get_privilege('reward_reviewer'))
-    {
-		echo $this->info_modal("沒有權限","/admin/main");
-		return;
-    }
-    
-	$input_data = $this->input->post(NULL,TRUE);
-	
-	$reviewer = $this->admin_model->get_admin_profile_by_ID($this->session->userdata('ID'));
-	$input_data['reviewer_name'] = $reviewer['name'];
-  
-	//送出前先處理
-	if($input_data['result'])
-		$input_data['deny_reason'] = '';
-	else
-		$input_data['accept_plan_no'] = '';
-  
-  
-	//更新資料
-	$this->reward_model->update_application($input_data);
-	
-	//email
-    $reward_data = $this->reward_model->get_application(array("serial_no",$input_data['serial_no']))->row_array();
-    
-    $this->email->from($reviewer['email'], $reviewer['name']);
-	$this->email->to($reward_data['email']); 
+  	try{
+		$this->is_admin_login();
+		
+	  	//檢查有否權限
+	    if(!$this->reward_model->is_super_admin())
+	    {
+			throw new Exception("沒有權限",ERROR_CODE);
+	    }
+	    
+	    $this->form_validation->set_rules("result","審查結果","required");
+	    if(!$this->form_validation->run())
+	    {
+			throw new Exception(validation_errors(),WARNING_CODE);
+		}
+	    
+		$input_data = $this->input->post(NULL,TRUE);
+		
+		$reviewer = $this->admin_model->get_admin_profile_by_ID($this->session->userdata('ID'));
+		$input_data['reviewer_name'] = $reviewer['name'];
+	  
+		//送出前先處理
+		if($input_data['result'])
+			$input_data['deny_reason'] = '';
+		else
+			$input_data['accept_plan_no'] = '';
+	  
+	  
+		//更新資料
+		$this->reward_model->update_application($input_data);
+		
+		//email
+	    $reward_data = $this->reward_model->get_application_list(array("serial_no",$input_data['serial_no']))->row_array();
+	    
+	    $this->email->from($reviewer['email'], $reviewer['name']);
+		$this->email->to($reward_data['email']); 
 
-	$this->email->subject('成大微奈米中心論文獎勵系統審核結果通知');
-	$plan = $this->reward_model->get_plan_by_SN($reward_data['accept_plan_no']);
-	if(empty($plan['name']))
-		$plan['name'] = "";
-	if($reward_data['result'])
-		$reward_data['result'] = '符合';
-	else
-		$reward_data['result'] = '不符合';
-	$this->email->message("
-                        <p>{$reward_data['applicant_name']} 老師您好： 
-                        <p>感謝您參加成功大學微奈米科技研究中心的論文獎勵活動，您的論文 {$reward_data['paper_title']} 已審核完畢</p>
-                        <p>審核結果為：{$reward_data['result']} </p>
-                        <p>{$plan['name']}{$reward_data['deny_reason']}</p>
-                        <p>有任何問題歡迎再與本中心聯絡，謝謝！ </p>"); 
-	$this->email->send();
-  
-	echo $this->info_modal("審核成功","/reward/list");
+		$this->email->subject('成大微奈米中心論文獎勵系統審核結果通知');
+		$plan = $this->reward_model->get_plan_by_SN($reward_data['accept_plan_no']);
+		if(empty($plan['name']))
+			$plan['name'] = "";
+		if($reward_data['result'])
+			$reward_data['result'] = '符合';
+		else
+			$reward_data['result'] = '不符合';
+		$this->email->message("
+	                        <p>{$reward_data['applicant_name']} 老師您好： 
+	                        <p>感謝您參加成功大學微奈米科技研究中心的論文獎勵活動，您的論文 {$reward_data['paper_title']} 已審核完畢</p>
+	                        <p>審核結果為：{$reward_data['result']} </p>
+	                        <p>{$plan['name']}{$reward_data['deny_reason']}</p>
+	                        <p>有任何問題歡迎再與本中心聯絡，謝謝！ </p>"); 
+		$this->email->send();
+	  
+		echo $this->info_modal("審核成功","/reward/list");
+	}catch(Exception $e){
+		echo $this->info_modal($e->getMessage(),"",$e->getCode());
+	}
+  	
 	
   }
   

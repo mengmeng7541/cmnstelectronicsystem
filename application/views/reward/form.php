@@ -34,7 +34,7 @@
                         
                         <!-- BEGIN FORM-->
                         <form action="<?=site_url();?>/reward/add" id="reward_application" class="form-horizontal" method=post enctype="multipart/form-data">
-                        	<? $readonly = isset($readonly)?" readonly='readonly'":""; ?>
+                        	<? $readonly = isset($readonly)?" disabled='disabled'":""; ?>
 						   <? if($this->session->userdata('status')=="admin") { ?>
 							   <div class="control-group">
 	                              <label class="control-label">編號</label>
