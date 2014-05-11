@@ -23,39 +23,44 @@
                      </div>
                      <div class="widget-body form">
                      	<form action="<?=site_url('/access/card/application/temp/add');?>" method="POST" class="form-horizontal">
-							<div class="control-group">
+							<!--<div class="control-group">
 					            <label class="control-label">申請人姓名</label>
 					            <div class="controls">
-									<input type="text" value="<?=isset()?>"/>
+									<input type="text" value=""/>
 								</div>
-							</div>
-							<div class="control-group">
+							</div>-->
+							<!--<div class="control-group">
 					            <label class="control-label">申請磁卡類別</label>
 					            <div class="controls">
 									
 								</div>
-							</div>
+							</div>-->
 							<div class="control-group">
 					            <label class="control-label">申請磁卡目的</label>
 					            <div class="controls">
-									
+									<?=form_dropdown("guest_purpose",isset($purposes)?$purposes:array(),isset($guest_purpose)?$guest_purpose:"","");?>
 								</div>
 							</div>
 							<div class="control-group">
 					            <label class="control-label">來賓姓名</label>
 					            <div class="controls">
-									
+									<input type="text" name="guest_name" value=""/>
 								</div>
 							</div>
 							<div class="control-group">
 					            <label class="control-label">來賓聯絡手機</label>
 					            <div class="controls">
-									
+									<input type="text" name="guest_mobile" value=""/>
 								</div>
 							</div>
 							<div class="control-group">
 					            <label class="control-label">磁卡使用時段</label>
 					            <div class="controls">
+									<input type="text" name="guest_access_start_date" value="<?=isset($guest_access_start_time)?date("Y-m-d"):date("Y-m-d",$guest_access_start_time);?>" class="date-picker"/>
+									<input type="text" name="guest_access_start_time" value="<?=isset($guest_access_start_time)?date("H:i"):date("H:i",$guest_access_start_time);?>" class="timepicker-24-mm"/>
+									~
+									<input type="text" name="guest_access_end_date" value="<?=isset($guest_access_end_time)?date("Y-m-d"):date("Y-m-d",$guest_access_end_time);?>" class="date-picker"/>
+									<input type="text" name="guest_access_end_time" value="<?=isset($guest_access_end_time)?date("H:i"):date("H:i",$guest_access_end_time);?>" class="timepicker-24-mm"/>
 									
 								</div>
 							</div>

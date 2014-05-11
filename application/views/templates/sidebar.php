@@ -20,7 +20,6 @@
 						<li><a class="" href="<?=site_url();?>/org/list">公司行號資料維護</a></li>
 	                </ul>
 				</li>
-		        
 				<li class="has-sub">
 					<a href="javascript:;" class="">
 					<span class="icon-box"><i class="icon-cogs"></i></span> 儀器預約
@@ -76,6 +75,16 @@
 						<li><a class="" href="<?=site_url();?>/reward/list">論文獎勵審查</a></li>
 	                    <li><a class="" href="<?=site_url();?>/reward/config/edit">系統設定</a></li>
 	                </ul>
+				</li>
+				<li class="has-sub">
+					<a href="javascript:;" class="">
+					<span class="icon-box"><i class="icon-cogs"></i></span> 門禁管制
+					<span class="arrow"></span>
+					</a>
+					<ul class="sub">
+						<li><a class="" href="<?=site_url();?>/access/card/application/temp/form">來賓卡/臨時卡申請</a></li>
+						<li><a class="" href="<?=site_url();?>/access/card/application/temp/list">卡片核發審查</a></li>
+					</ul>
 				</li>
 				<li><a class="" href="<?=site_url();?>/logout"><span class="icon-box"><i class="icon-user"></i></span> 登出</a></li>
 	        <?php }else if($this->session->userdata('ID')){ ?>
