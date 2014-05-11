@@ -160,8 +160,9 @@ class Reward extends MY_Controller {
 		$this->data = $application;
 		$this->data['readonly'] = TRUE;
 		
-		$this->data['plan_select_options'] = $this->reward_model->get_plan_ID_select_options(FALSE);
+		$this->data['awardees_select_options'] = $this->user_model->get_boss_ID_select_options();
 		
+		$this->data['plan_select_options'] = $this->reward_model->get_plan_ID_select_options(FALSE);
 		
 		$this->data['action_btn'][] = form_button("update","送出","class='btn btn-success'");
 		$this->data['action_btn'][] = anchor("reward/list","回前頁","class='btn btn-inverse'");
