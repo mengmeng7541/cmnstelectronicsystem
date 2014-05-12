@@ -107,7 +107,7 @@
 			}
 		});
 		$.ajax({
-			url: 'http://140.116.176.44/cmnst_trunk/index.php/access/card/application/temp/option',
+			url: site_url+'access/card/application/temp/option',
 			type: 'GET',
 			dataType: 'json',
 			
