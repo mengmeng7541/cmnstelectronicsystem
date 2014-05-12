@@ -3,7 +3,7 @@
 		$.ajax({
 			url: 'index.php/access/card/application/temp/option',
 			type: 'GET',
-			dataType: 'JSON',
+			dataType: 'json',
 		}).always(function(data){
 			for(var i=0;i<data.length;i++){
 				$("select[name='application_type']").append('<option value'+data[i].type_no+'>'+data[i].type_name+'</option>');
