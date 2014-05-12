@@ -9,7 +9,7 @@
 		}).always(function(data){
 			jdata = data;
 			for(var i=0;i<jdata.length;i++){
-				$("select[name='application_type']").append('<option value'+jdata[i].type_no+'>'+jdata[i].type_name+'</option>');
+				$("select[name='application_type']").append('<option value='+jdata[i].type_no+'>'+jdata[i].type_name+'</option>');
 			}
 		});
 		$("select[name='application_type']").change(function(){
