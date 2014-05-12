@@ -96,5 +96,5 @@
          <!-- END PAGE CONTAINER-->
       </div>
       <!-- END PAGE -->  
-<script src="<?=base_url('application/views/access/form_card_temp_application.js');?>"></script>
+<script src="<?=base_url('js/access/form_card_temp_application.js');?>"></script>
 
