@@ -56,11 +56,11 @@
 							<div class="control-group">
 					            <label class="control-label">磁卡使用時段</label>
 					            <div class="controls">
-									<input type="text" name="guest_access_start_date" value="<?=isset($guest_access_start_time)?date("Y-m-d"):date("Y-m-d",$guest_access_start_time);?>" class="date-picker"/>
-									<input type="text" name="guest_access_start_time" value="<?=isset($guest_access_start_time)?date("H:i"):date("H:i",$guest_access_start_time);?>" class="timepicker-24-mm"/>
+									<input type="text" name="guest_access_start_date" value="<?=isset($guest_access_start_time)?date("Y-m-d",$guest_access_start_time):date("Y-m-d");?>" class="date-picker"/>
+									<input type="text" name="guest_access_start_time" value="<?=isset($guest_access_start_time)?date("H:i",$guest_access_start_time):date("H:i");?>" class="timepicker-24-mm"/>
 									~
-									<input type="text" name="guest_access_end_date" value="<?=isset($guest_access_end_time)?date("Y-m-d"):date("Y-m-d",$guest_access_end_time);?>" class="date-picker"/>
-									<input type="text" name="guest_access_end_time" value="<?=isset($guest_access_end_time)?date("H:i"):date("H:i",$guest_access_end_time);?>" class="timepicker-24-mm"/>
+									<input type="text" name="guest_access_end_date" value="<?=isset($guest_access_end_time)?date("Y-m-d",$guest_access_end_time):date("Y-m-d");?>" class="date-picker"/>
+									<input type="text" name="guest_access_end_time" value="<?=isset($guest_access_end_time)?date("H:i",$guest_access_end_time):date("H:i");?>" class="timepicker-24-mm"/>
 									
 								</div>
 							</div>

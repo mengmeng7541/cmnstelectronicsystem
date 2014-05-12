@@ -82,7 +82,7 @@
 					<span class="arrow"></span>
 					</a>
 					<ul class="sub">
-						<li><a class="" href="<?=site_url();?>/access/card/application/temp/form">來賓卡/臨時卡申請</a></li>
+						<li><a class="" href="<?=site_url();?>/access/card/application/temp/form">臨時卡申請</a></li>
 						<li><a class="" href="<?=site_url();?>/access/card/application/temp/list">卡片核發審查</a></li>
 					</ul>
 				</li>
