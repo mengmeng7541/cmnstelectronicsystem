@@ -468,6 +468,10 @@ class Curriculum_model extends MY_Model {
 		{
 			$this->curriculum_db->where("{$sJoinTable['class']}.class_type",$options['class_type']);
 		}
+		if(isset($options['class_state']))
+		{
+			$this->curriculum_db->where("{$sJoinTable['class']}.class_state",$options['class_state']);
+		}
 		$this->curriculum_db->order_by("{$sJoinTable['course']}.course_ID","ASC");
 		$this->curriculum_db->order_by("{$sJoinTable['class']}.class_code","ASC");
 		$this->curriculum_db->order_by("{$sJoinTable['class']}.class_type","ASC");
