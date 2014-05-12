@@ -73,6 +73,7 @@ class Access extends MY_Controller {
 			
 			$this->data['purposes'] = $this->access_card_temp_application_model->get_purpose_select_option_array();
 			
+			
 			$this->load->view('templates/header');
 			$this->load->view('templates/sidebar');
 			$this->load->view('access/form_card_temp_application',$this->data);
@@ -110,9 +111,17 @@ class Access extends MY_Controller {
 		}catch(Exception $e){
 			$this->show_error_page();
 		}
-		
-		
-
+	}
+	
+	public function get_access_card_temp_application_type_purpose_json()
+	{
+		try{
+			
+			$output = $this->access_card_temp_application_model->get_type_purpose_array();
+			echo json_encode($output);
+		}catch(Exception $e){
+			
+		}
 	}
 
 	public function add_card_temp_application()
@@ -123,7 +132,6 @@ class Access extends MY_Controller {
 			$this->form_validation->set_rules("application_type","申請磁卡類別","required");
 			$this->form_validation->set_rules("guest_purpose","申請磁卡目的","required");
 			$this->form_validation->set_rules("guest_name","來賓姓名","required");
-			$this->form_validation->set_rules("guest_mobile","來賓聯絡手機","required");
 			$this->form_validation->set_rules("guest_access_start_date","磁卡使用時段","required");
 			$this->form_validation->set_rules("guest_access_start_time","磁卡使用時段","required");
 			$this->form_validation->set_rules("guest_access_end_date","磁卡使用時段","required");

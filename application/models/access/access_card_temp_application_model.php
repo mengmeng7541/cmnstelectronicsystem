@@ -28,6 +28,21 @@ class Access_card_temp_application_model extends MY_Model {
 	}
 	
 	//select options
+	public function get_type_purpose_array()
+	{
+		$output = array();
+		$types = $this->_get_type_list()->result_array();
+		foreach($types as $type){
+			$obj = array();
+			$obj = $type;
+			$purposes = $this->_get_purpose_list($type['type_no'])->result_array();
+			foreach($purposes as $purpose){
+				$obj['purpose'][] = $purpose;
+			}			
+			$output[] = $obj;
+		}
+		return $output;
+	}
 	public function get_purpose_select_option_array($type_no = NULL)
 	{
 		$types = $this->_get_type_list($type_no)->result_array();
