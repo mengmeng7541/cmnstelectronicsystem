@@ -32,13 +32,13 @@
 							<div class="control-group">
 					            <label class="control-label">申請磁卡類別</label>
 					            <div class="controls">
-									<?=form_dropdown("application_type",array(),"");?>
+									<?=form_dropdown("application_type",array(),isset($application_type)?$application_type:"","");?>
 								</div>
 							</div>
 							<div class="control-group">
 					            <label class="control-label">申請磁卡目的</label>
 					            <div class="controls">
-									<?=form_dropdown("guest_purpose",isset($purposes)?$purposes:array(),isset($guest_purpose)?$guest_purpose:"","");?>
+									<?=form_dropdown("guest_purpose",array(),isset($guest_purpose)?$guest_purpose:"","");?>
 								</div>
 							</div>
 							<div class="control-group">
