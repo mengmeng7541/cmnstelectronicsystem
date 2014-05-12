@@ -6,8 +6,8 @@ var App = function () {
     var isMapPage = false;
     var isIE8 = false;
 
-    var base_url = document.location.href.split('index.php')[0];
-	var site_url = base_url+'index.php/';
+    base_url = document.location.href.split('index.php')[0];//for global usage
+	site_url = base_url+'index.php/';
 	
     var handleJQVMAP = function () {
 
