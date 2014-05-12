@@ -7,7 +7,25 @@ class Access_model extends MY_Model {
 		parent::__construct();
 		$this->access_db = $this->load->database("access",TRUE);
 	}
-	
+	//--------------------SYSTEM PRIVILEGE-----------------------
+	public function get_privilege_list($options = array())
+	{
+		if(isset($options['admin_ID']))
+		{
+			$this->access_db->where("admin_ID",$options['admin_ID']);	
+		}
+		if(isset($options['privilege']))
+		{
+			$this->access_db->where("privilege",$options['privilege']);
+		}
+		return $this->access_db->get("access_admin_privilege");
+	}
+	public function is_super_admin($admin_ID = NULL)
+	{
+		if(!isset($admin_ID)) $admin_ID = $this->session->userdata('ID');
+		return $this->get_privilege_list(array("admin_ID"=>$admin_ID,"privilege"=>"access_super_admin"))->num_rows();
+	}
+	//----------------------ACCESS_CARD--------------------------
 	public function get_access_card_temp_application_list($options = array())
 	{
 		$sTable = "access_card_temp_application";
@@ -26,11 +44,11 @@ class Access_model extends MY_Model {
 	{
 		$this->access_db->set("applied_by",$data['applied_by'])
 						->set("application_type",$data['application_type'])
-						->set("guest_name")
-						->set("guest_mobile")
-						->set("guest_purpose")
-						->set("guest_access_start_time")
-						->set("guest_access_start_time");
+						->set("guest_name",$data['guest_name'])
+						->set("guest_mobile",$data['guest_mobile'])
+						->set("guest_purpose",$data['guest_purpose'])
+						->set("guest_access_start_time",$data['guest_access_start_time'])
+						->set("guest_access_end_time",$data['guest_access_end_time']);
 		$this->access_db->insert("access_card_temp_application");
 		return $this->access_db->insert_id();
 	}
