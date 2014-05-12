@@ -90,12 +90,18 @@ class Access extends MY_Controller {
 
 	public function update_card_temp_application()
 	{
-		
-		$this->load->view('templates/header');
-		$this->load->view('templates/sidebar');
-		$this->load->view('user/form');
-		$this->load->view('templates/footer');
-
+		try{
+			$this->is_admin_login();
+			
+			if(!$this->access_model->is_super_admin())
+			{
+				throw new Exception("沒有權限",ERROR_CODE);
+			}
+			
+			
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
 	}
 	
 	public function del_card_temp_application()

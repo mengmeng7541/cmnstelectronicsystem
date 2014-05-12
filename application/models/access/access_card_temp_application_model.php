@@ -47,10 +47,18 @@ class Access_card_temp_application_model extends MY_Model {
 	//
 	public function apply($data)
 	{
-		
+		//寫入資料
 		$insert_id = $this->access_model->add_access_card_temp_application(array(
-			
+			"applied_by"=>$this->session->userdata('ID'),
+			"application_type"=>$data['application_type'],
+			"guest_name"=>$data['guest_name'],
+			"guest_mobile"=>$data['guest_mobile'],
+			"guest_purpose"=>$data['guest_purpose'],
+			"guest_access_start_time"=>$data['guest_access_start_date'].' '.$data['guest_access_start_time'],
+			"guest_access_end_time"=>$data['guest_access_end_date'].' '.$data['guest_access_end_time']
 		));
+		
+		//發信通知
 	}
 	
 	public function issue($SN,$card_num = NULL,$issued_by = NULL)
