@@ -29,12 +29,12 @@
 									<input type="text" value=""/>
 								</div>
 							</div>-->
-							<!--<div class="control-group">
+							<div class="control-group">
 					            <label class="control-label">申請磁卡類別</label>
 					            <div class="controls">
-									
+									<?=form_dropdown("application_type",array(),"");?>
 								</div>
-							</div>-->
+							</div>
 							<div class="control-group">
 					            <label class="control-label">申請磁卡目的</label>
 					            <div class="controls">
@@ -48,7 +48,7 @@
 								</div>
 							</div>
 							<div class="control-group">
-					            <label class="control-label">來賓聯絡手機</label>
+					            <label class="control-label">來賓聯絡手機(選填)</label>
 					            <div class="controls">
 									<input type="text" name="guest_mobile" value=""/>
 								</div>
@@ -96,5 +96,15 @@
          <!-- END PAGE CONTAINER-->
       </div>
       <!-- END PAGE -->  
-<script type="text/javascript" src="<?=base_url();?>assets/ckeditor/ckeditor.js"></script>
+<script>
+	$(document).ready(function(){
+		$.ajax({
+			url: 'index.php/access/card/application/temp/option',
+			type: 'GET',
+			dataType: 'JSON',
+		}).always(function(data){
+			alert(data);
+		});
+	});
+</script>
 

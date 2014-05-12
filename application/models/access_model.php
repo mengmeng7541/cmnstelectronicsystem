@@ -69,7 +69,7 @@ class Access_model extends MY_Model {
 			{$sJoinTable['checkpoint']}.checkpoint_ID AS application_checkpoint_ID,
 			{$sJoinTable['checkpoint']}.checkpoint_name AS application_checkpoint_name,
 		");
-		$this->access_db->join($sJoinTable['checkpoint'],"{$sJoinTable['checkpoint']}.checkpoint_no = $sTable.checkpoint","LEFT");
+		$this->access_db->join($sJoinTable['checkpoint'],"{$sJoinTable['checkpoint']}.checkpoint_no = $sTable.application_checkpoint","LEFT");
 		$this->access_db->join($sJoinTable['enum_type'],"{$sJoinTable['enum_type']}.type_no = $sTable.application_type","LEFT");
 		$this->access_db->join($sJoinTable['enum_purpose'],"{$sJoinTable['enum_purpose']}.purpose_no = $sTable.guest_purpose","LEFT");
 		$this->access_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.applied_by","LEFT");
