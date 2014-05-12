@@ -64,8 +64,23 @@
 									
 								</div>
 							</div>
+							<? if(isset($page)&&$page=='issue'){ ?>					
+							<hr>
+							<div class="control-group">
+					            <label class="control-label">核發卡號</label>
+					            <div class="controls">
+					            	<input type="checkbox" name="auto_issue" value="1"/>
+									<input type="text" name="guest_access_card_num" value="0000"/>
+								</div>
+							</div>
+							<? } ?>
 							<div class="form-actions">
-								<button type="submit" class="btn btn-primary">送出</button>
+								<? if(isset($page)&&$page=='issue'){ ?>
+									<?=form_submit("issue","核發","class='btn btn-warning'");?>
+									<?=anchor("access/card/application/temp/list","回上頁","class='btn btn-primary'");?>
+								<? }else{ ?>
+									<?=form_submit("","申請","class='btn btn-primary'");?>
+								<? } ?>
 							</div>
                      	</form>
                  		

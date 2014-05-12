@@ -25,14 +25,41 @@ class Access_model extends MY_Model {
 		if(!isset($admin_ID)) $admin_ID = $this->session->userdata('ID');
 		return $this->get_privilege_list(array("admin_ID"=>$admin_ID,"privilege"=>"access_super_admin"))->num_rows();
 	}
+	//----------------------------CARD POOL----------------------
+	public function get_access_card_pool_list($options = array())
+	{
+		if(isset($options['occupied']))
+		{
+			$this->access_db->where("occupied",$options['occupied']);
+		}
+		return $this->access_db->get("access_card_pool");
+	}
+	public function update_access_card_pool($data)
+	{
+		$this->access_db->set("occupied",$data['occupied']);
+		$this->access_db->where("access_card_num",$data['access_card_num']);
+	}
+	//-----------------------------ENUM--------------------------
+	public function get_enum_access_card_temp_application_checkpoint_list($options = array())
+	{
+		if(isset($options['checkpoint_ID']))
+		{
+			$this->access_db->where("checkpoint_ID",$options['checkpoint_ID']);
+		}
+		return $this->access_db->get("enum_access_card_temp_application_checkpoint");
+	}
 	//----------------------ACCESS_CARD--------------------------
 	public function get_access_card_temp_application_list($options = array())
 	{
 		$sTable = "access_card_temp_application";
-		$sJoinTable = array();
+		$sJoinTable = array("checkpoint","enum_access_card_temp_application_checkpoint");
 		
-		$this->access_db->select("*");
-		
+		$this->access_db->select("
+			$sTable.*,
+			{$sJoinTablep['checkpoint']}.checkpoint_ID AS application_checkpoint_ID,
+			{$sJoinTablep['checkpoint']}.checkpoint_name AS application_checkpoint_name,
+		");
+		$this->access_db->join($sJoinTable['checkpoint'],"{$sJoinTable['checkpoint']}.checkpoint_no = $sTable.checkpoint","LEFT");
 		if(isset($options['serial_no']))
 		{
 			$this->access_db->where("$sTable.serial_no",$options['serial_no']);
@@ -72,7 +99,7 @@ class Access_model extends MY_Model {
 			$this->access_db->set("refunded_by",$data['refunded_by']);
 			$this->access_db->set("refundation_time",date("Y-m-d H:i:s"));
 		}
-		if(isset($data['application_checkpoint']))
+		if(isset($data['application_checkpoint_ID']))
 		{
 			$this->access_db->set("application_checkpoint",$data['application_checkpoint']);
 		}
