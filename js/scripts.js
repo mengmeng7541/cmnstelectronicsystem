@@ -3463,6 +3463,21 @@ var App = function () {
         });
 	}
 	
+	var handleAccess = function(){
+		var table_access_card_temp_application_list = $("#table_access_card_temp_application_list").dataTable({
+        	"sAjaxSource": site_url+"access/card/application/temp/query",
+            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+        });
+	}
+	
     var handleFormWizards = function () {
         if (!jQuery().bootstrapWizard) {
             return;
@@ -3650,6 +3665,7 @@ var App = function () {
 			handleRewardListTable();
 			handleRewardApplication();
 			handleRewardPlan();
+			handleAccess();
 			handleClock();
 			/*------------------------------*/
 //            handleFormWizards();
