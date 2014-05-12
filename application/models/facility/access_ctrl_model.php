@@ -19,11 +19,11 @@ class Access_ctrl_model extends MY_Model {
   }
   /**
   * 
-  * @param undefined $facility_ID 若為陣列，視為指定特定機種開啟，不為陣列者，會自動尋找主從關係
+  * @param undefined $facility_ID	若為陣列，視為指定特定機種開啟，不為陣列者，會自動尋找主從關係
   * @param undefined $user_ID
-  * @param undefined $start
-  * @param undefined $end
-  * @param undefined $booking_ID
+  * @param undefined $start			UNIX_TIME
+  * @param undefined $end			UNIX_TIME
+  * @param undefined $door_only
   * 
   * @return
   */
@@ -220,6 +220,35 @@ class Access_ctrl_model extends MY_Model {
   	$data = array("serial_no"=>$SN);
   	
   	$this->facility_model->update_access_ctrl($data);
+  }
+  
+  //------------------------------無帳號專區---------------------------
+  public function open_all_door_by_num($card_num,$start,$end)
+  {
+  	//取得所有門禁資訊
+  	$doors = $this->facility_model->get_facility_list(array("type"=>"door"))->result_array();
+  	//取得所有門禁關聯的卡機
+  	$ctrl_nos = sql_result_to_column($doors,"ctrl_no");
+  	//準備資料
+  	$data = array();
+  	foreach($ctrl_nos as $ctrl_no){
+		$row = array();
+		$row['date_time'] = $start;
+		$row['fun'] = "Add";
+		$row['card_num'] = $card_num;
+		$row['ctrl_no'] = $ctrl_no;
+		$data[] = $row;
+	}
+	foreach($ctrl_nos as $ctrl_no){
+		$row = array();
+		$row['date_time'] = $end;
+		$row['fun'] = "Del";
+		$row['card_num'] = $card_num;
+		$row['ctrl_no'] = $ctrl_no;
+		$data[] = $row;
+	}
+	//寫入
+	$this->facility_model->add_access_ctrl($data);
   }
 
 }
