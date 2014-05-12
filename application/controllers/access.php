@@ -14,6 +14,57 @@ class Access extends MY_Controller {
 	{
 
 	}
+	
+	public function list_card_temp_application()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$this->load->view('templates/header');
+			$this->load->view('templates/sidebar');
+			$this->load->view('access/list_card_temp_application',$this->data);
+			$this->load->view('templates/footer');
+			
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
+	}
+	
+	public function query_card_temp_application()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$apps = $this->access_model->get_access_card_temp_application_list()->result_array();
+			
+			$output['aaData'] = array();
+			foreach($apps as $app)
+			{
+				$row = array();
+				$row[] = $app['application_type_name'];
+				$row[] = $app['guest_purpose_name'];
+				$row[] = $app['applicant_name'];
+				$row[] = $app['guest_name'];
+				$row[] = $app['guest_access_start_time'].'~'.$app['guest_access_end_time'];
+				$row[] = $app['guest_access_card_num'];
+				$display = array();
+				if($app['application_checkpoint_ID']=='applied'){
+					$display[] = anchor("access/card/application/temp/edit/".$app['serial_no'],"審查","class='btn btn-small btn-primary'");
+					$display[] = form_button("reject","退件","class='btn btn-small btn-danger'");
+				}else if($app['application_checkpoint_ID']=='issued'){
+					$display[] = form_button("refund","確認歸還","class='btn btn-small btn-warning'");
+				}else if($app['application_checkpoint_ID']=='refunded'){
+					$display[] = form_label("已結案","",array("class"=>"label label-success"));
+				}
+				$row[] = implode(' ',$display);
+				$output['aaData'][] = $row;
+			}
+			
+			echo json_encode($output);
+		}catch(Exception $e){
+			echo json_encode($output);
+		}
+	}
 
 	public function form_card_temp_application()
 	{

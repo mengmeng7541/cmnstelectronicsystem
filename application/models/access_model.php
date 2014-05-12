@@ -52,14 +52,27 @@ class Access_model extends MY_Model {
 	public function get_access_card_temp_application_list($options = array())
 	{
 		$sTable = "access_card_temp_application";
-		$sJoinTable = array("checkpoint","enum_access_card_temp_application_checkpoint");
+		$sJoinTable = array(
+			"checkpoint"=>"enum_access_card_temp_application_checkpoint",
+			"enum_type"=>"enum_access_card_temp_application_type",
+			"enum_purpose"=>"enum_access_card_temp_application_purpose",
+			"user"=>"cmnst_common.user_profile"
+		);
 		
 		$this->access_db->select("
 			$sTable.*,
-			{$sJoinTablep['checkpoint']}.checkpoint_ID AS application_checkpoint_ID,
-			{$sJoinTablep['checkpoint']}.checkpoint_name AS application_checkpoint_name,
+			{$sJoinTable['user']}.name AS applicant_name,
+			{$sJoinTable['enum_type']}.type_ID AS application_type_ID,
+			{$sJoinTable['enum_type']}.type_name AS application_type_name,
+			{$sJoinTable['enum_purpose']}.purpose_ID AS guest_purpose_ID,
+			{$sJoinTable['enum_purpose']}.purpose_name AS guest_purpose_name,
+			{$sJoinTable['checkpoint']}.checkpoint_ID AS application_checkpoint_ID,
+			{$sJoinTable['checkpoint']}.checkpoint_name AS application_checkpoint_name,
 		");
 		$this->access_db->join($sJoinTable['checkpoint'],"{$sJoinTable['checkpoint']}.checkpoint_no = $sTable.checkpoint","LEFT");
+		$this->access_db->join($sJoinTable['enum_type'],"{$sJoinTable['enum_type']}.type_no = $sTable.application_type","LEFT");
+		$this->access_db->join($sJoinTable['enum_purpose'],"{$sJoinTable['enum_purpose']}.purpose_no = $sTable.guest_purpose","LEFT");
+		$this->access_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.applied_by","LEFT");
 		if(isset($options['serial_no']))
 		{
 			$this->access_db->where("$sTable.serial_no",$options['serial_no']);
