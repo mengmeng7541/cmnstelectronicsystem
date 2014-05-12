@@ -103,7 +103,9 @@
 			type: 'GET',
 			dataType: 'JSON',
 		}).always(function(data){
-			alert(data);
+			for(var i=0;i<data.length;i++){
+				$("select[name='application_type']").options.add(new Option(data[i].type_name,data[i].type_no));
+			}
 		});
 	});
 </script>
