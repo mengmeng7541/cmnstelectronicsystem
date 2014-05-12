@@ -27,11 +27,11 @@
                  		<table id="table_access_card_temp_application_list" class="table table-striped table-bordered">
                  			<thead>
                  				<th width="40">申請類別</th>
-                 				<th width="40">申請目的</th>
+                 				<th width="60">申請目的</th>
                  				<th width="40">申請人</th>
-                 				<th>來賓姓名</th>
-                 				<th>使用時段</th>
-                 				<th>磁卡卡號</th>
+                 				<th width="40">來賓姓名</th>
+                 				<th >使用時段</th>
+                 				<th width="60">磁卡卡號</th>
                  				<th width="100"></th>
                  			</thead>
                  		</table>

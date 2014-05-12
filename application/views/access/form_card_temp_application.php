@@ -56,11 +56,11 @@
 							<div class="control-group">
 					            <label class="control-label">磁卡使用時段</label>
 					            <div class="controls">
-									<input type="text" name="guest_access_start_date" value="<?=isset($guest_access_start_time)?date("Y-m-d",$guest_access_start_time):date("Y-m-d");?>" class="input-medium date-picker"/>
-									<input type="text" name="guest_access_start_time" value="<?=isset($guest_access_start_time)?date("H:i",$guest_access_start_time):date("H:i");?>" class="input-small timepicker-24-mm"/>
+									<input type="text" name="guest_access_start_date" value="<?=isset($guest_access_start_time)?date("Y-m-d",strtotime($guest_access_start_time)):date("Y-m-d");?>" class="input-medium date-picker"/>
+									<input type="text" name="guest_access_start_time" value="<?=isset($guest_access_start_time)?date("H:i",strtotime($guest_access_start_time)):date("H:i");?>" class="input-small timepicker-24-mm"/>
 									~
-									<input type="text" name="guest_access_end_date" value="<?=isset($guest_access_end_time)?date("Y-m-d",$guest_access_end_time):date("Y-m-d");?>" class="input-medium date-picker"/>
-									<input type="text" name="guest_access_end_time" value="<?=isset($guest_access_end_time)?date("H:i",$guest_access_end_time):date("H:i");?>" class="input-small timepicker-24-mm"/>
+									<input type="text" name="guest_access_end_date" value="<?=isset($guest_access_end_time)?date("Y-m-d",strtotime($guest_access_end_time)):date("Y-m-d");?>" class="input-medium date-picker"/>
+									<input type="text" name="guest_access_end_time" value="<?=isset($guest_access_end_time)?date("H:i",strtotime($guest_access_end_time)):date("H:i");?>" class="input-small timepicker-24-mm"/>
 									
 								</div>
 							</div>
