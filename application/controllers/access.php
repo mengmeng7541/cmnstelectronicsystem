@@ -8,7 +8,7 @@ class Access extends MY_Controller {
 		parent::__construct();
 
 		$this->load->model('access_model');
-		$this->load->model('access_card_temp_application_model');
+		$this->load->model('access/access_card_temp_application_model');
 	}
 	public function index()
 	{
