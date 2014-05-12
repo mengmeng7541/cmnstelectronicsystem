@@ -1,14 +1,14 @@
 
 	$(document).ready(function(){
 		$.ajax({
-			url: 'index.php/access/card/application/temp/option',
+			url: 'http://140.116.176.44/cmnst_trunk/index.php/access/card/application/temp/option',
 			type: 'GET',
 			dataType: 'json',
-			success: function(data){
-				console.log(data);
-				for(var i=0;i<data.length;i++){
-					$("select[name='application_type']").append('<option value'+data[i].type_no+'>'+data[i].type_name+'</option>');
-				}
+			
+		}).always(function(data){
+			console.log(data);
+			for(var i=0;i<data.length;i++){
+				$("select[name='application_type']").append('<option value'+data[i].type_no+'>'+data[i].type_name+'</option>');
 			}
 		});
 		$("select[name='application_type']").change(function(){
