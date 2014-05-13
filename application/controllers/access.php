@@ -119,7 +119,7 @@ class Access extends MY_Controller {
 			
 			$SN = $this->security->xss_clean($SN);
 			
-			$app = $this->access_model->get_access_card_temp_application_list(array("serial_no",$SN))->row_Array();
+			$app = $this->access_model->get_access_card_temp_application_list(array("serial_no"=>$SN))->row_Array();
 			if(!$app){
 				throw new Exception();
 			}
