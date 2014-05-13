@@ -154,7 +154,7 @@ class Access extends MY_Controller {
 				throw new Exception(validation_errors(),WARNING_CODE);
 			}
 			$input_data = $this->input->post(NULL,TRUE);
-			if($input_data['application_type']=="guest")
+			if($input_data['application_type_ID']=="guest")
 			{
 				$this->form_validation->set_rules("guest_name","來賓姓名","required");
 				$this->form_validation->set_rules("guest_access_start_date","磁卡使用時段","required");
@@ -165,7 +165,7 @@ class Access extends MY_Controller {
 					throw new Exception(validation_errors(),WARNING_CODE);
 				}
 				$this->access_card_temp_application_model->apply_guest($input_data);
-			}else if($input_data['application_type']=="user"){
+			}else if($input_data['application_type_ID']=="user"){
 				$this->access_card_temp_application_model->apply_user($input_data);
 			}
 			echo $this->info_modal("申請成功","/access/card/application/temp/list");
