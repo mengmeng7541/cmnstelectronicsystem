@@ -169,6 +169,6 @@ class Access_card_temp_application_model extends MY_Model {
 			throw new Exception("無此單資料");
 		}
 		//標記已還
-		$this->access_model->update_access_card_pool(array("occupied"=>0,"access_card_num"=>$app['card_num']));
+		$this->access_model->update_access_card_pool(array("occupied"=>0,"access_card_num"=>$app['guest_access_card_num']));
 	}
 }
