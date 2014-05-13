@@ -22,7 +22,7 @@
                         <h4><i class="icon-reorder"></i>臨時磁卡申請表單</h4>
                      </div>
                      <div class="widget-body form">
-                     	<form action="<?=site_url('/access/card/application/temp/add');?>" method="POST" class="form-horizontal">
+                     	<form action="<?=site_url(isset($page)&&$page=='issue'?'/access/card/application/temp/update':'/access/card/application/temp/add');?>" method="POST" class="form-horizontal">
 							<!--<div class="control-group">
 					            <label class="control-label">申請人姓名</label>
 					            <div class="controls">
@@ -41,29 +41,32 @@
 									<?=form_dropdown("guest_purpose",array(),isset($guest_purpose)?$guest_purpose:"","");?>
 								</div>
 							</div>
-							<div class="control-group">
-					            <label class="control-label">來賓姓名</label>
-					            <div class="controls">
-									<input type="text" name="guest_name" value=""/>
+							<div class="row-fluid guest">
+								<div class="control-group">
+						            <label class="control-label">來賓姓名</label>
+						            <div class="controls">
+										<input type="text" name="guest_name" value=""/>
+									</div>
+								</div>
+								<div class="control-group">
+						            <label class="control-label">來賓聯絡手機(選填)</label>
+						            <div class="controls">
+										<input type="text" name="guest_mobile" value=""/>
+									</div>
+								</div>
+								<div class="control-group">
+						            <label class="control-label">磁卡使用時段</label>
+						            <div class="controls">
+										<input type="text" name="guest_access_start_date" value="<?=isset($guest_access_start_time)?date("Y-m-d",strtotime($guest_access_start_time)):date("Y-m-d");?>" class="input-medium date-picker"/>
+										<input type="text" name="guest_access_start_time" value="<?=isset($guest_access_start_time)?date("H:i",strtotime($guest_access_start_time)):date("H:i");?>" class="input-small timepicker-24-mm"/>
+										~
+										<input type="text" name="guest_access_end_date" value="<?=isset($guest_access_end_time)?date("Y-m-d",strtotime($guest_access_end_time)):date("Y-m-d");?>" class="input-medium date-picker"/>
+										<input type="text" name="guest_access_end_time" value="<?=isset($guest_access_end_time)?date("H:i",strtotime($guest_access_end_time)):date("H:i");?>" class="input-small timepicker-24-mm"/>
+										
+									</div>
 								</div>
 							</div>
-							<div class="control-group">
-					            <label class="control-label">來賓聯絡手機(選填)</label>
-					            <div class="controls">
-									<input type="text" name="guest_mobile" value=""/>
-								</div>
-							</div>
-							<div class="control-group">
-					            <label class="control-label">磁卡使用時段</label>
-					            <div class="controls">
-									<input type="text" name="guest_access_start_date" value="<?=isset($guest_access_start_time)?date("Y-m-d",strtotime($guest_access_start_time)):date("Y-m-d");?>" class="input-medium date-picker"/>
-									<input type="text" name="guest_access_start_time" value="<?=isset($guest_access_start_time)?date("H:i",strtotime($guest_access_start_time)):date("H:i");?>" class="input-small timepicker-24-mm"/>
-									~
-									<input type="text" name="guest_access_end_date" value="<?=isset($guest_access_end_time)?date("Y-m-d",strtotime($guest_access_end_time)):date("Y-m-d");?>" class="input-medium date-picker"/>
-									<input type="text" name="guest_access_end_time" value="<?=isset($guest_access_end_time)?date("H:i",strtotime($guest_access_end_time)):date("H:i");?>" class="input-small timepicker-24-mm"/>
-									
-								</div>
-							</div>
+							
 							<? if(isset($page)&&$page=='issue'){ ?>					
 							<hr>
 							<div class="control-group">
@@ -103,18 +106,26 @@
 			var idx = $(this).find("option:selected").index();
 			$("select[name='guest_purpose']").empty();
 			for(var i=0;i<jdata[idx].purpose.length;i++){
-				$("select[name='guest_purpose']").append('<option value='+jdata[idx].purpose[i].purpose_no+'>'+jdata[idx].purpose[i].purpose_name+'</option>');
+				$("select[name='guest_purpose']").append('<option value='+jdata[idx].purpose[i].purpose_ID+'>'+jdata[idx].purpose[i].purpose_name+'</option>');
+			}
+			
+			//
+			if($(this).find("option:selected").val()=="guest")//訪客卡
+			{
+				$("form .guest").show();
+			}else if($(this).find("option:selected").val()=="user"){//借用卡
+				$("form .guest").hide();
 			}
 		});
 		$.ajax({
-			url: site_url+'access/card/application/temp/option',
+			url: site_url+'access/get_access_card_temp_application_type_purpose_json',
 			type: 'GET',
 			dataType: 'json',
 			
 		}).always(function(data){
 			jdata = data;
 			for(var i=0;i<jdata.length;i++){
-				$("select[name='application_type']").append('<option value='+jdata[i].type_no+'>'+jdata[i].type_name+'</option>');
+				$("select[name='application_type']").append('<option value='+jdata[i].type_ID+'>'+jdata[i].type_name+'</option>');
 			}
 			$("select[name='application_type']").trigger("change");
 		});
