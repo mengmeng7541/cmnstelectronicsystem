@@ -222,6 +222,10 @@ class MY_Controller extends CI_Controller
 		}
 	}
 	//--------------------------FORM VALIDATION---------------------------
+	public function at_least_one($ary)
+	{
+		return !empty(array_filter($ary,"trim"));
+	}
 	public function user_ID_existed($str)
 	{
 		$this->load->model("user_model");
