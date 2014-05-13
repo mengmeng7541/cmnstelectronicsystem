@@ -38,6 +38,7 @@ class Access_model extends MY_Model {
 	{
 		$this->access_db->set("occupied",$data['occupied']);
 		$this->access_db->where("access_card_num",$data['access_card_num']);
+		$this->access_db->update("access_card_pool");
 	}
 	//-----------------------------ENUM--------------------------
 	public function get_enum_access_card_temp_application_checkpoint_list($options = array())

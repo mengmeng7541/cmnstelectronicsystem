@@ -3485,6 +3485,19 @@ var App = function () {
         		table_access_card_temp_application_list.fnReloadAjax(null,null,true);
         	});
         });
+        $("#table_access_card_temp_application_list").on("click","button[name='refund']",function(){
+        	$.ajax({
+        		url: site_url+"access/card/application/temp/update/",
+        		data: {serial_no:$(this).val()},
+        		type: "POST",
+        		beforeSend: function(){
+					showRequest();
+				}
+        	}).always(function(data){
+        		showResponse(data);
+        		table_access_card_temp_application_list.fnReloadAjax(null,null,true);
+        	});
+        });
 	}
 	
     var handleFormWizards = function () {
