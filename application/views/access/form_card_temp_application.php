@@ -130,9 +130,9 @@
 			if(serial_no != ''){
 				$.ajax({
 					url: site_url+'access/get_access_card_temp_application/'+serial_no,
-					dataType: 'json'
+					dataType: 'json',
 				}).done(function(data){
-					console(data);
+					console.log(data);
 				});
 			}
 		});
