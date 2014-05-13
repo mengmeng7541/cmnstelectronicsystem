@@ -36,6 +36,14 @@
 									<?=form_dropdown("guest_purpose_ID",array(),isset($guest_purpose_ID)?$guest_purpose_ID:"","");?>
 								</div>
 							</div>
+							<div class="row-fluid user">
+								<div class="control-group">
+						            <label class="control-label">借卡者</label>
+						            <div class="controls">
+										<?=form_dropdown("used_by",isset($used_by_array)?$used_by_array:array(),isset($used_by)?$used_by:"","class='chosen'");?>
+									</div>
+								</div>
+							</div>
 							<div class="row-fluid guest">
 								<div class="control-group">
 						            <label class="control-label">來賓姓名</label>
@@ -108,8 +116,10 @@
 			if($(this).find("option:selected").val()=="guest")//訪客卡
 			{
 				$("form .guest").show();
+				$("form .user").hide();
 			}else if($(this).find("option:selected").val()=="user"){//借用卡
 				$("form .guest").hide();
+				$("form .user").show();
 			}
 		});
 		//取SELECT OPTION的資料

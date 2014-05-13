@@ -72,6 +72,8 @@ class Access extends MY_Controller {
 			$this->is_admin_login();
 			
 			$this->data['purposes'] = $this->access_card_temp_application_model->get_purpose_select_option_array();
+			$this->load->model('admin_model');
+			$this->data['used_by_array'] = $this->admin_model->get_admin_ID_select_options();
 			
 			
 			$this->load->view('templates/header');
@@ -99,6 +101,8 @@ class Access extends MY_Controller {
 			$this->data = $app;
 			
 			$this->data['purposes'] = $this->access_card_temp_application_model->get_purpose_select_option_array();
+			$this->load->model('admin_model');
+			$this->data['used_by_array'] = $this->admin_model->get_admin_ID_select_options();
 			
 			if($app['application_checkpoint_ID']=='applied' && $this->access_model->is_super_admin()){
 				$this->data['page'] = "issue";
@@ -164,9 +168,13 @@ class Access extends MY_Controller {
 				if(!$this->form_validation->run()){
 					throw new Exception(validation_errors(),WARNING_CODE);
 				}
-				$this->access_card_temp_application_model->apply_guest($input_data);
+				$this->access_card_temp_application_model->apply($input_data);
 			}else if($input_data['application_type_ID']=="user"){
-				$this->access_card_temp_application_model->apply_user($input_data);
+				$this->form_validation->set_rules("used_by","借卡者","required");
+				if(!$this->form_validation->run()){
+					throw new Exception(validation_errors(),WARNING_CODE);
+				}
+				$this->access_card_temp_application_model->apply($input_data);
 			}
 			echo $this->info_modal("申請成功","/access/card/application/temp/list");
 		}catch(Exception $e){
