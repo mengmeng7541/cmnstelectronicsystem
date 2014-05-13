@@ -99,9 +99,9 @@
 		var jdata;
 		$("select[name='application_type']").change(function(){
 			var idx = $(this).find("option:selected").index();
-			$("select[name='guest_purpose']").empty();
+			$("select[name='guest_purpose_ID']").empty();
 			for(var i=0;i<jdata[idx].purpose.length;i++){
-				$("select[name='guest_purpose']").append('<option value='+jdata[idx].purpose[i].purpose_ID+'>'+jdata[idx].purpose[i].purpose_name+'</option>');
+				$("select[name='guest_purpose_ID']").append('<option value='+jdata[idx].purpose[i].purpose_ID+'>'+jdata[idx].purpose[i].purpose_name+'</option>');
 			}
 			
 			//
@@ -121,9 +121,9 @@
 		}).done(function(data){
 			jdata = data;
 			for(var i=0;i<jdata.length;i++){
-				$("select[name='application_type']").append('<option value='+jdata[i].type_ID+'>'+jdata[i].type_name+'</option>');
+				$("select[name='application_type_ID']").append('<option value='+jdata[i].type_ID+'>'+jdata[i].type_name+'</option>');
 			}
-			$("select[name='application_type']").trigger("change");
+			$("select[name='application_type_ID']").trigger("change");
 			
 			//取申請單的資料
 			var serial_no = $("form input[name='serial_no']").val();
