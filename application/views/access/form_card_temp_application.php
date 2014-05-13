@@ -132,7 +132,10 @@
 					url: site_url+'access/get_access_card_temp_application/'+serial_no,
 					dataType: 'json',
 				}).done(function(data){
-					console.log(data);
+					for(var key in data){
+						$("input[name='"+key+"']").val(data[key]);
+						$("select[name='"+key+"']").find("option[value='"+data[key]+"']").prop("selected",true);
+					}
 				});
 			}
 		});
