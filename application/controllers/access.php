@@ -160,11 +160,11 @@ class Access extends MY_Controller {
 			$input_data = $this->input->post(NULL,TRUE);
 			if($input_data['application_type_ID']=="guest")
 			{
-//				$input_data['guest_name'] = isset($input_data['guest_name'])?array_filter((array)$input_data['guest_name'],"trim"):"";
-//				if(empty($input_data['guest_name'])){
-//					throw new Exception("請至少填寫一位訪客姓名",WARNING_CODE);
-//				}
-				$this->form_validation->set_rules("guest_name[]","訪客姓名","callback_at_least_one");
+
+				if(!$this->at_least_one($this->input->post("guest_name"))){
+					throw new Exception("請至少填寫一位訪客姓名",WARNING_CODE);
+				}
+				
 				$this->form_validation->set_rules("guest_access_start_date","磁卡使用時段","required");
 				$this->form_validation->set_rules("guest_access_start_time","磁卡使用時段","required");
 				$this->form_validation->set_rules("guest_access_end_date","磁卡使用時段","required");
