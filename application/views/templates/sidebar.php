@@ -29,12 +29,8 @@
 						<li><a class="" href="<?=site_url();?>/facility/admin/available/list">儀器預約</a></li>
 						<li><a class="" href="<?=site_url();?>/facility/admin/booking/list">預約紀錄</a></li>
 						<li><a class="" href="<?=site_url();?>/facility/admin/facility/list">儀器管理</a></li>
-						<li><a class="" href="<?=site_url();?>/facility/admin/card/list">磁卡核發</a></li>
 						<li><a class="" href="<?=site_url();?>/facility/admin/nocharge/list">預約不計費</a></li>
 						<li><a class="" href="<?=site_url();?>/facility/admin/privilege/list">使用者權限</a></li>
-						<li><a class="" href="<?=site_url();?>/facility/admin/access/ctrl/list">卡機控管</a></li>
-	                    <li><a class="" href="<?=site_url();?>/facility/admin/access/card/list">進出紀錄</a></li>
-	                    <li><a class="" href="<?=site_url();?>/facility/admin/access/link/list">連線設定</a></li>
 	                </ul>
 				</li>
 				<li class="has-sub">
@@ -83,7 +79,11 @@
 					</a>
 					<ul class="sub">
 						<li><a class="" href="<?=site_url();?>/access/card/application/temp/form">臨時卡申請</a></li>
-						<li><a class="" href="<?=site_url();?>/access/card/application/temp/list">卡片核發審查</a></li>
+						<li><a class="" href="<?=site_url();?>/access/card/application/temp/list">臨時磁卡核發</a></li>
+						<li><a class="" href="<?=site_url();?>/facility/admin/card/list">永久磁卡核發</a></li>
+						<li><a class="" href="<?=site_url();?>/facility/admin/access/ctrl/list">卡機控管</a></li>
+	                    <li><a class="" href="<?=site_url();?>/facility/admin/access/card/list">進出紀錄</a></li>
+	                    <li><a class="" href="<?=site_url();?>/facility/admin/access/link/list">連線設定</a></li>
 					</ul>
 				</li>
 				<li><a class="" href="<?=site_url();?>/logout"><span class="icon-box"><i class="icon-user"></i></span> 登出</a></li>
@@ -97,7 +97,7 @@
 					<ul class="sub">
 	                    <li><a class="" href="<?=site_url();?>/facility/user/available/list">預約儀器</a></li>
 	                    <li><a class="" href="<?=site_url();?>/facility/user/booking/list">查詢紀錄</a></li>
-	                    <li><a class="" href="<?=site_url();?>/facility/user/card/form">申請磁卡</a></li>
+	                    <li><a class="" href="<?=site_url();?>/facility/user/card/form">申請/退還磁卡</a></li>
 	                </ul>
 				</li>
 				<li class="has-sub">

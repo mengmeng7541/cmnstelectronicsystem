@@ -218,7 +218,7 @@ class Access_ctrl_model extends MY_Model {
 	$this->facility_model->add_access_ctrl($data);
   }
   
-  //有BUG
+  //
   public function del($facility_ID,$user_ID,$start,$end)
   {
   	$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$user_ID))->row_array();

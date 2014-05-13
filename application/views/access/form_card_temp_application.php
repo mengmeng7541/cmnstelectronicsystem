@@ -46,13 +46,13 @@
 							</div>
 							<div class="row-fluid guest">
 								<div class="control-group">
-						            <label class="control-label">來賓姓名</label>
+						            <label class="control-label">訪客姓名</label>
 						            <div class="controls">
 										<input type="text" name="guest_name" value="<?=isset($guest_name)?$guest_name:"";?>"/>
 									</div>
 								</div>
 								<div class="control-group">
-						            <label class="control-label">來賓聯絡手機(選填)</label>
+						            <label class="control-label">訪客聯絡手機(選填)</label>
 						            <div class="controls">
 										<input type="text" name="guest_mobile" value="<?=isset($guest_mobile)?$guest_mobile:"";?>"/>
 									</div>
@@ -75,7 +75,7 @@
 							<div class="control-group">
 					            <label class="control-label">核發卡號</label>
 					            <div class="controls">
-					            	<input type="checkbox" name="auto_issue" value="1"/>
+					            	<input type="checkbox" name="auto_issue" value="1"/>自動
 									<input type="text" name="guest_access_card_num" value="0000"/>
 								</div>
 							</div>
@@ -142,10 +142,8 @@
 					url: site_url+'access/get_access_card_temp_application/'+serial_no,
 					dataType: 'json',
 				}).done(function(data){
-					for(var key in data){
-						$("input[name='"+key+"']").val(data[key]);
-						$("select[name='"+key+"']").find("option[value='"+data[key]+"']").prop("selected",true).trigger("change");
-					}
+					$("select[name='application_type_ID'] option").filter(function(){return $(this).val()==data.application_type_ID}).prop("selected",true).trigger("change");
+					$("select[name='guest_purpose_ID'] option").filter(function(){return $(this).val()==data.guest_purpose_ID}).prop("selected",true);
 				});
 			}
 		});
