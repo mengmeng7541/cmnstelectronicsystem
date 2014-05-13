@@ -52,7 +52,7 @@ class Access extends MY_Controller {
 					$display[] = anchor("access/card/application/temp/edit/".$app['serial_no'],"審查","class='btn btn-small btn-primary'");
 					$display[] = form_button("reject","退件","class='btn btn-small btn-danger' value='{$app['serial_no']}'");
 				}else if($app['application_checkpoint_ID']=='issued'){
-					$display[] = form_button("refund","確認歸還","class='btn btn-small btn-warning'");
+					$display[] = form_button("refund","確認歸還","class='btn btn-small btn-warning' value='{$app['serial_no']}'");
 				}else if($app['application_checkpoint_ID']=='refunded'){
 					$display[] = form_label("已結案","",array("class"=>"label label-success"));
 				}
