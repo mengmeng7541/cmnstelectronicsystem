@@ -97,7 +97,7 @@
 <script>
 	$(document).ready(function(){
 		var jdata;
-		$("select[name='application_type']").change(function(){
+		$("select[name='application_type_ID']").change(function(){
 			var idx = $(this).find("option:selected").index();
 			$("select[name='guest_purpose_ID']").empty();
 			for(var i=0;i<jdata[idx].purpose.length;i++){
