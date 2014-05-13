@@ -86,6 +86,7 @@ class Access_card_temp_application_model extends MY_Model {
 		if($data['application_type_ID']=="guest"){
 			//寫入資料
 			foreach((array)$data['guest_name'] as $idx => $guest_name){
+				if(empty($guest_name = trim($guest_name))) continue;//如果是空的就略過
 				$insert_id = $this->access_model->add_access_card_temp_application(array(
 					"applied_by"=>$this->session->userdata('ID'),
 					"application_type"=>$type['type_no'],
