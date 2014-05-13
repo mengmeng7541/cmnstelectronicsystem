@@ -230,7 +230,18 @@ class Access_ctrl_model extends MY_Model {
 		$f_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("no_child"=>TRUE,"facility_only"=>$user_profile['group']=="admin"));
 	}
 	
-	
+	//判斷是否有借用卡
+  	$this->load->model('access_model');
+  	$temp_app = $this->access_model->get_access_card_temp_application_list(array(
+  		"application_type_ID"=>"user",
+  		"used_by"=>$user_profile['ID'],
+  		"guest_access_start_time"=>date("Y-m-d H:i:s",$start),
+  		"guest_access_end_time"=>date("Y-m-d H:i:s",$end),
+  		"application_checkpoint_ID"=>"issued"
+  	))->row_array();
+  	if($temp_app){
+		$this->del_by_card_num($f_IDs,$temp_app['guest_access_card_num'],$start,$end);
+	}
 	
   	//刪除卡機的時段開關預約紀錄
 	foreach($f_IDs as $f_ID){
@@ -282,6 +293,48 @@ class Access_ctrl_model extends MY_Model {
 	))->result_array();//+1-1是為了觸碰到邊緣
 	foreach($bookings as $booking){
 		$this->add($booking['facility_ID'],$booking['user_ID'],strtotime($booking['start_time']),strtotime($booking['end_time']));
+	}
+  }
+  public function del_by_card_num($f_IDs,$card_num,$start,$end)
+  {
+  	foreach((array)$f_IDs as $f_ID){
+		//取得儀器資訊
+		$facility = $this->facility_model->get_facility_list(array("ID"=>$f_ID))->row_array();
+		if(!$facility)	continue;
+		if(empty($facility['ctrl_no'])) continue;
+		
+
+		$ctrl = $this->facility_model->get_access_ctrl_list(array(
+			"facility_ctrl_no"=>$facility['ctrl_no'],
+			"card_num"=>$card_num,
+			"fun"=>"Add",
+			"f_time"=>date("Y-m-d H:i:s",$start-$facility['pre_open_sec'])
+		))->row_array();
+		if($ctrl){
+			$this->facility_model->del_access_ctrl(array("serial_no"=>$ctrl['serial_no']));
+		}
+		
+
+		$ctrl = $this->facility_model->get_access_ctrl_list(array(
+			"facility_ctrl_no"=>$facility['ctrl_no'],
+			"card_num"=>$card_num,
+			"fun"=>"Del",
+			"f_time"=>date("Y-m-d H:i:s",$end)
+		))->row_array();
+		if($ctrl){
+			$this->facility_model->del_access_ctrl(array("serial_no"=>$ctrl['serial_no']));
+		}
+		
+		//若現在時間在預開到結束之間，表示突然被取消，此時要加DEL堵住，否則會無敵
+		if(date("Y-m-d H:i:s") >= $start-$facility['pre_open_sec'] && date("Y-m-d H:i:s") <= $end){
+			$row = array();
+			$row["date_time"] = date("Y-m-d H:i:s",$start-$facility['pre_open_sec']);
+			$row["fun"] = "Del";
+			$row["card_num"] = $card_num;
+			$row["ctrl_no"] = $facility['ctrl_no'];
+			$data[] = $row;
+			$this->facility_model->add_access_ctrl($data);
+		}
 	}
   }
   
