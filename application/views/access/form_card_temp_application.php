@@ -134,7 +134,7 @@
 				}).done(function(data){
 					for(var key in data){
 						$("input[name='"+key+"']").val(data[key]);
-						$("select[name='"+key+"']").find("option[value='"+data[key]+"']").prop("selected",true);
+						$("select[name='"+key+"']").find("option[value='"+data[key]+"']").prop("selected",true).trigger("change");
 					}
 				});
 			}
