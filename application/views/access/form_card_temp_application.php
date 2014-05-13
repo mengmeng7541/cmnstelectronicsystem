@@ -126,8 +126,8 @@
 			}
 		});
 		//取SELECT OPTION的資料
-		var application_type_ID = <?=isset($application_type_ID)?$application_type_ID:"";?>;
-		var guest_purpose_ID = <?=isset($guest_purpose_ID)?$guest_purpose_ID:"";?>;
+		var application_type_ID = '<?=isset($application_type_ID)?$application_type_ID:"";?>';
+		var guest_purpose_ID = '<?=isset($guest_purpose_ID)?$guest_purpose_ID:"";?>';
 		$.ajax({
 			url: site_url+'access/get_access_card_temp_application_type_purpose_json',
 			type: 'GET',
