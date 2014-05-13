@@ -62,8 +62,9 @@ class Reg_model extends MY_Model {
 			}
 		}
 		
-		//判斷class有否一連串的課
-		if(in_array('certification',explode(",",$class['class_type'])))
+		//判斷是否只選認證
+		$this->load->model('curriculum/class_model');
+		if($this->class_model->is_certification_class_only($class['class_type']))
 		{
 			//只選這堂課之前先確認已有權限，只是因為過期所以才要重報，或者曾經選過只是最後認證未過
 			
