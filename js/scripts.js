@@ -3474,6 +3474,17 @@ var App = function () {
                 }
             },
         });
+        $("#table_access_card_temp_application_list").on("click","button[name='reject']",function(){
+        	$.ajax({
+        		url: site_url+"access/card/application/temp/del/"+$(this).val(),
+        		beforeSend: function(){
+					showRequest();
+				}
+        	}).always(function(data){
+        		showResponse(data);
+        		table_access_card_temp_application_list.fnReloadAjax(null,null,true);
+        	});
+        });
 	}
 	
     var handleFormWizards = function () {

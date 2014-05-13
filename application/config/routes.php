@@ -189,7 +189,7 @@ $route['access/card/application/temp/query'] = 'access/query_card_temp_applicati
 $route['access/card/application/temp/form'] = 'access/form_card_temp_application';
 $route['access/card/application/temp/edit/(:num)'] = 'access/edit_card_temp_application/$1';
 $route['access/card/application/temp/add'] = 'access/add_card_temp_application';
-$route['access/card/application/temp/update/(:num)'] = 'access/update_card_temp_application/$1';
+$route['access/card/application/temp/update'] = 'access/update_card_temp_application';
 $route['access/card/application/temp/del/(:num)'] = 'access/del_card_temp_application/$1';
 
 //curriculum

@@ -45,13 +45,13 @@
 								<div class="control-group">
 						            <label class="control-label">來賓姓名</label>
 						            <div class="controls">
-										<input type="text" name="guest_name" value=""/>
+										<input type="text" name="guest_name" value="<?=isset($guest_name)?$guest_name:"";?>"/>
 									</div>
 								</div>
 								<div class="control-group">
 						            <label class="control-label">來賓聯絡手機(選填)</label>
 						            <div class="controls">
-										<input type="text" name="guest_mobile" value=""/>
+										<input type="text" name="guest_mobile" value="<?=isset($guest_mobile)?$guest_mobile:"";?>"/>
 									</div>
 								</div>
 								<div class="control-group">
