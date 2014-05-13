@@ -75,12 +75,12 @@ class Access_card_temp_application_model extends MY_Model {
 	public function apply_guest($data)
 	{
 		//get type index
-		$type = $this->_get_type_list(array("type_ID"=>$data['application_type']))->row_array();
+		$type = $this->_get_type_list(array("type_ID"=>$data['application_type_ID']))->row_array();
 		if(!$type){
 			throw new Exception("無此類別",ERROR_CODE);
 		}
 		//get purpose index
-		$purpose = $this->_get_purpose_list(array("purpose_ID"=>$data['guest_purpose']))->row_array();
+		$purpose = $this->_get_purpose_list(array("purpose_ID"=>$data['guest_purpose_ID']))->row_array();
 		if(!$purpose){
 			throw new Exception("無此目的",ERROR_CODE);
 		}
@@ -100,12 +100,12 @@ class Access_card_temp_application_model extends MY_Model {
 	public function apply_user($data)
 	{
 		//get type index
-		$type = $this->_get_type_list(array("type_ID"=>$data['application_type']))->row_array();
+		$type = $this->_get_type_list(array("type_ID"=>$data['application_type_ID']))->row_array();
 		if(!$type){
 			throw new Exception("無此類別",ERROR_CODE);
 		}
 		//get purpose index
-		$purpose = $this->_get_purpose_list(array("purpose_ID"=>$data['guest_purpose']))->row_array();
+		$purpose = $this->_get_purpose_list(array("purpose_ID"=>$data['guest_purpose_ID']))->row_array();
 		if(!$purpose){
 			throw new Exception("無此目的",ERROR_CODE);
 		}

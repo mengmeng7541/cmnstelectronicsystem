@@ -23,22 +23,17 @@
                      </div>
                      <div class="widget-body form">
                      	<form action="<?=site_url(isset($page)&&$page=='issue'?'/access/card/application/temp/update':'/access/card/application/temp/add');?>" method="POST" class="form-horizontal">
-							<!--<div class="control-group">
-					            <label class="control-label">申請人姓名</label>
-					            <div class="controls">
-									<input type="text" value=""/>
-								</div>
-							</div>-->
+							<?=form_hidden("serial_no",isset($serial_no)?$serial_no:"");?>
 							<div class="control-group">
 					            <label class="control-label">申請磁卡類別</label>
 					            <div class="controls">
-									<?=form_dropdown("application_type",array(),isset($application_type)?$application_type:"","");?>
+									<?=form_dropdown("application_type_ID",array(),isset($application_type_ID)?$application_type_ID:"","");?>
 								</div>
 							</div>
 							<div class="control-group">
 					            <label class="control-label">申請磁卡目的</label>
 					            <div class="controls">
-									<?=form_dropdown("guest_purpose",array(),isset($guest_purpose)?$guest_purpose:"","");?>
+									<?=form_dropdown("guest_purpose_ID",array(),isset($guest_purpose_ID)?$guest_purpose_ID:"","");?>
 								</div>
 							</div>
 							<div class="row-fluid guest">
@@ -117,18 +112,31 @@
 				$("form .guest").hide();
 			}
 		});
+		//取SELECT OPTION的資料
 		$.ajax({
 			url: site_url+'access/get_access_card_temp_application_type_purpose_json',
 			type: 'GET',
 			dataType: 'json',
 			
-		}).always(function(data){
+		}).done(function(data){
 			jdata = data;
 			for(var i=0;i<jdata.length;i++){
 				$("select[name='application_type']").append('<option value='+jdata[i].type_ID+'>'+jdata[i].type_name+'</option>');
 			}
 			$("select[name='application_type']").trigger("change");
+			
+			//取申請單的資料
+			var serial_no = $("form input[name='serial_no']").val();
+			if(serial_no != ''){
+				$.ajax({
+					url: site_url+'access/get_access_card_temp_application/'+serial_no,
+					dataType: 'json'
+				}).done(function(data){
+					console(data);
+				});
+			}
 		});
+		
 	});
 </script>
 

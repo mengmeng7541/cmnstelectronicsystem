@@ -113,6 +113,25 @@ class Access extends MY_Controller {
 		}
 	}
 	
+	public function get_access_card_temp_application($SN = ""){
+		try{
+			$this->is_admin_login();
+			
+			$SN = $this->security->xss_clean($SN);
+			
+			$app = $this->access_model->get_access_card_temp_application_list(array("serial_no",$SN))->row_Array();
+			if(!$app){
+				throw new Exception();
+			}
+			
+			$output = array();
+			$output = $app;
+			echo json_encode($output);
+		}catch(Exception $e){
+			
+		}
+	}
+	
 	public function get_access_card_temp_application_type_purpose_json()
 	{
 		try{
@@ -129,8 +148,8 @@ class Access extends MY_Controller {
 		try{
 			$this->is_admin_login();
 			
-			$this->form_validation->set_rules("application_type","申請磁卡類別","required");
-			$this->form_validation->set_rules("guest_purpose","申請磁卡目的","required");
+			$this->form_validation->set_rules("application_type_ID","申請磁卡類別","required");
+			$this->form_validation->set_rules("guest_purpose_ID","申請磁卡目的","required");
 			if(!$this->form_validation->run()){
 				throw new Exception(validation_errors(),WARNING_CODE);
 			}
