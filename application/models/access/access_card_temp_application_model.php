@@ -72,8 +72,7 @@ class Access_card_temp_application_model extends MY_Model {
 	}
 	
 	//
-	public function apply_guest($data)
-	{
+	public function apply($data){
 		//get type index
 		$type = $this->_get_type_list(array("type_ID"=>$data['application_type_ID']))->row_array();
 		if(!$type){
@@ -84,40 +83,35 @@ class Access_card_temp_application_model extends MY_Model {
 		if(!$purpose){
 			throw new Exception("無此目的",ERROR_CODE);
 		}
-		//寫入資料
-		$insert_id = $this->access_model->add_access_card_temp_application(array(
-			"applied_by"=>$this->session->userdata('ID'),
-			"application_type"=>$type['type_no'],
-			"guest_name"=>$data['guest_name'],
-			"guest_mobile"=>$data['guest_mobile'],
-			"guest_purpose"=>$purpose['purpose_no'],
-			"guest_access_start_time"=>$data['guest_access_start_date'].' '.$data['guest_access_start_time'],
-			"guest_access_end_time"=>$data['guest_access_end_date'].' '.$data['guest_access_end_time']
-		));
-		
-		//發信通知
-	}
-	public function apply_user($data)
-	{
-		//get type index
-		$type = $this->_get_type_list(array("type_ID"=>$data['application_type_ID']))->row_array();
-		if(!$type){
-			throw new Exception("無此類別",ERROR_CODE);
+		if($data['application_type_ID']=="guest"){
+			//寫入資料
+			$insert_id = $this->access_model->add_access_card_temp_application(array(
+				"applied_by"=>$this->session->userdata('ID'),
+				"application_type"=>$type['type_no'],
+				"guest_name"=>$data['guest_name'],
+				"guest_mobile"=>$data['guest_mobile'],
+				"guest_purpose"=>$purpose['purpose_no'],
+				"guest_access_start_time"=>$data['guest_access_start_date'].' '.$data['guest_access_start_time'],
+				"guest_access_end_time"=>$data['guest_access_end_date'].' '.$data['guest_access_end_time']
+			));
+		}else if($data['application_type_ID']=="user"){
+			//get user data
+			$this->load->model('user_model');
+			$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$data['used_by']))->row_array();
+			if(!$user_profile){
+				throw new Exception("無此使用者",ERROR_CODE);
+			}
+			$insert_id = $this->access_model->add_access_card_temp_application(array(
+				"applied_by"=>$this->session->userdata('ID'),
+				"application_type"=>$type['type_no'],
+				"used_by"=>$data['used_by'],
+				"guest_name"=>$user_profile['name'],
+				"guest_mobile"=>$user_profile['mobile'],
+				"guest_purpose"=>$purpose['purpose_no'],
+				"guest_access_start_time"=>date("Y-m-d H:i:s"),
+				"guest_access_end_time"=>date("Y-m-d 00:00:00",strtotime("+1day"))
+			));
 		}
-		//get purpose index
-		$purpose = $this->_get_purpose_list(array("purpose_ID"=>$data['guest_purpose_ID']))->row_array();
-		if(!$purpose){
-			throw new Exception("無此目的",ERROR_CODE);
-		}
-		$insert_id = $this->access_model->add_access_card_temp_application(array(
-			"applied_by"=>$this->session->userdata('ID'),
-			"application_type"=>$type['type_no'],
-			"guest_purpose"=>$purpose['purpose_no'],
-			"guest_access_start_time"=>date("Y-m-d H:i:s"),
-			"guest_access_end_time"=>date("Y-m-d 00:00:00",strtotime("+1day"))
-		));
-		
-		//發信通知
 	}
 	
 	public function issue($SN,$card_num = NULL,$issued_by = NULL)
@@ -149,8 +143,14 @@ class Access_card_temp_application_model extends MY_Model {
 		//標記已用
 		$this->access_model->update_access_card_pool(array("occupied"=>1,"access_card_num"=>$app['guest_access_card_num']));
 		//開啟權限
-		$this->load->model('facility/access_ctrl_model');
-		$this->access_ctrl_model->open_all_door_by_num($app['guest_access_card_num'],$app['guest_access_start_time'],$app['guest_access_end_time']);
+		if($app['application_type_ID']=="guest"){
+			$this->load->model('facility/access_ctrl_model');
+			$this->access_ctrl_model->open_all_door_by_num($app['guest_access_card_num'],$app['guest_access_start_time'],$app['guest_access_end_time']);
+		}else if($app['application_type_ID']=="user"){
+			//把那個人那個時間點的開卡紀錄全部換成這張卡
+			$this->load->model('facility/access_ctrl_model');
+			$this->access_ctrl_model->exchange($app['used_by'],$app['guest_access_card_num'],$app['guest_access_start_time'],$app['guest_access_end_time']);
+		}
 		//回傳開啟的卡號
 		return $app['guest_access_card_num'];
 	}

@@ -78,7 +78,19 @@ class Access_model extends MY_Model {
 		{
 			$this->access_db->where("$sTable.serial_no",$options['serial_no']);
 		}
-		
+		if(isset($options['application_type_ID']))
+		{
+			$this->access_db->where("{$sJoinTable['enum_type']}.type_ID",$options['application_type_ID']);
+		}
+		if(isset($options['guest_access_start_time']))
+		{
+			$this->access_db->where("$sTable.guest_access_end_time >=",$options['guest_access_start_time']);
+		}
+		if(isset($options['guest_access_end_time']))
+		{
+			$this->access_db->where("$sTable.guest_access_start_time <=",$options['guest_access_end_time']);
+		}
+		$this->access_db->order_by("$sTable.issuance_time","DESC");
 		return $this->access_db->get($sTable);
 	}
 	public function add_access_card_temp_application($data)
@@ -88,6 +100,9 @@ class Access_model extends MY_Model {
 						->set("guest_purpose",$data['guest_purpose'])
 						->set("guest_access_start_time",$data['guest_access_start_time'])
 						->set("guest_access_end_time",$data['guest_access_end_time']);
+		if(isset($data['used_by'])){
+			$this->access_db->set("used_by",$data['used_by']);
+		}
 		if(isset($data['guest_name']))
 		{
 			$this->access_db->set("guest_name",$data['guest_name']);

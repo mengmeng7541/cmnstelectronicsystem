@@ -39,6 +39,20 @@ class Access_ctrl_model extends MY_Model {
 		$f_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("no_child"=>TRUE,"facility_only"=>$user_profile['group']=="admin","door_only"=>$door_only));
 	}
   	//$f_IDs = (array)$f_IDs;
+  	
+  	//判斷是否有借用卡
+  	$this->load->model('access_model');
+  	$temp_app = $this->access_model->get_access_card_temp_application_list(array(
+  		"application_type_ID"=>"user",
+  		"used_by"=>$user_profile['ID'],
+  		"guest_access_start_time"=>date("Y-m-d H:i:s",$start),
+  		"guest_access_end_time"=>date("Y-m-d H:i:s",$end),
+  		"application_checkpoint_ID"=>"issued"
+  	))->row_array();
+  	if($temp_app){
+		$this->add_by_card_num($f_IDs,$temp_app['guest_access_card_num'],$start,$end);
+	}
+  	
   	//寫入卡機(關聯的父儀器都要開)
 	$data = array();
 	foreach($f_IDs as $f_ID){
@@ -110,6 +124,93 @@ class Access_ctrl_model extends MY_Model {
 			$row["date_time"] = date("Y-m-d H:i:s",$end);
 			$row["fun"] = "Del";
 			$row["card_num"] = $user_profile['card_num'];
+			$row["ctrl_no"] = $facility['ctrl_no'];
+			$data[] = $row;
+		}
+	}
+	$this->facility_model->add_access_ctrl($data);
+  }
+  /**
+  * 
+  * @param array $f_IDs	已經判斷好要開的儀器了，不用再判斷父子或平行關係
+  * @param string $card_num
+  * @param int $start
+  * @param int $end
+  * 
+  * @return
+  */
+  public function add_by_card_num($f_IDs,$card_num,$start,$end){
+  	//寫入卡機(關聯的父儀器都要開)
+	$data = array();
+	foreach((array)$f_IDs as $f_ID){
+		//取得儀器資訊
+		$facility = $this->facility_model->get_facility_list(array("ID"=>$f_ID))->row_array();
+		if(!$facility)	continue;
+		if(empty($facility['ctrl_no'])) continue;
+		
+		if($start && $end)
+		{
+			//檢查該儀器在預開到關閉之時段是否有開關紀錄，有就刪掉避開BUG
+			$options = array(
+				"start_time"=>date("Y-m-d H:i:s",$start-$facility['pre_open_sec']),
+				"end_time"=>date("Y-m-d H:i:s",$end),
+				"card_num"=>$card_num,
+				"facility_ctrl_no"=>$facility['ctrl_no']
+			);
+			$ctrls = $this->facility_model->get_access_ctrl_list($options)->result_array();
+			foreach($ctrls as $ctrl){
+				$this->facility_model->del_access_ctrl(array("serial_no"=>$ctrl['serial_no']));
+			}
+
+			
+			//若之前無資料或第一筆是刪除或是執行失敗了，就要新增
+			$options = array(
+				"end_time"=>date("Y-m-d H:i:s",max($start-$facility['pre_open_sec'],time())),
+				"card_num"=>$card_num,
+				"facility_ctrl_no"=>$facility['ctrl_no']
+			);
+			$ctrl = $this->facility_model->get_access_ctrl_list($options)->row_array();
+			if(!$ctrl || $ctrl['action']=="Del" || $ctrl['status']=="F")
+			{
+				$row = array();
+				$row["date_time"] = date("Y-m-d H:i:s",$start-$facility['pre_open_sec']);
+				$row["fun"] = "Add";
+				$row["card_num"] = $card_num;
+				$row["ctrl_no"] = $facility['ctrl_no'];
+				$data[] = $row;
+			}
+			
+			
+			//若之後無資料或第一筆是新增，就要刪除
+			$options = array(
+				"start_time"=>date("Y-m-d H:i:s",$end),
+				"card_num"=>$card_num,
+				"facility_ctrl_no"=>$facility['ctrl_no']
+			);
+			$ctrl = $this->facility_model->get_access_ctrl_list($options)->row_array();
+			if(!$ctrl || $ctrl['action']=="Add")
+			{
+				$row = array();
+				$row["date_time"] = date("Y-m-d H:i:s",$end);
+				$row["fun"] = "Del";
+				$row["card_num"] = $card_num;
+				$row["ctrl_no"] = $facility['ctrl_no'];
+				$data[] = $row;
+			}
+			
+			
+		}else if($start){
+			$row = array();
+			$row["date_time"] = date("Y-m-d H:i:s",$start);
+			$row["fun"] = "Add";
+			$row["card_num"] = $card_num;
+			$row["ctrl_no"] = $facility['ctrl_no'];
+			$data[] = $row;
+		}else if($end){
+			$row = array();
+			$row["date_time"] = date("Y-m-d H:i:s",$end);
+			$row["fun"] = "Del";
+			$row["card_num"] = $card_num;
 			$row["ctrl_no"] = $facility['ctrl_no'];
 			$data[] = $row;
 		}
@@ -220,6 +321,26 @@ class Access_ctrl_model extends MY_Model {
   	$data = array("serial_no"=>$SN);
   	
   	$this->facility_model->update_access_ctrl($data);
+  }
+  
+  //--------------------------換卡號-----------------------------------
+  public function exchange($user_ID,$new_card_num,$start_time,$end_time = NULL){
+  	$this->load->model('user_model');
+  	$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$user_ID))->row_array();
+  	if(!$user_profile){
+		throw new Exception("無此使用者",ERROR_CODE);
+	}
+	//把時間區間的預約紀錄抽出來
+	$bookings = $this->facility_model->get_facility_booking_list(array(
+		"user_ID"=>$user_profile['ID'],
+		"start_time"=>$start_time,
+		"end_time"=>$end_time
+	))->result_array();
+	//全部重開一次
+	foreach($bookings as $booking){
+		$f_IDs = $this->facility_model->get_vertical_group_facilities($booking['facility_ID'],array("no_child"=>TRUE,"facility_only"=>$user_profile['group']=="admin"));
+		$this->add_by_card_num($f_IDs,$new_card_num,strtotime($booking['start_time']),strtotime($booking['end_time']));
+	}
   }
   
   //------------------------------無帳號專區---------------------------
