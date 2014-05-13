@@ -47,7 +47,7 @@ class Access_card_temp_application_model extends MY_Model {
 		foreach($types as $type){
 			$obj = array();
 			$obj = $type;
-			$purposes = $this->_get_purpose_list($type['type_no'])->result_array();
+			$purposes = $this->_get_purpose_list(array("type_no"=>$type['type_no']))->result_array();
 			foreach($purposes as $purpose){
 				$obj['purpose'][] = $purpose;
 			}			
@@ -61,7 +61,7 @@ class Access_card_temp_application_model extends MY_Model {
 		
 		$output = array();
 		foreach($types as $type){
-			$purposes = $this->_get_purpose_list($type['type_no'])->result_array();
+			$purposes = $this->_get_purpose_list(array("type_no"=>$type['type_no']))->result_array();
 			foreach($purposes as $purpose)
 			{
 				$output[$type['type_name']][$purpose['purpose_no']] = $purpose['purpose_name'];
