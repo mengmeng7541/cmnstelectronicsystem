@@ -46,26 +46,28 @@
 							</div>
 							<div class="row-fluid guest">
 								<div class="control-group">
-						            <label class="control-label">訪客姓名</label>
-						            <div class="controls">
-										<input type="text" name="guest_name" value="<?=isset($guest_name)?$guest_name:"";?>"/>
-									</div>
-								</div>
-								<div class="control-group">
-						            <label class="control-label">訪客聯絡手機(選填)</label>
-						            <div class="controls">
-										<input type="text" name="guest_mobile" value="<?=isset($guest_mobile)?$guest_mobile:"";?>"/>
-									</div>
-								</div>
-								<div class="control-group">
 						            <label class="control-label">磁卡使用時段</label>
 						            <div class="controls">
-										<input type="text" name="guest_access_start_date" value="<?=isset($guest_access_start_time)?date("Y-m-d",strtotime($guest_access_start_time)):date("Y-m-d");?>" class="input-medium date-picker"/>
-										<input type="text" name="guest_access_start_time" value="<?=isset($guest_access_start_time)?date("H:i",strtotime($guest_access_start_time)):date("H:i");?>" class="input-small timepicker-24-mm"/>
+										<input type="text" name="guest_access_start_date" value="<?=isset($guest_access_start_time)?date("Y-m-d",strtotime($guest_access_start_time)):date("Y-m-d");?>" class="input-small date-picker"/>
+										<input type="text" name="guest_access_start_time" value="<?=isset($guest_access_start_time)?date("H:i",strtotime($guest_access_start_time)):date("H:i");?>" class="input-mini timepicker-24-30m"/>
 										~
-										<input type="text" name="guest_access_end_date" value="<?=isset($guest_access_end_time)?date("Y-m-d",strtotime($guest_access_end_time)):date("Y-m-d");?>" class="input-medium date-picker"/>
-										<input type="text" name="guest_access_end_time" value="<?=isset($guest_access_end_time)?date("H:i",strtotime($guest_access_end_time)):date("H:i");?>" class="input-small timepicker-24-mm"/>
+										<input type="text" name="guest_access_end_date" value="<?=isset($guest_access_end_time)?date("Y-m-d",strtotime($guest_access_end_time)):date("Y-m-d");?>" class="input-small date-picker"/>
+										<input type="text" name="guest_access_end_time" value="<?=isset($guest_access_end_time)?date("H:i",strtotime($guest_access_end_time)):date("H:i");?>" class="input-mini timepicker-24-30m"/>
 										
+									</div>
+								</div>
+								<div class="row-fluid batch-input-area">
+									<div class="control-group span6">
+							            <label class="control-label">訪客姓名</label>
+							            <div class="controls">
+											<input type="text" name="guest_name[]" value="<?=isset($guest_name)?$guest_name:"";?>"/>
+										</div>
+									</div>
+									<div class="control-group span6">
+							            <label class="control-label">訪客聯絡手機(選填)</label>
+							            <div class="controls">
+											<input type="text" name="guest_mobile[]" value="<?=isset($guest_mobile)?$guest_mobile:"";?>"/>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -85,7 +87,8 @@
 									<?=form_submit("issue","核發","class='btn btn-warning'");?>
 									<?=anchor("access/card/application/temp/list","回上頁","class='btn btn-primary'");?>
 								<? }else{ ?>
-									<?=form_submit("","申請","class='btn btn-primary'");?>
+									<?=form_button("add","新增","class='btn btn-primary'");?>
+									<?=form_submit("","送出","class='btn btn-warning'");?>
 								<? } ?>
 							</div>
                      	</form>
@@ -147,7 +150,15 @@
 				});
 			}
 		});
-		
+		//自動開關
+		$("input[type='checkbox'][name='auto_issue']").change(function(){
+			$("input[name='guest_access_card_num']").prop("readonly",$(this).prop("checked"));
+		})
+		//新增一列
+		var row_new = $("div.batch-input-area").html();
+		$("button[name='add']").click(function(){
+			$("div.batch-input-area").last().after(row_new);
+		});
 	});
 </script>
 

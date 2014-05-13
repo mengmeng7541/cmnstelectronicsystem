@@ -160,7 +160,7 @@ class Access extends MY_Controller {
 			$input_data = $this->input->post(NULL,TRUE);
 			if($input_data['application_type_ID']=="guest")
 			{
-				$this->form_validation->set_rules("guest_name","來賓姓名","required");
+				$this->form_validation->set_rules("guest_name[]","來賓姓名","required|trim");
 				$this->form_validation->set_rules("guest_access_start_date","磁卡使用時段","required");
 				$this->form_validation->set_rules("guest_access_start_time","磁卡使用時段","required");
 				$this->form_validation->set_rules("guest_access_end_date","磁卡使用時段","required");

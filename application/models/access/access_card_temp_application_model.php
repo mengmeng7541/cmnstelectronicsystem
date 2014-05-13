@@ -85,15 +85,18 @@ class Access_card_temp_application_model extends MY_Model {
 		}
 		if($data['application_type_ID']=="guest"){
 			//寫入資料
-			$insert_id = $this->access_model->add_access_card_temp_application(array(
-				"applied_by"=>$this->session->userdata('ID'),
-				"application_type"=>$type['type_no'],
-				"guest_name"=>$data['guest_name'],
-				"guest_mobile"=>$data['guest_mobile'],
-				"guest_purpose"=>$purpose['purpose_no'],
-				"guest_access_start_time"=>$data['guest_access_start_date'].' '.$data['guest_access_start_time'],
-				"guest_access_end_time"=>$data['guest_access_end_date'].' '.$data['guest_access_end_time']
-			));
+			foreach((array)$data['guest_name'] as $idx => $guest_name){
+				$insert_id = $this->access_model->add_access_card_temp_application(array(
+					"applied_by"=>$this->session->userdata('ID'),
+					"application_type"=>$type['type_no'],
+					"guest_name"=>$guest_name,
+					"guest_mobile"=>$data['guest_mobile'][$idx],
+					"guest_purpose"=>$purpose['purpose_no'],
+					"guest_access_start_time"=>$data['guest_access_start_date'].' '.$data['guest_access_start_time'],
+					"guest_access_end_time"=>$data['guest_access_end_date'].' '.$data['guest_access_end_time']
+				));
+			}
+			
 		}else if($data['application_type_ID']=="user"){
 			//get user data
 			$this->load->model('user_model');
