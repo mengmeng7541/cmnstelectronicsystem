@@ -82,7 +82,7 @@ class Access_model extends MY_Model {
 	}
 	public function add_access_card_temp_application($data)
 	{
-		->set("applied_by",$data['applied_by'])
+		$this->access_db->set("applied_by",$data['applied_by'])
 						->set("application_type",$data['application_type'])
 						->set("guest_purpose",$data['guest_purpose'])
 						->set("guest_access_start_time",$data['guest_access_start_time'])
