@@ -147,8 +147,9 @@ class Access_card_temp_application_model extends MY_Model {
 			$this->load->model('facility/access_ctrl_model');
 			$this->access_ctrl_model->open_all_door_by_num($app['guest_access_card_num'],$app['guest_access_start_time'],$app['guest_access_end_time']);
 		}else if($app['application_type_ID']=="user"){
-			//把那個人那個時間點的開卡紀錄全部換成這張卡
 			$this->load->model('facility/access_ctrl_model');
+			$this->access_ctrl_model->open_all_door_by_num($app['guest_access_card_num'],$app['guest_access_start_time'],$app['guest_access_end_time']);
+			//把開門禁並將那個人那個時間點的開卡紀錄全部換成這張卡
 			$this->access_ctrl_model->exchange($app['used_by'],$app['guest_access_card_num'],$app['guest_access_start_time'],$app['guest_access_end_time']);
 		}
 		//回傳開啟的卡號
