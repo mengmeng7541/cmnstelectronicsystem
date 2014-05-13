@@ -27,13 +27,13 @@
 							<div class="control-group">
 					            <label class="control-label">申請磁卡類別</label>
 					            <div class="controls">
-									<?=form_dropdown("application_type_ID",array(),isset($application_type_ID)?$application_type_ID:"","");?>
+									<?=form_dropdown("application_type_ID",array(),"","");?>
 								</div>
 							</div>
 							<div class="control-group">
 					            <label class="control-label">申請磁卡目的</label>
 					            <div class="controls">
-									<?=form_dropdown("guest_purpose_ID",array(),isset($guest_purpose_ID)?$guest_purpose_ID:"","");?>
+									<?=form_dropdown("guest_purpose_ID",array(),"","");?>
 								</div>
 							</div>
 							<div class="row-fluid user">
@@ -126,6 +126,8 @@
 			}
 		});
 		//取SELECT OPTION的資料
+		var application_type_ID = <?=isset($application_type_ID)?$application_type_ID:"";?>;
+		var guest_purpose_ID = <?=isset($guest_purpose_ID)?$guest_purpose_ID:"";?>;
 		$.ajax({
 			url: site_url+'access/get_access_card_temp_application_type_purpose_json',
 			type: 'GET',
@@ -139,16 +141,16 @@
 			$("select[name='application_type_ID']").trigger("change");
 			
 			//取申請單的資料
-			var serial_no = $("form input[name='serial_no']").val();
-			if(serial_no != ''){
-				$.ajax({
-					url: site_url+'access/get_access_card_temp_application/'+serial_no,
-					dataType: 'json',
-				}).done(function(data){
-					$("select[name='application_type_ID'] option").filter(function(){return $(this).val()==data.application_type_ID}).prop("selected",true).trigger("change");
-					$("select[name='guest_purpose_ID'] option").filter(function(){return $(this).val()==data.guest_purpose_ID}).prop("selected",true);
-				});
-			}
+//			var serial_no = $("form input[name='serial_no']").val();
+//			if(serial_no != ''){
+//				$.ajax({
+//					url: site_url+'access/get_access_card_temp_application/'+serial_no,
+//					dataType: 'json',
+//				}).done(function(data){
+					$("select[name='application_type_ID'] option").filter(function(){return $(this).val()==application_type_ID}).prop("selected",true).trigger("change");
+					$("select[name='guest_purpose_ID'] option").filter(function(){return $(this).val()==guest_purpose_ID}).prop("selected",true);
+//				});
+//			}
 		});
 		//自動開關
 		$("input[type='checkbox'][name='auto_issue']").change(function(){
