@@ -82,13 +82,19 @@ class Access_model extends MY_Model {
 	}
 	public function add_access_card_temp_application($data)
 	{
-		$this->access_db->set("applied_by",$data['applied_by'])
+		->set("applied_by",$data['applied_by'])
 						->set("application_type",$data['application_type'])
-						->set("guest_name",$data['guest_name'])
-						->set("guest_mobile",$data['guest_mobile'])
 						->set("guest_purpose",$data['guest_purpose'])
 						->set("guest_access_start_time",$data['guest_access_start_time'])
 						->set("guest_access_end_time",$data['guest_access_end_time']);
+		if(isset($data['guest_name']))
+		{
+			$this->access_db->set("guest_name",$data['guest_name']);
+		}
+		if(isset($data['guest_mobile']))
+		{
+			$this->access_db->set("guest_mobile",$data['guest_mobile']);
+		}	
 		$this->access_db->insert("access_card_temp_application");
 		return $this->access_db->insert_id();
 	}
