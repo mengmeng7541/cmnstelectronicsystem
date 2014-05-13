@@ -9,20 +9,32 @@ class Access_card_temp_application_model extends MY_Model {
 		$this->load->model('access_model');
 	}
 	
-	private function _get_type_list($type_no = NULL)
+	private function _get_type_list($options = array())
 	{
-		if(isset($type_no))
+		if(isset($options['type_no']))
 		{
-			$this->access_db->where("type_no",$type_no);
+			$this->access_db->where("type_no",$options['type_no']);
+		}
+		if(isset($options['type_ID']))
+		{
+			$this->access_db->where("type_ID",$options['type_ID']);
 		}
 		return $this->access_db->get("enum_access_card_temp_application_type");
 	}
 	
-	private function _get_purpose_list($type_no = NULL)
+	private function _get_purpose_list($options = array())
 	{
-		if(isset($type_no))
+		if(isset($options['type_no']))
 		{
-			$this->access_db->where("type_no",$type_no);
+			$this->access_db->where("type_no",$options['type_no']);
+		}
+		if(isset($options['purpose_no']))
+		{
+			$this->access_db->where("purpose_no",$options['purpose_no']);
+		}
+		if(isset($options['purpose_ID']))
+		{
+			$this->access_db->where("purpose_ID",$options['purpose_ID']);
 		}
 		return $this->access_db->get("enum_access_card_temp_application_purpose");
 	}
@@ -45,7 +57,7 @@ class Access_card_temp_application_model extends MY_Model {
 	}
 	public function get_purpose_select_option_array($type_no = NULL)
 	{
-		$types = $this->_get_type_list($type_no)->result_array();
+		$types = $this->_get_type_list(array("type_no"=>$type_no))->result_array();
 		
 		$output = array();
 		foreach($types as $type){
@@ -62,13 +74,23 @@ class Access_card_temp_application_model extends MY_Model {
 	//
 	public function apply_guest($data)
 	{
+		//get type index
+		$type = $this->_get_type_list(array("type_ID"=>$data['application_type']))->row_array();
+		if(!$type){
+			throw new Exception("無此類別",ERROR_CODE);
+		}
+		//get purpose index
+		$purpose = $this->_get_purpose_list(array("purpose_ID"=>$data['guest_purpose']))->row_array();
+		if(!$purpose){
+			throw new Exception("無此目的",ERROR_CODE);
+		}
 		//寫入資料
 		$insert_id = $this->access_model->add_access_card_temp_application(array(
 			"applied_by"=>$this->session->userdata('ID'),
-			"application_type"=>$data['application_type'],
+			"application_type"=>$type['type_no'],
 			"guest_name"=>$data['guest_name'],
 			"guest_mobile"=>$data['guest_mobile'],
-			"guest_purpose"=>$data['guest_purpose'],
+			"guest_purpose"=>$purpose['purpose_no'],
 			"guest_access_start_time"=>$data['guest_access_start_date'].' '.$data['guest_access_start_time'],
 			"guest_access_end_time"=>$data['guest_access_end_date'].' '.$data['guest_access_end_time']
 		));
@@ -77,15 +99,25 @@ class Access_card_temp_application_model extends MY_Model {
 	}
 	public function apply_user($data)
 	{
+		//get type index
+		$type = $this->_get_type_list(array("type_ID"=>$data['application_type']))->row_array();
+		if(!$type){
+			throw new Exception("無此類別",ERROR_CODE);
+		}
+		//get purpose index
+		$purpose = $this->_get_purpose_list(array("purpose_ID"=>$data['guest_purpose']))->row_array();
+		if(!$purpose){
+			throw new Exception("無此目的",ERROR_CODE);
+		}
 		$insert_id = $this->access_model->add_access_card_temp_application(array(
 			"applied_by"=>$this->session->userdata('ID'),
-			"application_type"=>$data['application_type'],
-			"guest_purpose"=>$data['guest_purpose'],
+			"application_type"=>$type['type_no'],
+			"guest_purpose"=>$purpose['purpose_no'],
 			"guest_access_start_time"=>date("Y-m-d H:i:s"),
-			"guest_access_end_time"=>date("Y-m-d H:i:s",strtotime("+1day"))
+			"guest_access_end_time"=>date("Y-m-d 00:00:00",strtotime("+1day"))
 		));
 		
-		
+		//發信通知
 	}
 	
 	public function issue($SN,$card_num = NULL,$issued_by = NULL)
