@@ -118,7 +118,7 @@ class Access_model extends MY_Model {
 			$this->access_db->set("refunded_by",$data['refunded_by']);
 			$this->access_db->set("refundation_time",date("Y-m-d H:i:s"));
 		}
-		if(isset($data['application_checkpoint_ID']))
+		if(isset($data['application_checkpoint']))
 		{
 			$this->access_db->set("application_checkpoint",$data['application_checkpoint']);
 		}

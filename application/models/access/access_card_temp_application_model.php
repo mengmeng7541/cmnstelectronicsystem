@@ -147,7 +147,7 @@ class Access_card_temp_application_model extends MY_Model {
 			throw new Exception("無此單資料");
 		}
 		//標記已用
-		$this->access_model->update_access_card_pool(array("occupied"=>1,"access_card_num"=>$app['card_num']));
+		$this->access_model->update_access_card_pool(array("occupied"=>1,"access_card_num"=>$app['guest_access_card_num']));
 		//開啟權限
 		$this->load->model('facility/access_ctrl_model');
 		$this->access_ctrl_model->open_all_door_by_num($app['guest_access_card_num'],$app['guest_access_start_time'],$app['guest_access_end_time']);
