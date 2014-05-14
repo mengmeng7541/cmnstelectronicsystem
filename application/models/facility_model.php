@@ -560,6 +560,7 @@ class Facility_model extends MY_Model {
 				$row['CtrlNo'] = "71";//B1實驗室門禁
 				$row['Status'] = "01";
 			}
+			$row['FDateTime'] = $row['FDate'].' '.$row['FTime'];
 			$this->facility_db->insert("Card",$row);
 		}
 	}
