@@ -47,11 +47,28 @@ class Access_model extends MY_Model {
 		}
 		return $this->access_db->get("access_card_pool");
 	}
+	public function add_access_card_pool($data)
+	{
+		foreach((array)$data['access_card_num'] as $access_card_num)
+		{
+			$this->access_db->set("access_card_num",$access_card_num);
+			$this->access_db->set("occupied",0);
+			$this->access_db->insert("access_card_pool");
+		}
+	}
 	public function update_access_card_pool($data)
 	{
 		$this->access_db->set("occupied",$data['occupied']);
 		$this->access_db->where("access_card_num",$data['access_card_num']);
 		$this->access_db->update("access_card_pool");
+	}
+	public function del_access_card_pool($data)
+	{
+		foreach((array)$data['access_card_num'] as $access_card_num)
+		{
+			$this->access_db->where("access_card_num",$access_card_num);
+			$this->access_db->delete("access_card_pool");
+		}
 	}
 	//-----------------------------ENUM--------------------------
 	public function get_enum_access_card_temp_application_checkpoint_list($options = array())
@@ -62,7 +79,8 @@ class Access_model extends MY_Model {
 		}
 		return $this->access_db->get("enum_access_card_temp_application_checkpoint");
 	}
-	//----------------------ACCESS_CARD--------------------------
+	
+	//----------------------ACCESS_CARD TEMP APPLICATION--------------------------
 	public function get_access_card_temp_application_list($options = array())
 	{
 		$sTable = "access_card_temp_application";

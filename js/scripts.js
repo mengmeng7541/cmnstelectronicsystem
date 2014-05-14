@@ -3500,6 +3500,50 @@ var App = function () {
         		table_access_card_temp_application_list.fnReloadAjax(null,null,true);
         	});
         });
+        //---------------POOL--------------
+        var table_access_card_pool_list = $("#table_access_card_pool_list").dataTable({
+        	"sAjaxSource": site_url+"access/card/pool/query",
+            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+        });
+        $("#form_access_card_pool_list button[name='del']").click(function(){
+//        	$.ajax({
+//        		url: site_url+"access/card/pool/del",
+//        		type: "POST",
+//        		data: $("#form_access_card_pool_list").serialize(),
+//				beforeSend: function(){
+//					showRequest();	
+//				}
+//        	}).done(function(data){
+//        		showResponse(data);
+//        		table_access_card_pool_list.fnReloadAjax(null,null,true);
+//        	});
+			ajaxSubmitOptions = { 
+		        beforeSubmit:  showRequest,  // pre-submit callback 
+		        success:       function(data){
+		        	showResponse(data);
+		        	table_access_card_pool_list.fnReloadAjax(null,null,true);
+		        },  // post-submit callback 
+		        url:       site_url+"access/card/pool/del",// override for form's 'action' attribute  
+	    	}; 	
+        });
+        $("#form_access_card_pool_add_batch").click(function(){
+        	ajaxSubmitOptions = { 
+		        beforeSubmit:  showRequest,  // pre-submit callback 
+		        success:       function(data){
+		        	showResponse(data);
+		        	table_access_card_pool_list.fnReloadAjax(null,null,true);
+		        },  // post-submit callback 
+		        url:       site_url+"access/card/pool/add/batch",// override for form's 'action' attribute  
+	    	}; 	
+        });
 	}
 	
     var handleFormWizards = function () {
