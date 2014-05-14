@@ -56,7 +56,9 @@ class Access extends MY_Controller {
 			$input_data = $this->input->post(NULL,TRUE);
 			
 			//先取
-			$privileges = $this->access_model->get_privilege_list()->result_array();
+			$privileges = $this->access_model->get_privilege_list(array(
+				"privilege"=>"access_super_admin"
+			))->result_array();
 			//再刪
 			foreach($privileges as $privilege){
 				$this->access_model->del_privilege(array(
@@ -67,6 +69,8 @@ class Access extends MY_Controller {
 			$this->access_model->add_privilege(array(
 				"admin_ID"=>$input_data['admin_ID']
 			));
+			
+			echo $this->info_modal("設定成功");
 		}catch(Exception $e){
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
