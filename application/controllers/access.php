@@ -136,10 +136,9 @@ class Access extends MY_Controller {
 					throw new Exception("啟始流水號不可大於結束流水號",WARNING_CODE);
 				}
 				for($i=$input_data['serial_no_start'];$i<=$input_data['serial_no_end'];$i++){
-					echo $i;
-//					$this->access_model->add_access_card_pool(array(
-//						"access_card_num"=>$i
-//					));
+					$this->access_model->add_access_card_pool(array(
+						"access_card_num"=>str_pad($i,8,"0",STR_PAD_LEFT)
+					));
 				}
 			}else{
 				

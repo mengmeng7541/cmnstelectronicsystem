@@ -51,6 +51,10 @@ class Access_model extends MY_Model {
 	{
 		foreach((array)$data['access_card_num'] as $access_card_num)
 		{
+			$exist = $this->get_access_card_pool_list(array("access_card_num"=>$access_card_num))->num_rows();
+			if($exist){
+				continue;
+			}//存在就略過
 			$this->access_db->set("access_card_num",$access_card_num);
 			$this->access_db->set("occupied",0);
 			$this->access_db->insert("access_card_pool");
