@@ -78,11 +78,32 @@ class Access extends MY_Controller {
 		//-----------------ACCESS CARD POOL----------
 	public function list_access_card_pool()
 	{
-		
+		try{
+			$this->is_admin_login();
+		}catch(Exception $e){
+			
+		}
 	}
 	public function query_access_card_pool()
 	{
-		
+		try{
+			$this->is_admin_login();
+			
+			$cards = $this->access_model->get_access_card_pool_list()->result_array();
+			
+			$output['aaData'] = array();
+			foreach($cards as $card){
+				$row = array();
+				$row[] = $card['access_card_num'];
+				$display = array();
+				$display[] = form_checkbox("access_card_num[]",$row['access_card_num']);
+				$row[] = implode(' ',$display);
+				$output['aaData'][] = $row;
+			}
+			echo json_encode($output);
+		}catch(Exception $e){
+			echo json_encode($output);
+		}
 	}
 	public function form_access_card_pool()
 	{
@@ -92,17 +113,69 @@ class Access extends MY_Controller {
 	{
 		
 	}
-	public function add_access_card_pool()
+	public function add_access_card_pool($action = NULL)
 	{
-		
+		try{
+			$this->is_admin_login();
+			
+			if(!$this->access_model->is_super_admin())
+			{
+				throw new Exception("沒有權限",ERROR_CODE);
+			}
+			
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			if($action=="batch"){
+				$this->form_validation->set_rules("serial_no_start","啟始流水號","required|numeric|exact_length[8]");
+				$this->form_validation->set_rules("serial_no_end","結束流水號","required|numeric|exact_length[8]");
+				if(!$this->form_validation->run()){
+					throw new Exception(validation_errors(),WARNING_CODE);
+				}
+				if($input_data['serial_no_start'] > $input_data['serial_no_end'])
+				{
+					throw new Exception("啟始流水號不可大於結束流水號",WARNING_CODE);
+				}
+				for($i=$input_data['serial_no_start'];$i<=$input_data['serial_no_end'];$i++){
+					echo $i;
+//					$this->access_model->add_access_card_pool(array(
+//						"access_card_num"=>$i
+//					));
+				}
+			}else{
+				
+			}
+			
+			echo $this->info_modal("新增成功");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
 	}
 	public function update_access_card_pool()
 	{
 		
 	}
-	public function del_access_card_pool()
+	public function del_access_card_pool($SN = NULL)
 	{
-		
+		try{
+			$this->is_admin_login();
+			
+			if(!$this->access_model->is_super_admin()){
+				throw new Exception("沒有權限",ERROR_CODE);
+			}
+			
+			if(isset($SN)){
+				
+			}else{
+				$input_data = $this->input->post(NULL,TRUE);
+				$this->access_model->del_access_card_pool(array(
+					"access_card_num"=>$input_data['access_card_num']
+				));
+			}
+			
+			echo $this->info_modal("刪除成功");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
 	}
 	//-----------------------TEMP APPLICATION--------------------
 	public function list_card_temp_application()
