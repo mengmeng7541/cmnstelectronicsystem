@@ -23,7 +23,12 @@ class Access extends MY_Controller {
 			
 			$this->load->model('admin_model');
 			$this->data['admin_ID_select_options'] = $this->admin_model->get_admin_ID_select_options();
-			
+			$privileges = $this->access_model->get_privilege_list(array(
+				"privilege"=>"access_super_admin"
+			))->result_array();
+			if($privileges){
+				$this->data['admin_ID'] = sql_column_to_key_value_array($privileges,"admin_ID");
+			}
 			$this->load->view('templates/header');
 			$this->load->view('templates/sidebar');
 			$this->load->view('access/edit_config',$this->data);
@@ -42,7 +47,7 @@ class Access extends MY_Controller {
 				throw new Exception("權限不足",ERROR_CODE);
 			}
 			
-			$this->form_validation("admin_ID[]","管理員","required");
+			$this->form_validation->set_rules("admin_ID[]","管理員","required");
 			if(!$this->form_validation->run())
 			{
 				throw new Exception(validation_errors(),WARNING_CODE);
