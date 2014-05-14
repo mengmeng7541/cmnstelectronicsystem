@@ -43,7 +43,7 @@
                <div class="span6">
                   <div class="widget">
                      <div class="widget-title">
-                        <h4><i class="icon-reorder"></i>磁卡批次新增</h4>
+                        <h4><i class="icon-reorder"></i>自動核發臨時磁卡 - 批次新增</h4>
                      </div>
                      <div class="widget-body form">
                      	<form id="form_access_card_pool_add_batch" action="<?=site_url('/access/card/pool/add/batch');?>" method="POST" class="form-horizontal">
@@ -72,7 +72,7 @@
                <div class="span12">
                   <div class="widget">
                      <div class="widget-title">
-                        <h4><i class="icon-reorder"></i>磁卡游泳池</h4>
+                        <h4><i class="icon-reorder"></i>自動核發臨時磁卡列表</h4>
                      </div>
                      <div class="widget-body form">
                      	<form id="form_access_card_pool_list" action="<?=site_url();?>/access/card/pool/del" method="POST" >

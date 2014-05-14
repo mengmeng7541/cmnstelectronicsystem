@@ -612,8 +612,18 @@ class User extends MY_Controller {
 			}
 			$row = array();
 			$row[] = "";
-			$row[] = $result['user_name'];
-			$row[] = $result['user_mobile'];
+			if(empty($result['user_name'])){
+				if(empty($result['guest_name'])){
+					$row[] = "未知人員";
+					$row[] = "";
+				}else{
+					$row[] = $result['guest_name'];
+					$row[] = $result['guest_mobile'];
+				}
+			}else{
+				$row[] = $result['user_name'];
+				$row[] = $result['user_mobile'];
+			}
 			$row[] = $result['access_first_datetime'];
 			$row[] = $result['access_last_datetime'];
 			$output['aaData'][] = $row;
