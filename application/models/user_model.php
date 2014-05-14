@@ -416,11 +416,11 @@ class User_model extends MY_Model {
 		$sJoinTable = array("user"=>"cmnst_common.user_profile","facility"=>"cmnst_facility.facility_list","location"=>"cmnst_common.location","temp"=>"cmnst_access.access_card_temp_application");
 		$this->clock_db->select("
 			card.Status AS access_status,
+			card.CardNo AS user_card_num,
 			MAX(TIMESTAMP(card.FDate,card.FTime)) AS access_last_datetime,
 			MIN(TIMESTAMP(card.FDate,card.FTime)) AS access_first_datetime,
 			{$sJoinTable['user']}.name AS user_name,
 			{$sJoinTable['user']}.mobile AS user_mobile,
-			{$sJoinTable['user']}.card_num AS user_card_num,
 			{$sJoinTable['facility']}.parent_ID AS facility_parent_ID,
 			{$sJoinTable['facility']}.location_ID AS location_ID,
 			{$sJoinTable['location']}.location_cht_name AS location_cht_name,
