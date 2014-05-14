@@ -413,7 +413,7 @@ class User_model extends MY_Model {
 	public function get_clock_list($options = array())
 	{
 		$sTable = "cmnst_facility.Card";
-		$sJoinTable = array("user"=>"cmnst_common.user_profile","facility"=>"cmnst_facility.facility_list","location"=>"cmnst_common.location");
+		$sJoinTable = array("user"=>"cmnst_common.user_profile","facility"=>"cmnst_facility.facility_list","location"=>"cmnst_common.location","temp"=>"cmnst_access.access_card_temp_application");
 		$this->clock_db->select("
 			card.Status AS access_status,
 			MAX(TIMESTAMP(card.FDate,card.FTime)) AS access_last_datetime,
@@ -423,14 +423,17 @@ class User_model extends MY_Model {
 			{$sJoinTable['user']}.card_num AS user_card_num,
 			{$sJoinTable['facility']}.parent_ID AS facility_parent_ID,
 			{$sJoinTable['facility']}.location_ID AS location_ID,
-			{$sJoinTable['location']}.location_cht_name AS location_cht_name
+			{$sJoinTable['location']}.location_cht_name AS location_cht_name,
+			{$sJoinTable['temp']}.guest_name AS guest_name,
+			{$sJoinTable['temp']}.guest_mobile AS guest_mobile
 			FROM
 			(SELECT * FROM $sTable WHERE TIMESTAMP(FDate,FTime) > NOW() - INTERVAL 7 DAY ORDER BY FDate DESC, FTime DESC) card
 		",FALSE)
-					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num")
+					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num","LEFT")
 					   ->join($sJoinTable['facility'],"card.CtrlNo = {$sJoinTable['facility']}.ctrl_no","LEFT")
 					   ->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT")
 					   ->join("(SELECT MAX(TIMESTAMP(FDate,FTime)) AS access_out_last_datetime,CardNo FROM $sTable WHERE Status='01' GROUP BY CardNo) temp_card","temp_card.CardNo = card.CardNo","LEFT")
+					   ->join("(SELECT * FROM {$sJoinTable['temp']} ORDER BY issuance_time DESC) {$sJoinTable['temp']}","card.CardNo = {$sJoinTable['temp']}.guest_access_card_num","LEFT")
 					   ->group_by("card.CardNo");
 		$this->clock_db->where("TIMESTAMP(card.FDate,card.FTime) >","temp_card.access_out_last_datetime",FALSE);
 		if(isset($options['location_ID']))

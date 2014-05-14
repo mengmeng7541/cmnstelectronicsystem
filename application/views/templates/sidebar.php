@@ -85,6 +85,7 @@
 	                    <li><a class="" href="<?=site_url();?>/facility/admin/access/card/list">進出紀錄</a></li>
 	                    <li><a class="" href="<?=site_url();?>/facility/admin/access/link/list">連線設定</a></li>
 	                    <li><a class="" href="<?=site_url();?>/access/config/edit">系統設置</a></li>
+	                    <li><a class="" href="<?=site_url();?>/user/clock/list/3">建置中</a></li>
 					</ul>
 				</li>
 				<li><a class="" href="<?=site_url();?>/logout"><span class="icon-box"><i class="icon-user"></i></span> 登出</a></li>
