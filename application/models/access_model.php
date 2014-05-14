@@ -20,6 +20,19 @@ class Access_model extends MY_Model {
 		}
 		return $this->access_db->get("access_admin_privilege");
 	}
+	public function add_privilege($data)
+	{
+		foreach((array)$data['admin_ID'] as $admin_ID){
+			$this->access_db->set("admin_ID",$admin_ID);
+			$this->access_db->set("privilege","access_super_admin");
+			$this->access_db->insert("access_admin_privilege");
+		}
+	}
+	public function del_privilege($data)
+	{
+		$this->access_db->set("serial_no",$data['serial_no']);
+		$this->access_db->delete("access_admin_privilege");
+	}
 	public function is_super_admin($admin_ID = NULL)
 	{
 		if(!isset($admin_ID)) $admin_ID = $this->session->userdata('ID');
