@@ -41,6 +41,10 @@ class Access_model extends MY_Model {
 	//----------------------------CARD POOL----------------------
 	public function get_access_card_pool_list($options = array())
 	{
+		if(isset($options['access_card_num']))
+		{
+			$this->access_db->where("access_card_num",$options['access_card_num']);
+		}
 		if(isset($options['occupied']))
 		{
 			$this->access_db->where("occupied",$options['occupied']);
