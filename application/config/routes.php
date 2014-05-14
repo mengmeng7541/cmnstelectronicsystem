@@ -195,7 +195,7 @@ $route['access/card/application/temp/del/(:num)'] = 'access/del_card_temp_applic
 $route['access/card/pool/list'] = 'access/list_access_card_pool';
 $route['access/card/pool/query'] = 'access/query_access_card_pool';
 $route['access/card/pool/add'] = 'access/add_access_card_pool';
-$route['access/card/pool/add/(:num)'] = 'access/add_access_card_pool/$1';
+$route['access/card/pool/add/(:any)'] = 'access/add_access_card_pool/$1';
 $route['access/card/pool/del'] = 'access/del_access_card_pool';
 $route['access/card/pool/del/(:num)'] = 'access/del_access_card_pool/$1';
 

@@ -3510,19 +3510,11 @@ var App = function () {
                     "sNext": "Next"
                 }
             },
+            "fnDrawCallback": function( oSettings ){
+				handleUniform();
+			}
         });
         $("#form_access_card_pool_list button[name='del']").click(function(){
-//        	$.ajax({
-//        		url: site_url+"access/card/pool/del",
-//        		type: "POST",
-//        		data: $("#form_access_card_pool_list").serialize(),
-//				beforeSend: function(){
-//					showRequest();	
-//				}
-//        	}).done(function(data){
-//        		showResponse(data);
-//        		table_access_card_pool_list.fnReloadAjax(null,null,true);
-//        	});
 			ajaxSubmitOptions = { 
 		        beforeSubmit:  showRequest,  // pre-submit callback 
 		        success:       function(data){
