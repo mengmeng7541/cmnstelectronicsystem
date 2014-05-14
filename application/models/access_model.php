@@ -30,7 +30,7 @@ class Access_model extends MY_Model {
 	}
 	public function del_privilege($data)
 	{
-		$this->access_db->set("serial_no",$data['serial_no']);
+		$this->access_db->where("serial_no",$data['serial_no']);
 		$this->access_db->delete("access_admin_privilege");
 	}
 	public function is_super_admin($admin_ID = NULL)
