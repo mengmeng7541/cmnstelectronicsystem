@@ -96,7 +96,7 @@ class Access extends MY_Controller {
 				$row = array();
 				$row[] = $card['access_card_num'];
 				$display = array();
-				$display[] = form_checkbox("access_card_num[]",$row['access_card_num']);
+				$display[] = form_checkbox("access_card_num[]",$card['access_card_num']);
 				$row[] = implode(' ',$display);
 				$output['aaData'][] = $row;
 			}
