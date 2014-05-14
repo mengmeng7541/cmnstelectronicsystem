@@ -57,16 +57,18 @@
 									</div>
 								</div>
 								<div class="row-fluid batch-input-area">
-									<div class="control-group span6">
-							            <label class="control-label">訪客姓名</label>
-							            <div class="controls">
-											<input type="text" name="guest_name[]" value="<?=isset($guest_name)?$guest_name:"";?>"/>
+									<div class="row-fluid">
+										<div class="control-group span6">
+								            <label class="control-label">訪客姓名</label>
+								            <div class="controls">
+												<input type="text" name="guest_name[]" value="<?=isset($guest_name)?$guest_name:"";?>"/>
+											</div>
 										</div>
-									</div>
-									<div class="control-group span6">
-							            <label class="control-label">訪客聯絡手機(選填)</label>
-							            <div class="controls">
-											<input type="text" name="guest_mobile[]" value="<?=isset($guest_mobile)?$guest_mobile:"";?>"/>
+										<div class="control-group span6">
+								            <label class="control-label">訪客聯絡手機(選填)</label>
+								            <div class="controls">
+												<input type="text" name="guest_mobile[]" value="<?=isset($guest_mobile)?$guest_mobile:"";?>"/>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -141,16 +143,9 @@
 			$("select[name='application_type_ID']").trigger("change");
 			
 			//取申請單的資料
-//			var serial_no = $("form input[name='serial_no']").val();
-//			if(serial_no != ''){
-//				$.ajax({
-//					url: site_url+'access/get_access_card_temp_application/'+serial_no,
-//					dataType: 'json',
-//				}).done(function(data){
-					$("select[name='application_type_ID'] option").filter(function(){return $(this).val()==application_type_ID}).prop("selected",true).trigger("change");
-					$("select[name='guest_purpose_ID'] option").filter(function(){return $(this).val()==guest_purpose_ID}).prop("selected",true);
-//				});
-//			}
+			$("select[name='application_type_ID'] option").filter(function(){return $(this).val()==application_type_ID}).prop("selected",true).trigger("change");
+			$("select[name='guest_purpose_ID'] option").filter(function(){return $(this).val()==guest_purpose_ID}).prop("selected",true);
+
 		});
 		//自動開關
 		$("input[type='checkbox'][name='auto_issue']").change(function(){
@@ -159,7 +154,7 @@
 		//新增一列
 		var row_new = $("div.batch-input-area").html();
 		$("button[name='add']").click(function(){
-			$("div.batch-input-area").last().after(row_new);
+			$("div.batch-input-area").append(row_new);
 		});
 	});
 </script>
