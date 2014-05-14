@@ -117,29 +117,29 @@ class Access extends MY_Controller {
 		}
 	}
 	
-	public function get_access_card_temp_application($SN = ""){
-		try{
-			$this->is_admin_login();
-			
-			$SN = $this->security->xss_clean($SN);
-			
-			$app = $this->access_model->get_access_card_temp_application_list(array("serial_no"=>$SN))->row_Array();
-			if(!$app){
-				throw new Exception();
-			}
-			
-			$output = array();
-			$output = $app;
-			echo json_encode($output);
-		}catch(Exception $e){
-			
-		}
-	}
+//	public function get_access_card_temp_application($SN = ""){
+//		try{
+//			$this->is_admin_login();
+//			
+//			$SN = $this->security->xss_clean($SN);
+//			
+//			$app = $this->access_model->get_access_card_temp_application_list(array("serial_no"=>$SN))->row_Array();
+//			if(!$app){
+//				throw new Exception();
+//			}
+//			
+//			$output = array();
+//			$output = $app;
+//			echo json_encode($output);
+//		}catch(Exception $e){
+//			
+//		}
+//	}
 	
 	public function get_access_card_temp_application_type_purpose_json()
 	{
 		try{
-			
+			$this->is_user_login();
 			$output = $this->access_card_temp_application_model->get_type_purpose_array();
 			echo json_encode($output);
 		}catch(Exception $e){
