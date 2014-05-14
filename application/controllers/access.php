@@ -165,6 +165,11 @@ class Access extends MY_Controller {
 			if(isset($SN)){
 				
 			}else{
+				$this->form_validation->set_rules("access_card_num[]","卡號","required");
+				if(!$this->form_validation->run())
+				{
+					throw new Exception(validation_errors(),WARNING_CODE);
+				}
 				$input_data = $this->input->post(NULL,TRUE);
 				$this->access_model->del_access_card_pool(array(
 					"access_card_num"=>$input_data['access_card_num']
