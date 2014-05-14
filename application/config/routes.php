@@ -192,6 +192,9 @@ $route['access/card/application/temp/add'] = 'access/add_card_temp_application';
 $route['access/card/application/temp/update'] = 'access/update_card_temp_application';
 $route['access/card/application/temp/del/(:num)'] = 'access/del_card_temp_application/$1';
 
+$route['access/config/edit'] = 'access/edit_config';
+$route['access/config/update'] = 'access/update_config';
+
 //curriculum
 $route['curriculum/config/form'] = 'curriculum/edit_config';
 $route['curriculum/config/update'] = 'curriculum/update_config';

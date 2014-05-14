@@ -14,7 +14,88 @@ class Access extends MY_Controller {
 	{
 
 	}
-	
+	//-----------------------SYSTEM MANAGEMENT-------------------
+		//------------------ADMIN----------------
+	public function edit_config()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$this->load->model('admin_model');
+			$this->data['admin_ID_select_options'] = $this->admin_model->get_admin_ID_select_options();
+			
+			$this->load->view('templates/header');
+			$this->load->view('templates/sidebar');
+			$this->load->view('access/edit_config',$this->data);
+			$this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
+	}
+	public function update_config()
+	{
+		try{
+			$this->is_admin_login();
+			
+			if(!$this->access_model->is_super_admin())
+			{
+				throw new Exception("權限不足",ERROR_CODE);
+			}
+			
+			$this->form_validation("admin_ID[]","管理員","required");
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			//先取
+			$privileges = $this->access_model->get_privilege_list()->result_array();
+			//再刪
+			foreach($privileges as $privilege){
+				$this->access_model->del_privilege(array(
+					"serial_no"=>$privilege['serial_no']
+				));
+			}
+			//後增
+			$this->access_model->add_privilege(array(
+				"admin_ID"=>$input_data['admin_ID']
+			));
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+	}
+		//-----------------ACCESS CARD POOL----------
+	public function list_access_card_pool()
+	{
+		
+	}
+	public function query_access_card_pool()
+	{
+		
+	}
+	public function form_access_card_pool()
+	{
+		
+	}
+	public function edit_access_card_pool()
+	{
+		
+	}
+	public function add_access_card_pool()
+	{
+		
+	}
+	public function update_access_card_pool()
+	{
+		
+	}
+	public function del_access_card_pool()
+	{
+		
+	}
+	//-----------------------TEMP APPLICATION--------------------
 	public function list_card_temp_application()
 	{
 		try{
@@ -254,6 +335,13 @@ class Access extends MY_Controller {
 			if(!$app)
 			{
 				throw new Exception("無此筆資料",ERROR_CODE);
+			}
+			
+			//檢查是否為申請者本人或超級管理者
+			if(	!$this->access_model->is_super_admin() &&
+				$app['applied_by'] != $this->session->userdata('ID'))
+			{
+				throw new Exception("沒有權限",ERROR_CODE);
 			}
 			
 			if($app['application_checkpoint_ID']!="applied"){
