@@ -79,7 +79,7 @@
 	                     	<table id="table_access_card_pool_list" class="table table-striped table-bordered">
 	                     		<thead>
 	                     			<th>卡號</th>
-	                     			<th></th>
+	                     			<th><input type="checkbox" data-model="check_all" data-target="access_card_num[]"/></th>
 	                     		</thead>
 	                     	</table>
 							<div class="form-actions">
