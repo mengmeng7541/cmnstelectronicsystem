@@ -2809,7 +2809,13 @@ var App = function () {
 			"iDisplayLength": 100,
 			"fnServerParams": function ( aoData ) {
 		      aoData.push(  {"name": "location_ID", "value": $("#location_ID").val() } );
-		    }
+		    },
+		    "aoColumnDefs": [ {
+		      "aTargets": [ 0 ],
+		      "mRender": function ( data, type, full ) {
+		        return moment(data).fromNow();
+		      }
+		    } ]
         });
 	}
 	
