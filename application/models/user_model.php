@@ -430,8 +430,8 @@ class User_model extends MY_Model {
 			temp.guest_name AS guest_name,
 			temp.guest_mobile AS guest_mobile
 			FROM
-			(SELECT * FROM $sTable WHERE FDateTime > NOW() - INTERVAL 1 DAY ORDER BY FDateTime DESC) card
-		",FALSE)
+			(SELECT * FROM $sTable WHERE Status!='02' AND FDateTime > NOW() - INTERVAL 1 DAY ORDER BY FDateTime DESC) card
+		",FALSE)//過濾02電腦遙控開關
 					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num","LEFT")
 					   ->join($sJoinTable['facility'],"card.CtrlNo = {$sJoinTable['facility']}.ctrl_no","LEFT")
 					   ->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT")
