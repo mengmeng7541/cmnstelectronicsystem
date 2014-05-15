@@ -2815,7 +2815,7 @@ var App = function () {
 		      $("#to_fullscreen").click(function(){
 		      	$("#table_user_clock_list").fullscreen();
 		      });
-		    }
+		    },
 			"aaSorting": [[0,'desc']],
 			"iDisplayLength": 100,
 			"fnServerParams": function ( aoData ) {
