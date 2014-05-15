@@ -423,17 +423,20 @@ class User_model extends MY_Model {
 			{$sJoinTable['user']}.mobile AS user_mobile,
 			{$sJoinTable['facility']}.parent_ID AS facility_parent_ID,
 			{$sJoinTable['facility']}.location_ID AS location_ID,
+			{$sJoinTable['facility']}.tel_ext AS facility_tel_ext,
+			{$sJoinTable['facility']}.facility_cht_name AS facility_cht_name,
+			{$sJoinTable['facility']}.facility_eng_name AS facility_eng_name,
 			{$sJoinTable['location']}.location_cht_name AS location_cht_name,
 			temp.guest_name AS guest_name,
 			temp.guest_mobile AS guest_mobile
 			FROM
-			(SELECT * FROM $sTable WHERE FDateTime > NOW() - INTERVAL 7 DAY ORDER BY FDateTime DESC) card
+			(SELECT * FROM $sTable WHERE FDateTime > NOW() - INTERVAL 1 DAY ORDER BY FDateTime DESC) card
 		",FALSE)
 					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num","LEFT")
 					   ->join($sJoinTable['facility'],"card.CtrlNo = {$sJoinTable['facility']}.ctrl_no","LEFT")
 					   ->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT")
 					   //注意這裡要小心，目前中心只有刷出是01，所以可以這樣用，如果關掉儀器也是01時，記得這裡要改
-					   ->join("(SELECT MAX(FDateTime) AS access_out_last_datetime,CardNo FROM $sTable WHERE Status='01' AND FDateTime > NOW() - INTERVAL 7 DAY GROUP BY CardNo) card2","card2.CardNo = card.CardNo","LEFT")
+					   ->join("(SELECT MAX(FDateTime) AS access_out_last_datetime,CardNo FROM $sTable WHERE Status='01' AND FDateTime > NOW() - INTERVAL 1 DAY GROUP BY CardNo) card2","card2.CardNo = card.CardNo","LEFT")
 					   ->join("(SELECT * FROM {$sJoinTable['temp']} ORDER BY issuance_time DESC) temp","card.CardNo = temp.guest_access_card_num","LEFT")
 					   ->group_by("card.CardNo");
 		$this->clock_db->where("card.FDateTime >","card2.access_out_last_datetime",FALSE);
@@ -442,7 +445,7 @@ class User_model extends MY_Model {
 //					   ->having("card.Status","00");
 		
 		$query = $this->clock_db->get();
-		echo $this->clock_db->last_query();
+//		echo $this->clock_db->last_query();
 		return $query;
 		//$this->clock_db->get("clock_user_manual");
 	}
