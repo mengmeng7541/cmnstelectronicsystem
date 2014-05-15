@@ -610,7 +610,7 @@ class User extends MY_Controller {
 				if($facility['location_ID']!=$result['location_ID']) continue;
 			}
 			$row = array();
-			$row[] = time()-strtotime($result['access_last_datetime']);
+			$row[] = $result['access_last_datetime'];
 			if(empty($result['user_name'])){
 				if(empty($result['guest_name'])){
 					$row[] = "未知人員";
