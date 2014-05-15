@@ -2810,15 +2810,15 @@ var App = function () {
 		      	table_user_clock_list.fnReloadAjax();
 		      },10000);
 		      
-		      setTimeout(function(){
-		      	document.location.reload(true);
-		      },86400000);
+//		      setTimeout(function(){
+//		      	document.location.reload(true);
+//		      },86400000);//本來想讓它每天固定重刷，但全螢幕會跑掉就算了
 			  
 		      $("#to_fullscreen").click(function(){
 		      	$("#fullscreen_area").fullscreen();
 		      });
 		      
-		      $("#to_fullscreen").trigger("click");
+//		      $("#to_fullscreen").trigger("click");
 		    },
 			"aaSorting": [[0,'desc']],
 			"iDisplayLength": 100,
