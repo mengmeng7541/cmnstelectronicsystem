@@ -2813,7 +2813,7 @@ var App = function () {
 		      	document.location.reload(true);
 		      },86400);
 		      $("#to_fullscreen").click(function(){
-		      	$("#fullscreen_area").fullScreen(true);
+		      	$("#fullscreen_area").fullscreen();
 		      });
 		    },
 			"aaSorting": [[0,'desc']],
