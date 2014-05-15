@@ -2812,8 +2812,18 @@ var App = function () {
 		    },
 		    "aoColumnDefs": [ {
 		      "aTargets": [ 0 ],
-		      "mRender": function ( data, type, full ) {
-		        return moment(data).fromNow();
+		      "mData": function ( source, type, val ) {
+		        if (type === 'set') {
+		          source.last_access_datetime = val;
+		          // Store the computed dislay and filter values for efficiency
+		          source.last_access_datetime_display = moment(val).fromNow();
+		          return;
+		        }
+		        else if (type === 'display') {
+		          return source.price_display;
+		        }
+		        // 'sort', 'type' and undefined all just use the integer
+		        return source.last_access_datetime;
 		      }
 		    } ]
         });
