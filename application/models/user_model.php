@@ -440,7 +440,7 @@ class User_model extends MY_Model {
 					   ->join("(SELECT * FROM {$sJoinTable['temp']} ORDER BY issuance_time DESC) temp","card.CardNo = temp.guest_access_card_num","LEFT")
 					   ->group_by("card.CardNo");
 		$this->clock_db->where("card.FDateTime >","card2.access_out_last_datetime");
-		$this->clock_db->or_where("card.FDateTime",NULL);
+		$this->clock_db->or_where("card2.access_out_last_datetime",NULL);
 		if(isset($options['location_ID']))
 			$this->clock_db->having("location_ID",$options['location_ID']);
 //					   ->having("card.Status","00");
