@@ -25,10 +25,10 @@
 						<table id="table_user_clock_list" class="table table-striped table-bordered">
 							
 							<thead>
-								<th width="">更新</th>
+								<th width="100">更新</th>
 								<th width="50">姓名</th>
-								<th width="100">進入時間</th>
-								<th width="100">所在位置</th>
+								<th width="150">進入時間</th>
+								<th >所在位置</th>
 							</thead>
 							
 						</table>
