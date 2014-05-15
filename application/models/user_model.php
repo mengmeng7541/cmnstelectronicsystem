@@ -424,8 +424,8 @@ class User_model extends MY_Model {
 			{$sJoinTable['facility']}.parent_ID AS facility_parent_ID,
 			{$sJoinTable['facility']}.location_ID AS location_ID,
 			{$sJoinTable['facility']}.tel_ext AS facility_tel_ext,
-			{$sJoinTable['facility']}.facility_cht_name AS facility_cht_name,
-			{$sJoinTable['facility']}.facility_eng_name AS facility_eng_name,
+			{$sJoinTable['facility']}.cht_name AS facility_cht_name,
+			{$sJoinTable['facility']}.eng_name AS facility_eng_name,
 			{$sJoinTable['location']}.location_cht_name AS location_cht_name,
 			temp.guest_name AS guest_name,
 			temp.guest_mobile AS guest_mobile
