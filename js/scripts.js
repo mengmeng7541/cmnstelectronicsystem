@@ -6,8 +6,8 @@ var App = function () {
     var isMapPage = false;
     var isIE8 = false;
 
-    var base_url = document.location.href.split('index.php')[0];
-	var site_url = base_url+'index.php/';
+    base_url = document.location.href.split('index.php')[0];//for global usage
+	site_url = base_url+'index.php/';
 	
     var handleJQVMAP = function () {
 
@@ -2794,9 +2794,9 @@ var App = function () {
 			},1000);
 		});
 		//------------------------自動打卡(使用者)-----------------------------
-		$("#table_user_clock_list").dataTable({
+		var table_user_clock_list = $("#table_user_clock_list").dataTable({
             "sAjaxSource": site_url+"user/clock/query",
-            "sDom": "<'row-fluid'<'span12'f>r>t<'row-fluid'>",
+            "sDom": "<'row-fluid'>t<'row-fluid'>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page",
@@ -2805,11 +2805,42 @@ var App = function () {
                     "sNext": "Next"
                 }
             },
+            "fnInitComplete": function(oSettings, json) {
+		      setInterval(function(){
+		      	table_user_clock_list.fnReloadAjax();
+		      },10000);
+		      
+//		      setTimeout(function(){
+//		      	document.location.reload(true);
+//		      },86400000);//本來想讓它每天固定重刷，但全螢幕會跑掉就算了
+			  
+		      $("#to_fullscreen").click(function(){
+		      	$("#fullscreen_area").fullscreen();
+		      });
+		      
+//		      $("#to_fullscreen").trigger("click");
+		    },
 			"aaSorting": [[0,'desc']],
 			"iDisplayLength": 100,
 			"fnServerParams": function ( aoData ) {
 		      aoData.push(  {"name": "location_ID", "value": $("#location_ID").val() } );
-		    }
+		    },
+		    "aoColumnDefs": [ {
+		      "aTargets": [ 0 ],
+		      "mData": function ( source, type, val ) {
+		        if (type === 'set') {
+		          source[0] = val;
+		          // Store the computed dislay and filter values for efficiency
+		          source.last_access_datetime_display = moment(val).fromNow();
+		          return;
+		        }
+		        else if (type === 'display') {
+		          return source.last_access_datetime_display;
+		        }
+		        // 'sort', 'type' and undefined all just use the integer
+		        return source[0];
+		      }
+		    } ]
         });
 	}
 	
@@ -3463,6 +3494,81 @@ var App = function () {
         });
 	}
 	
+	var handleAccess = function(){
+		var table_access_card_temp_application_list = $("#table_access_card_temp_application_list").dataTable({
+        	"sAjaxSource": site_url+"access/card/application/temp/query",
+            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+        });
+        $("#table_access_card_temp_application_list").on("click","button[name='reject']",function(){
+        	$.ajax({
+        		url: site_url+"access/card/application/temp/del/"+$(this).val(),
+        		beforeSend: function(){
+					showRequest();
+				}
+        	}).always(function(data){
+        		showResponse(data);
+        		table_access_card_temp_application_list.fnReloadAjax(null,null,true);
+        	});
+        });
+        $("#table_access_card_temp_application_list").on("click","button[name='refund']",function(){
+        	$.ajax({
+        		url: site_url+"access/card/application/temp/update/",
+        		data: {serial_no:$(this).val()},
+        		type: "POST",
+        		beforeSend: function(){
+					showRequest();
+				}
+        	}).always(function(data){
+        		showResponse(data);
+        		table_access_card_temp_application_list.fnReloadAjax(null,null,true);
+        	});
+        });
+        //---------------POOL--------------
+        var table_access_card_pool_list = $("#table_access_card_pool_list").dataTable({
+        	"sAjaxSource": site_url+"access/card/pool/query",
+            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+            "fnDrawCallback": function( oSettings ){
+				handleUniform();
+			}
+        });
+        $("#form_access_card_pool_list button[name='del']").click(function(){
+			ajaxSubmitOptions = { 
+		        beforeSubmit:  showRequest,  // pre-submit callback 
+		        success:       function(data){
+		        	showResponse(data);
+		        	table_access_card_pool_list.fnReloadAjax(null,null,true);
+		        },  // post-submit callback 
+		        url:       site_url+"access/card/pool/del",// override for form's 'action' attribute  
+	    	}; 	
+        });
+        $("#form_access_card_pool_add_batch").click(function(){
+        	ajaxSubmitOptions = { 
+		        beforeSubmit:  showRequest,  // pre-submit callback 
+		        success:       function(data){
+		        	showResponse(data);
+		        	table_access_card_pool_list.fnReloadAjax(null,null,true);
+		        },  // post-submit callback 
+		        url:       site_url+"access/card/pool/add/batch",// override for form's 'action' attribute  
+	    	}; 	
+        });
+	}
+	
     var handleFormWizards = function () {
         if (!jQuery().bootstrapWizard) {
             return;
@@ -3650,6 +3756,7 @@ var App = function () {
 			handleRewardListTable();
 			handleRewardApplication();
 			handleRewardPlan();
+			handleAccess();
 			handleClock();
 			/*------------------------------*/
 //            handleFormWizards();

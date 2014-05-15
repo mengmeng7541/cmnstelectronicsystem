@@ -183,6 +183,25 @@ $route['facility/admin/nocharge/del'] = 'facility/del_nocharge';
 
 $route['facility/admin/tracker/list'] = 'admin/list_clock';
 
+//access_system
+$route['access/card/application/temp/list'] = 'access/list_card_temp_application';
+$route['access/card/application/temp/query'] = 'access/query_card_temp_application';
+$route['access/card/application/temp/form'] = 'access/form_card_temp_application';
+$route['access/card/application/temp/edit/(:num)'] = 'access/edit_card_temp_application/$1';
+$route['access/card/application/temp/add'] = 'access/add_card_temp_application';
+$route['access/card/application/temp/update'] = 'access/update_card_temp_application';
+$route['access/card/application/temp/del/(:num)'] = 'access/del_card_temp_application/$1';
+
+$route['access/card/pool/list'] = 'access/list_access_card_pool';
+$route['access/card/pool/query'] = 'access/query_access_card_pool';
+$route['access/card/pool/add'] = 'access/add_access_card_pool';
+$route['access/card/pool/add/(:any)'] = 'access/add_access_card_pool/$1';
+$route['access/card/pool/del'] = 'access/del_access_card_pool';
+$route['access/card/pool/del/(:num)'] = 'access/del_access_card_pool/$1';
+
+$route['access/config/edit'] = 'access/edit_config';
+$route['access/config/update'] = 'access/update_config';
+
 //curriculum
 $route['curriculum/config/form'] = 'curriculum/edit_config';
 $route['curriculum/config/update'] = 'curriculum/update_config';

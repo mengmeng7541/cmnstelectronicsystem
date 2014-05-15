@@ -413,32 +413,39 @@ class User_model extends MY_Model {
 	public function get_clock_list($options = array())
 	{
 		$sTable = "cmnst_facility.Card";
-		$sJoinTable = array("user"=>"cmnst_common.user_profile","facility"=>"cmnst_facility.facility_list","location"=>"cmnst_common.location");
+		$sJoinTable = array("user"=>"cmnst_common.user_profile","facility"=>"cmnst_facility.facility_list","location"=>"cmnst_common.location","temp"=>"cmnst_access.access_card_temp_application");
 		$this->clock_db->select("
 			card.Status AS access_status,
-			MAX(TIMESTAMP(card.FDate,card.FTime)) AS access_last_datetime,
-			MIN(TIMESTAMP(card.FDate,card.FTime)) AS access_first_datetime,
+			card.CardNo AS user_card_num,
+			MAX(card.FDateTime) AS access_last_datetime,
+			MIN(card.FDateTime) AS access_first_datetime,
 			{$sJoinTable['user']}.name AS user_name,
 			{$sJoinTable['user']}.mobile AS user_mobile,
-			{$sJoinTable['user']}.card_num AS user_card_num,
 			{$sJoinTable['facility']}.parent_ID AS facility_parent_ID,
-			{$sJoinTable['facility']}.location_ID AS location_ID,
-			{$sJoinTable['location']}.location_cht_name AS location_cht_name
+			{$sJoinTable['facility']}.tel_ext AS facility_tel_ext,
+			{$sJoinTable['facility']}.cht_name AS facility_cht_name,
+			{$sJoinTable['facility']}.eng_name AS facility_eng_name,
+			{$sJoinTable['location']}.location_ID AS location_ID,
+			{$sJoinTable['location']}.location_cht_name AS location_cht_name,
+			temp.guest_name AS guest_name,
+			temp.guest_mobile AS guest_mobile
 			FROM
-			(SELECT * FROM $sTable WHERE TIMESTAMP(FDate,FTime) > NOW() - INTERVAL 7 DAY ORDER BY FDate DESC, FTime DESC) card
-		",FALSE)
-					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num")
+			(SELECT * FROM $sTable WHERE Status!='02' AND FDateTime > NOW() - INTERVAL 1 DAY ORDER BY FDateTime DESC) card
+		",FALSE)//過濾02電腦遙控開關
+					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num","LEFT")
 					   ->join($sJoinTable['facility'],"card.CtrlNo = {$sJoinTable['facility']}.ctrl_no","LEFT")
 					   ->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT")
-					   ->join("(SELECT MAX(TIMESTAMP(FDate,FTime)) AS access_out_last_datetime,CardNo FROM $sTable WHERE Status='01' GROUP BY CardNo) temp_card","temp_card.CardNo = card.CardNo","LEFT")
-					   ->group_by("card.CardNo");
-		$this->clock_db->where("TIMESTAMP(card.FDate,card.FTime) >","temp_card.access_out_last_datetime",FALSE);
+					   //注意這裡要小心，目前中心只有刷出是01，所以可以這樣用，如果關掉儀器也是01時，記得這裡要改
+					   ->join("(SELECT MAX(FDateTime) AS access_out_last_datetime,CardNo FROM $sTable WHERE Status='01' AND FDateTime > NOW() - INTERVAL 1 DAY GROUP BY CardNo) card2","card2.CardNo = card.CardNo","LEFT")
+					   ->join("(SELECT * FROM {$sJoinTable['temp']} ORDER BY issuance_time DESC) temp","card.CardNo = temp.guest_access_card_num","LEFT");
+					   
+		$this->clock_db->where("(card.FDateTime > card2.access_out_last_datetime OR card2.access_out_last_datetime IS NULL)");
 		if(isset($options['location_ID']))
-			$this->clock_db->having("location_ID",$options['location_ID']);
+			$this->clock_db->where("{$sJoinTable['location']}.location_ID",$options['location_ID']);
 //					   ->having("card.Status","00");
-		
+		$this->clock_db->group_by("card.CardNo");
 		$query = $this->clock_db->get();
-		echo $this->clock_db->last_query();
+//		echo $this->clock_db->last_query();
 		return $query;
 		//$this->clock_db->get("clock_user_manual");
 	}
