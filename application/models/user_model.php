@@ -422,10 +422,10 @@ class User_model extends MY_Model {
 			{$sJoinTable['user']}.name AS user_name,
 			{$sJoinTable['user']}.mobile AS user_mobile,
 			{$sJoinTable['facility']}.parent_ID AS facility_parent_ID,
-			{$sJoinTable['facility']}.location_ID AS location_ID,
 			{$sJoinTable['facility']}.tel_ext AS facility_tel_ext,
 			{$sJoinTable['facility']}.cht_name AS facility_cht_name,
 			{$sJoinTable['facility']}.eng_name AS facility_eng_name,
+			{$sJoinTable['location']}.location_ID AS location_ID,
 			{$sJoinTable['location']}.location_cht_name AS location_cht_name,
 			temp.guest_name AS guest_name,
 			temp.guest_mobile AS guest_mobile
@@ -442,7 +442,7 @@ class User_model extends MY_Model {
 		$this->clock_db->where("card.FDateTime >","card2.access_out_last_datetime");
 		$this->clock_db->or_where("card2.access_out_last_datetime",NULL);
 		if(isset($options['location_ID']))
-			$this->clock_db->having("location_ID",$options['location_ID']);
+			$this->clock_db->where("{$sJoinTable['location']}.location_ID",$options['location_ID']);
 //					   ->having("card.Status","00");
 		
 		$query = $this->clock_db->get();
