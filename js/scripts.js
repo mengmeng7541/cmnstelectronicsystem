@@ -2814,7 +2814,7 @@ var App = function () {
 		      "aTargets": [ 0 ],
 		      "mData": function ( source, type, val ) {
 		        if (type === 'set') {
-		          source.last_access_datetime = val;
+		          source[0] = val;
 		          // Store the computed dislay and filter values for efficiency
 		          source.last_access_datetime_display = moment(val).fromNow();
 		          return;
@@ -2823,7 +2823,7 @@ var App = function () {
 		          return source.last_access_datetime_display;
 		        }
 		        // 'sort', 'type' and undefined all just use the integer
-		        return source.last_access_datetime;
+		        return source[0];
 		      }
 		    } ]
         });
