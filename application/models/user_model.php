@@ -439,7 +439,8 @@ class User_model extends MY_Model {
 					   ->join("(SELECT MAX(FDateTime) AS access_out_last_datetime,CardNo FROM $sTable WHERE Status='01' AND FDateTime > NOW() - INTERVAL 1 DAY GROUP BY CardNo) card2","card2.CardNo = card.CardNo","LEFT")
 					   ->join("(SELECT * FROM {$sJoinTable['temp']} ORDER BY issuance_time DESC) temp","card.CardNo = temp.guest_access_card_num","LEFT")
 					   ->group_by("card.CardNo");
-		$this->clock_db->where("card.FDateTime >","card2.access_out_last_datetime",FALSE);
+		$this->clock_db->where("card.FDateTime >","card2.access_out_last_datetime");
+		$this->clock_db->or_where("card.FDateTime",NULL);
 		if(isset($options['location_ID']))
 			$this->clock_db->having("location_ID",$options['location_ID']);
 //					   ->having("card.Status","00");
