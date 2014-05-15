@@ -2820,7 +2820,7 @@ var App = function () {
 		          return;
 		        }
 		        else if (type === 'display') {
-		          return source.price_display;
+		          return source.last_access_datetime_display;
 		        }
 		        // 'sort', 'type' and undefined all just use the integer
 		        return source.last_access_datetime;
