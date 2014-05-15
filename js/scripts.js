@@ -2809,9 +2809,10 @@ var App = function () {
 		      setInterval(function(){
 		      	table_user_clock_list.fnReloadAjax();
 		      },10000);
-		      setTimeout(function(){
-		      	document.location.reload(true);
-		      },86400);
+//		      setTimeout(function(){
+//		      	document.location.reload(true);
+//		      },86400000);
+			  $("#fullscreen_area").fullscreen();
 		      $("#to_fullscreen").click(function(){
 		      	$("#fullscreen_area").fullscreen();
 		      });
