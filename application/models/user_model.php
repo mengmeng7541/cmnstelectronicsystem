@@ -437,16 +437,16 @@ class User_model extends MY_Model {
 					   ->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT")
 					   //注意這裡要小心，目前中心只有刷出是01，所以可以這樣用，如果關掉儀器也是01時，記得這裡要改
 					   ->join("(SELECT MAX(FDateTime) AS access_out_last_datetime,CardNo FROM $sTable WHERE Status='01' AND FDateTime > NOW() - INTERVAL 1 DAY GROUP BY CardNo) card2","card2.CardNo = card.CardNo","LEFT")
-					   ->join("(SELECT * FROM {$sJoinTable['temp']} ORDER BY issuance_time DESC) temp","card.CardNo = temp.guest_access_card_num","LEFT")
-					   ->group_by("card.CardNo");
+					   ->join("(SELECT * FROM {$sJoinTable['temp']} ORDER BY issuance_time DESC) temp","card.CardNo = temp.guest_access_card_num","LEFT");
+					   
 		$this->clock_db->where("card.FDateTime >","card2.access_out_last_datetime");
 		$this->clock_db->or_where("card2.access_out_last_datetime",NULL);
 		if(isset($options['location_ID']))
 			$this->clock_db->where("{$sJoinTable['location']}.location_ID",$options['location_ID']);
 //					   ->having("card.Status","00");
-		
+		$this->clock_db->group_by("card.CardNo");
 		$query = $this->clock_db->get();
-//		echo $this->clock_db->last_query();
+		echo $this->clock_db->last_query();
 		return $query;
 		//$this->clock_db->get("clock_user_manual");
 	}
