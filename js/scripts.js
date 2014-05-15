@@ -2813,7 +2813,7 @@ var App = function () {
 		      	document.location.reload(true);
 		      },86400);
 		      $("#to_fullscreen").click(function(){
-		      	$("#table_user_clock_list").fullScreen(true);
+		      	$("#table_user_clock_list_wrapper").fullScreen(true);
 		      });
 		    },
 			"aaSorting": [[0,'desc']],
