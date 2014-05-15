@@ -20,7 +20,7 @@
 	    			<div class="widget-title">
 	                    <h4><i class="icon-reorder"></i></h4>
 	                </div>
-	                <div class="widget-body">
+	                <div class="widget-body" id="fullscreen_area">
 	                	<input type="hidden" id="location_ID" value="<?=isset($location_ID)?$location_ID:"";?>" />
 						<table id="table_user_clock_list" class="table table-striped table-bordered">
 							
@@ -32,9 +32,8 @@
 							</thead>
 							
 						</table>
-						
-						<button id="to_fullscreen" class="btn btn-primary">全螢幕</button>
 	                </div>
+	                <button id="to_fullscreen" class="btn btn-primary">全螢幕</button>
 	    		</div>
     		</div>
         </div>

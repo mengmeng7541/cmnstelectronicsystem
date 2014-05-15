@@ -2796,7 +2796,7 @@ var App = function () {
 		//------------------------自動打卡(使用者)-----------------------------
 		var table_user_clock_list = $("#table_user_clock_list").dataTable({
             "sAjaxSource": site_url+"user/clock/query",
-            "sDom": "<'row-fluid'<'span12'f>r>t<'row-fluid'>",
+            "sDom": "<'row-fluid'>t<'row-fluid'>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
                 "sLengthMenu": "_MENU_ records per page",
@@ -2813,7 +2813,7 @@ var App = function () {
 		      	document.location.reload(true);
 		      },86400);
 		      $("#to_fullscreen").click(function(){
-		      	$("#table_user_clock_list_wrapper").fullScreen(true);
+		      	$("#fullscreen_area").fullScreen(true);
 		      });
 		    },
 			"aaSorting": [[0,'desc']],
