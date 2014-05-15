@@ -32,6 +32,8 @@
 							</thead>
 							
 						</table>
+						
+						<button id="to_fullscreen" class="btn btn-primary">全螢幕</button>
 	                </div>
 	    		</div>
     		</div>
