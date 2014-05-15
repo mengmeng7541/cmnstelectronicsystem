@@ -589,7 +589,6 @@ class User extends MY_Controller {
 		$input_data = $this->input->get(NULL,TRUE);
 		
 		$data = array("location_ID"=>empty($input_data['location_ID'])?NULL:$input_data['location_ID']);
-		//還要找出此地點最後一道門的卡機編號(還沒做)
 		
 		$results = $this->user_model->get_clock_list($data)->result_array();
 		
@@ -611,21 +610,18 @@ class User extends MY_Controller {
 				if($facility['location_ID']!=$result['location_ID']) continue;
 			}
 			$row = array();
-			$row[] = "";
+			$row[] = time()-strtotime($result['access_last_datetime']);
 			if(empty($result['user_name'])){
 				if(empty($result['guest_name'])){
 					$row[] = "未知人員";
-					$row[] = "";
 				}else{
 					$row[] = $result['guest_name'];
-					$row[] = $result['guest_mobile'];
 				}
 			}else{
 				$row[] = $result['user_name'];
-				$row[] = $result['user_mobile'];
 			}
 			$row[] = $result['access_first_datetime'];
-			$row[] = $result['access_last_datetime'];
+			$row[] = $result['facility_cht_name'];
 			$output['aaData'][] = $row;
 		}
 		echo json_encode($output);
