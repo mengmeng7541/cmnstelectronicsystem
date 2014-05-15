@@ -2794,7 +2794,7 @@ var App = function () {
 			},1000);
 		});
 		//------------------------自動打卡(使用者)-----------------------------
-		$("#table_user_clock_list").dataTable({
+		var table_user_clock_list = $("#table_user_clock_list").dataTable({
             "sAjaxSource": site_url+"user/clock/query",
             "sDom": "<'row-fluid'<'span12'f>r>t<'row-fluid'>",
             "sPaginationType": "bootstrap",
@@ -2805,6 +2805,17 @@ var App = function () {
                     "sNext": "Next"
                 }
             },
+            "fnInitComplete": function(oSettings, json) {
+		      setInterval(function(){
+		      	table_user_clock_list.fnReloadAjax();
+		      },10000);
+		      setTimeout(function(){
+		      	document.location.reload(true);
+		      },86400);
+		      $("#to_fullscreen").click(function(){
+		      	$("#table_user_clock_list").fullscreen();
+		      });
+		    }
 			"aaSorting": [[0,'desc']],
 			"iDisplayLength": 100,
 			"fnServerParams": function ( aoData ) {
