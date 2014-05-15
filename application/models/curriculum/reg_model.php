@@ -370,8 +370,14 @@ class Reg_model extends MY_Model {
 					$this->load->model('user_model');
 					$this->user_model->update_user_security_verification($reg['user_ID']);
 				}else{
-					//先檢查是否為認證課程
-					if(!in_array('certification',explode(",",$reg['class_type']))) throw new Exception("此課程不含認證課程！",ERROR_CODE); 
+					//先檢查相關的報名是否有含認證課程
+					//if(!in_array('certification',explode(",",$reg['class_type']))) throw new Exception("此課程不含認證課程！",ERROR_CODE); 
+					$data = array("user_ID"=>$reg['user_ID'],"course_ID"=>$reg['course_ID'],"class_code"=>$reg['class_code'],"group_class_suite"=>TRUE);
+					$reg = $this->curriculum_model->get_reg_list($data)->row_array();
+					$class_type = explode(',',$reg['class_type']);
+					if(!in_array('certification',$class_type)){
+						throw new Exception("此課程不含認證課程！",ERROR_CODE);
+					}
 					//開啟相關儀器權限(先取得該課程相關的儀器，再開啟權限)
 					$data = array("course_ID"=>$reg['course_ID']);
 					$results = $this->curriculum_model->get_course_facility_map($data)->result_array();
@@ -381,11 +387,18 @@ class Reg_model extends MY_Model {
 						$this->user_privilege_model->add($result['facility_ID'],$reg['user_ID'],"normal");
 					}
 				}
-				//更改狀態為已認證
-				$data = array(	"reg_state"=>"certified",
-								"reg_certified_by"=>$updated_by,
-								"reg_ID"=>$reg['reg_ID']);
-				$this->curriculum_model->update_reg($data);
+				//將所有的報名更改狀態為已認證
+				$data = array("user_ID"=>$reg['user_ID'],"course_ID"=>$reg['course_ID'],"class_code"=>$reg['class_code']);
+				$regs = $this->curriculum_model->get_reg_list($data)->result_array();
+				foreach($regs as $reg)
+				{
+					$data = array("reg_state"=>"certified","reg_certified_by"=>$updated_by,"reg_ID"=>$reg['reg_ID']);
+					$this->curriculum_model->update_reg($data);
+				}
+				//$data = array(	"reg_state"=>"certified",
+				//				"reg_certified_by"=>$updated_by,
+				//				"reg_ID"=>$reg['reg_ID']);
+				//$this->curriculum_model->update_reg($data);
 			}else{
 				throw new Exception("尚未確認已到",ERROR_CODE);
 			}
