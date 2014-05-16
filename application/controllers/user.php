@@ -626,12 +626,15 @@ class User extends MY_Controller {
 			}
 //			$row[] = $result['access_first_datetime'];
 //			$row[] = $result['facility_cht_name'];
-			if(($counter%$columns_per_row)==($columns_per_row-1)){
+			$counter++;
+			if(($counter%$columns_per_row)==0){
 				$output['aaData'][] = $row;
 			}
-			$counter++;
 		}
-		if($counter%$columns_per_row!=0){
+		if(($counter%$columns_per_row)!=0){
+			for(;$counter%$columns_per_row!=0;$counter++){
+				$row[] = "";
+			}
 			$output['aaData'][] = $row;
 		}
 		echo json_encode($output);
