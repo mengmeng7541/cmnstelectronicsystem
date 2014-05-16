@@ -37,11 +37,11 @@
 								<th></th>
 							</thead>
 							
-							<style type="text/css">
+							<!--<style type="text/css">
 								tbody{
 									font-size: 4vw;
 								}
-							</style>
+							</style>-->
 							
 						</table>
 	                </div>

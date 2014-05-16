@@ -593,6 +593,8 @@ class User extends MY_Controller {
 		$results = $this->user_model->get_clock_list($data)->result_array();
 		
 		$output['aaData'] = array();
+		$columns_per_row = 4;
+		$counter = 0;
 		foreach($results as $result)
 		{
 			//如果在門口就進不去(A0)或刷出(01)，就忽略
@@ -609,7 +611,9 @@ class User extends MY_Controller {
 				if(!$facility) continue;
 				if($facility['location_ID']!=$result['location_ID']) continue;
 			}
-			$row = array();
+			if($counter%$columns_per_row==0){
+				$row = array();
+			}
 //			$row[] = $result['access_last_datetime'];
 			if(empty($result['user_name'])){
 				if(empty($result['guest_name'])){
@@ -622,6 +626,12 @@ class User extends MY_Controller {
 			}
 //			$row[] = $result['access_first_datetime'];
 //			$row[] = $result['facility_cht_name'];
+			if(($counter%$columns_per_row)==($columns_per_row-1)){
+				$output['aaData'][] = $row;
+			}
+			$counter++;
+		}
+		if($counter%$columns_per_row!=0){
 			$output['aaData'][] = $row;
 		}
 		echo json_encode($output);
