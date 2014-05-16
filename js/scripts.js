@@ -2822,7 +2822,7 @@ var App = function () {
 		      
 //		      $("#to_fullscreen").trigger("click");
 		    },
-			"aaSorting": [[0,'desc']],
+			"aaSorting": [],
 			"iDisplayLength": 100,
 			"fnServerParams": function ( aoData ) {
 		      aoData.push(  {"name": "location_ID", "value": $("#location_ID").val() } );

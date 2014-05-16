@@ -443,6 +443,7 @@ class User_model extends MY_Model {
 		if(isset($options['location_ID']))
 			$this->clock_db->where("{$sJoinTable['location']}.location_ID",$options['location_ID']);
 //					   ->having("card.Status","00");
+		$this->clock_db->order_by("access_first_datetime","DESC");
 		$this->clock_db->group_by("card.CardNo");
 		$query = $this->clock_db->get();
 //		echo $this->clock_db->last_query();
