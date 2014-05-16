@@ -593,7 +593,7 @@ class User extends MY_Controller {
 		$results = $this->user_model->get_clock_list($data)->result_array();
 		
 		$output['aaData'] = array();
-		$columns_per_row = 4;
+		$columns_per_row = 5;
 		$counter = 0;
 		foreach($results as $result)
 		{

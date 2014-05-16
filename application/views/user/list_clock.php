@@ -22,6 +22,7 @@
 	                </div>
 	                <div class="widget-body" id="fullscreen_area">
 	                	<input type="hidden" id="location_ID" value="<?=isset($location_ID)?$location_ID:"";?>" />
+	                	<div class="row-fluid" id="timer" style="text-align: center;"></div>
 						<table id="table_user_clock_list" class="table table-striped table-bordered">
 							
 							<!--<thead>
@@ -31,10 +32,11 @@
 								<th >所在位置</th>
 							</thead>-->
 							<thead class="hide">
-								<th></th>
-								<th></th>
-								<th></th>
-								<th></th>
+								<th width="20%"></th>
+								<th width="20%"></th>
+								<th width="20%"></th>
+								<th width="20%"></th>
+								<th width="20%"></th>
 							</thead>
 							
 							<!--<style type="text/css">

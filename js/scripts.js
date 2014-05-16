@@ -2806,8 +2806,10 @@ var App = function () {
                 }
             },
             "fnInitComplete": function(oSettings, json) {
+              $("#timer").html(moment().format('LLLL'));
 		      setInterval(function(){
 		      	table_user_clock_list.fnReloadAjax();
+		      	$("#timer").html(moment().format('LLLL'));
 		      },10000);
 		      
 //		      setTimeout(function(){
