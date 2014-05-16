@@ -610,7 +610,7 @@ class User extends MY_Controller {
 				if($facility['location_ID']!=$result['location_ID']) continue;
 			}
 			$row = array();
-			$row[] = $result['access_last_datetime'];
+//			$row[] = $result['access_last_datetime'];
 			if(empty($result['user_name'])){
 				if(empty($result['guest_name'])){
 					$row[] = "未知人員";
@@ -620,8 +620,8 @@ class User extends MY_Controller {
 			}else{
 				$row[] = $result['user_name'];
 			}
-			$row[] = $result['access_first_datetime'];
-			$row[] = $result['facility_cht_name'];
+//			$row[] = $result['access_first_datetime'];
+//			$row[] = $result['facility_cht_name'];
 			$output['aaData'][] = $row;
 		}
 		echo json_encode($output);

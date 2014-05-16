@@ -2825,22 +2825,22 @@ var App = function () {
 			"fnServerParams": function ( aoData ) {
 		      aoData.push(  {"name": "location_ID", "value": $("#location_ID").val() } );
 		    },
-		    "aoColumnDefs": [ {
-		      "aTargets": [ 0 ],
-		      "mData": function ( source, type, val ) {
-		        if (type === 'set') {
-		          source[0] = val;
-		          // Store the computed dislay and filter values for efficiency
-		          source.last_access_datetime_display = moment(val).fromNow();
-		          return;
-		        }
-		        else if (type === 'display') {
-		          return source.last_access_datetime_display;
-		        }
-		        // 'sort', 'type' and undefined all just use the integer
-		        return source[0];
-		      }
-		    } ]
+//		    "aoColumnDefs": [ {
+//		      "aTargets": [ 0 ],
+//		      "mData": function ( source, type, val ) {
+//		        if (type === 'set') {
+//		          source[0] = val;
+//		          // Store the computed dislay and filter values for efficiency
+//		          source.last_access_datetime_display = moment(val).fromNow();
+//		          return;
+//		        }
+//		        else if (type === 'display') {
+//		          return source.last_access_datetime_display;
+//		        }
+//		        // 'sort', 'type' and undefined all just use the integer
+//		        return source[0];
+//		      }
+//		    } ]
         });
 	}
 	
