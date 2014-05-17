@@ -64,6 +64,7 @@
 	}
 	#table_user_clock_list{
 		height: 100%;
+		table-layout: fixed;
 	}
 	#table_user_clock_list th,#table_user_clock_list td{
 		text-align: center;
@@ -110,7 +111,8 @@
 					'<tr>'+output_array.join('</tr><tr>')+'</tr>'
 				);
 			}
-			$("#table_user_clock_list th,#table_user_clock_list td").fitText();
+			$("#table_user_clock_list td").css("width",100/columns_per_row+"%");
+			$("#table_user_clock_list td").fitText();
 		});
 	};
 	$(document).ready(function(){
