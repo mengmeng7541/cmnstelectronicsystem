@@ -21,7 +21,7 @@
 	                    <h4><i class="icon-reorder"></i></h4>
 	                </div>
 	                <div class="widget-body form" id="fullscreen_area">
-	                	<form id="form_user_clock" action="" method="GET">
+	                	<form id="form_user_clock" class="form-horizontal" action="" method="GET">
 	                		<div class="control-group">
 	                           <label class="control-label">地點</label>
 	                           <div class="controls">
@@ -32,15 +32,16 @@
 	                			<button id="to_fullscreen" class="btn btn-primary">全螢幕</button>
 	                		</div>
 	                	</form>
-	                	
-						<table id="table_user_clock_list" class="table table-striped table-bordered">
-							<!--<thead>
-								<th width="100">更新</th>
-								<th width="60">姓名</th>
-								<th width="150">進入時間</th>
-								<th >所在位置</th>
-							</thead>-->
-						</table>
+	                	<div class="row-fluid" id="fullscreen_area">
+	                		<table id="table_user_clock_list" class="table table-striped table-bordered">
+								<!--<thead>
+									<th width="100">更新</th>
+									<th width="60">姓名</th>
+									<th width="150">進入時間</th>
+									<th >所在位置</th>
+								</thead>-->
+							</table>
+	                	</div>
 	                </div>
 	                
 	    		</div>
@@ -72,7 +73,7 @@
 			url: site_url+"user/clock/query",
 			type: "GET",
 			dataType: "json",
-			data: $()
+			data: $("#form_user_clock").serialize()
 		}).done(function(data){
 			data = data.aaData;
 			console.log(data);
