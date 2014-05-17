@@ -112,7 +112,7 @@
 				);
 			}
 			$("#table_user_clock_list td").css("width",100/columns_per_row+"%");
-			$("#table_user_clock_list td").fitText(0.2);
+			$("#table_user_clock_list td").fitText(0.5);
 		});
 	};
 	$(document).ready(function(){
