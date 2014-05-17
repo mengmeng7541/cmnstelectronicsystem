@@ -56,11 +56,14 @@
     </div>
 </div>
 <style type="text/css">
+	#fullscreen_area{
+		height: 100vh;
+	}
 	#timer{
 		text-align: center;
 	}
 	#table_user_clock_list{
-		height: 90vh;
+		height: 100%;
 	}
 </style>
 <script type="text/javascript">
