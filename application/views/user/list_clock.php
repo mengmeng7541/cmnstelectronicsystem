@@ -110,7 +110,7 @@
 					'<tr>'+output_array.join('</tr><tr>')+'</tr>'
 				);
 			}
-			$("#table_user_clock_list").fitText();
+			$("#table_user_clock_list th,#table_user_clock_list td").fitText();
 		});
 	};
 	$(document).ready(function(){
