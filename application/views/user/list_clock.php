@@ -28,20 +28,20 @@
 	                              <?=form_dropdown("location_ID",isset($location_ID_select_options)?$location_ID_select_options:array(),isset($location_ID)?$location_ID:"","");?>
 	                           </div>
 	                        </div>
+	                        <div class="row-fluid" id="fullscreen_area">
+		                		<table id="table_user_clock_list" class="table table-striped table-bordered">
+									<!--<thead>
+										<th width="100">更新</th>
+										<th width="60">姓名</th>
+										<th width="150">進入時間</th>
+										<th >所在位置</th>
+									</thead>-->
+								</table>
+		                	</div>
 	                		<div class="form-actions">
 	                			<button id="to_fullscreen" type="button" class="btn btn-primary">全螢幕</button>
 	                		</div>
 	                	</form>
-	                	<div class="row-fluid" id="fullscreen_area">
-	                		<table id="table_user_clock_list" class="table table-striped table-bordered">
-								<!--<thead>
-									<th width="100">更新</th>
-									<th width="60">姓名</th>
-									<th width="150">進入時間</th>
-									<th >所在位置</th>
-								</thead>-->
-							</table>
-	                	</div>
 	                </div>
 	                
 	    		</div>
