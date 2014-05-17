@@ -22,7 +22,6 @@
 	                </div>
 	                <div class="widget-body" id="fullscreen_area">
 	                	<input type="hidden" id="location_ID" value="<?=isset($location_ID)?$location_ID:"";?>" />
-	                	<div class="row-fluid" id="timer"></div>
 						<table id="table_user_clock_list" class="table table-striped table-bordered">
 							
 							<!--<thead>
@@ -100,14 +99,12 @@
 				output_array.push(row);
 			}
 			//顯示
-			$("#timer").html(moment().format('LLLL'));
-			if(idx==0){
-				$("#table_user_clock_list").empty();
-			}else{
+			$("#table_user_clock_list").html('<th colspan='+columns_per_row+'>'+moment().format('LLLL')+'</th>');
+			if(idx!=0){
 				$.each(output_array,function(idx,value){
 					output_array[idx] = '<td>'+value.join('</td><td>')+'</td>';	
 				});
-				$("#table_user_clock_list").html(
+				$("#table_user_clock_list").append(
 					'<tr>'+output_array.join('</tr><tr>')+'</tr>'
 				);
 			}
