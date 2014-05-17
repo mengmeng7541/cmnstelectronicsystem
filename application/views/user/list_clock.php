@@ -22,7 +22,7 @@
 	                </div>
 	                <div class="widget-body" id="fullscreen_area">
 	                	<input type="hidden" id="location_ID" value="<?=isset($location_ID)?$location_ID:"";?>" />
-	                	<div class="row-fluid" id="timer" style="text-align: center;"></div>
+	                	<div class="row-fluid" id="timer"></div>
 						<table id="table_user_clock_list" class="table table-striped table-bordered">
 							
 							<!--<thead>
@@ -55,13 +55,21 @@
         <!-- END ADVANCED TABLE widget-->
     </div>
 </div>
-<script>
-	$(document).ready(function(){
+<style type="text/css">
+	#timer{
+		text-align: center;
+	}
+	#table_user_clock_list{
+		height: 90vh;
+	}
+</style>
+<script type="text/javascript">
+	var ajax_displayer = function(){
 		$.ajax({
 			url: site_url+"user/clock/query",
 			type: "GET",
 			dataType: "json",
-			data: {location_ID:location.href.split('/').pop()}
+			data: {location_ID:$("#location_ID").val()}
 		}).done(function(data){
 			data = data.aaData;
 			console.log(data);
@@ -84,6 +92,7 @@
 				output_array.push(row);
 			}
 			//顯示
+			$("#timer").html(moment().format('LLLL'));
 			if(idx==0){
 				$("#table_user_clock_list").empty();
 			}else{
@@ -94,6 +103,17 @@
 					'<tr>'+output_array.join('</tr><tr>')+'</tr>'
 				);
 			}
+		});
+	};
+	$(document).ready(function(){
+		ajax_displayer();
+		setInterval(function(){
+			ajax_displayer();
+		},10000);
+		
+		//全螢幕按鈕
+		$("#to_fullscreen").click(function(){
+			$("#fullscreen_area").fullscreen();
 		});
 	});
 </script>
