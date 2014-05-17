@@ -20,7 +20,7 @@
 	    			<div class="widget-title">
 	                    <h4><i class="icon-reorder"></i></h4>
 	                </div>
-	                <div class="widget-body form" id="fullscreen_area">
+	                <div class="widget-body form">
 	                	<form id="form_user_clock" class="form-horizontal" action="" method="GET">
 	                		<div class="control-group">
 	                           <label class="control-label">地點</label>
@@ -29,7 +29,7 @@
 	                           </div>
 	                        </div>
 	                		<div class="form-actions">
-	                			<button id="to_fullscreen" class="btn btn-primary">全螢幕</button>
+	                			<button id="to_fullscreen" type="button" class="btn btn-primary">全螢幕</button>
 	                		</div>
 	                	</form>
 	                	<div class="row-fluid" id="fullscreen_area">
@@ -54,9 +54,6 @@
 <style type="text/css">
 	#fullscreen_area{
 		height: 100vh;
-	}
-	#timer{
-		text-align: center;
 	}
 	#table_user_clock_list{
 		height: 100%;
