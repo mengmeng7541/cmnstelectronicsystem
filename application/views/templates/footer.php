@@ -86,7 +86,7 @@
    <!-- end -->
    <script type="text/javascript" src="<?=base_url();?>js/moment-with-langs.min.js"></script>
    <script type="text/javascript" src="<?=base_url();?>js/jquery.jqprint-0.3.js"></script>
-   
+   <script type="text/javascript" src="<?=base_url();?>js/jquery.fittext.js"></script>
    <script type="text/javascript" src="<?=base_url();?>js/jquery.fullscreen-0.4.1.min.js"></script>
    
    <script src="<?=base_url();?>js/scripts.js"></script>

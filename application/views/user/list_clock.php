@@ -65,6 +65,10 @@
 	#table_user_clock_list{
 		height: 100%;
 	}
+	#table_user_clock_list th,#table_user_clock_list td{
+		text-align: center;
+		vertical-align: middle;
+	}
 </style>
 <script type="text/javascript">
 	var ajax_displayer = function(){
@@ -106,6 +110,10 @@
 					'<tr>'+output_array.join('</tr><tr>')+'</tr>'
 				);
 			}
+			var els = $("#table_user_clock_list th,#table_user_clock_list td");
+			els.each(function(idx){
+				$(this).fitText();
+			});
 		});
 	};
 	$(document).ready(function(){
