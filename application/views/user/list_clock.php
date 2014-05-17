@@ -61,6 +61,7 @@
 			url: site_url+"user/clock/query",
 			type: "GET",
 			dataType: "json",
+			data: {location_ID:location.href.split('/').pop()}
 		}).done(function(data){
 			data = data.aaData;
 			console.log(data);
