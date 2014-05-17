@@ -31,13 +31,13 @@
 								<th width="150">進入時間</th>
 								<th >所在位置</th>
 							</thead>-->
-							<thead class="hide">
+							<!--<thead class="hide">
 								<th width="20%"></th>
 								<th width="20%"></th>
 								<th width="20%"></th>
 								<th width="20%"></th>
 								<th width="20%"></th>
-							</thead>
+							</thead>-->
 							
 							<!--<style type="text/css">
 								tbody{
@@ -55,4 +55,45 @@
         <!-- END ADVANCED TABLE widget-->
     </div>
 </div>
+<script>
+	$(document).ready(function(){
+		$.ajax({
+			url: site_url+"user/clock/query",
+			type: "GET",
+			dataType: "json",
+		}).done(function(data){
+			data = data.aaData;
+			console.log(data);
+			
+			//參數設定
+			var columns_per_row = Math.ceil(Math.sqrt(data.length));
+			var output_array = [];
+			//準備資料
+			for(var idx=0,row=[];idx<data.length;idx++){
+				if(idx!=0 && idx%columns_per_row==0){
+					output_array.push(row);
+					row = [];
+				}
+				row.push(data[idx]);
+			}
+			if(idx!=0){
+				for(;idx%columns_per_row!=0;idx++){
+					row.push('');
+				}
+				output_array.push(row);
+			}
+			//顯示
+			if(idx==0){
+				$("#table_user_clock_list").empty();
+			}else{
+				$.each(output_array,function(idx,value){
+					output_array[idx] = '<td>'+value.join('</td><td>')+'</td>';	
+				});
+				$("#table_user_clock_list").html(
+					'<tr>'+output_array.join('</tr><tr>')+'</tr>'
+				);
+			}
+		});
+	});
+</script>
 				

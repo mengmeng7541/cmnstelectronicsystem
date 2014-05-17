@@ -2794,56 +2794,56 @@ var App = function () {
 			},1000);
 		});
 		//------------------------自動打卡(使用者)-----------------------------
-		var table_user_clock_list = $("#table_user_clock_list").dataTable({
-            "sAjaxSource": site_url+"user/clock/query",
-            "sDom": "<'row-fluid'>t<'row-fluid'>",
-            "sPaginationType": "bootstrap",
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page",
-                "oPaginate": {
-                    "sPrevious": "Prev",
-                    "sNext": "Next"
-                }
-            },
-            "fnInitComplete": function(oSettings, json) {
-              $("#timer").html(moment().format('LLLL'));
-		      setInterval(function(){
-		      	table_user_clock_list.fnReloadAjax();
-		      	$("#timer").html(moment().format('LLLL'));
-		      },10000);
-		      
-//		      setTimeout(function(){
-//		      	document.location.reload(true);
-//		      },86400000);//本來想讓它每天固定重刷，但全螢幕會跑掉就算了
-			  
-		      $("#to_fullscreen").click(function(){
-		      	$("#fullscreen_area").fullscreen();
-		      });
-		      
-//		      $("#to_fullscreen").trigger("click");
-		    },
-			"aaSorting": [],
-			"iDisplayLength": 100,
-			"fnServerParams": function ( aoData ) {
-		      aoData.push(  {"name": "location_ID", "value": $("#location_ID").val() } );
-		    },
-//		    "aoColumnDefs": [ {
-//		      "aTargets": [ 0 ],
-//		      "mData": function ( source, type, val ) {
-//		        if (type === 'set') {
-//		          source[0] = val;
-//		          // Store the computed dislay and filter values for efficiency
-//		          source.last_access_datetime_display = moment(val).fromNow();
-//		          return;
-//		        }
-//		        else if (type === 'display') {
-//		          return source.last_access_datetime_display;
-//		        }
-//		        // 'sort', 'type' and undefined all just use the integer
-//		        return source[0];
-//		      }
-//		    } ]
-        });
+//		var table_user_clock_list = $("#table_user_clock_list").dataTable({
+//            "sAjaxSource": site_url+"user/clock/query",
+//            "sDom": "<'row-fluid'>t<'row-fluid'>",
+//            "sPaginationType": "bootstrap",
+//            "oLanguage": {
+//                "sLengthMenu": "_MENU_ records per page",
+//                "oPaginate": {
+//                    "sPrevious": "Prev",
+//                    "sNext": "Next"
+//                }
+//            },
+//            "fnInitComplete": function(oSettings, json) {
+//              $("#timer").html(moment().format('LLLL'));
+//		      setInterval(function(){
+//		      	table_user_clock_list.fnReloadAjax();
+//		      	$("#timer").html(moment().format('LLLL'));
+//		      },10000);
+//		      
+////		      setTimeout(function(){
+////		      	document.location.reload(true);
+////		      },86400000);//本來想讓它每天固定重刷，但全螢幕會跑掉就算了
+//			  
+//		      $("#to_fullscreen").click(function(){
+//		      	$("#fullscreen_area").fullscreen();
+//		      });
+//		      
+////		      $("#to_fullscreen").trigger("click");
+//		    },
+//			"aaSorting": [],
+//			"iDisplayLength": 100,
+//			"fnServerParams": function ( aoData ) {
+//		      aoData.push(  {"name": "location_ID", "value": $("#location_ID").val() } );
+//		    },
+////		    "aoColumnDefs": [ {
+////		      "aTargets": [ 0 ],
+////		      "mData": function ( source, type, val ) {
+////		        if (type === 'set') {
+////		          source[0] = val;
+////		          // Store the computed dislay and filter values for efficiency
+////		          source.last_access_datetime_display = moment(val).fromNow();
+////		          return;
+////		        }
+////		        else if (type === 'display') {
+////		          return source.last_access_datetime_display;
+////		        }
+////		        // 'sort', 'type' and undefined all just use the integer
+////		        return source[0];
+////		      }
+////		    } ]
+//        });
 	}
 	
 	var handleTablesCurriculum = function(){
