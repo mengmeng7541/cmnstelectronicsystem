@@ -579,6 +579,8 @@ class User extends MY_Controller {
 	{
 		$location_ID = $this->security->xss_clean($location_ID);
 		$this->data['location_ID'] = $location_ID;
+		$this->load->model('common_model');
+		$this->data['location_ID_select_options'] = $this->common_model->get_location_ID_select_options();
 		$this->load->view('templates/header');
 		$this->load->view('templates/sidebar');
 		$this->load->view('user/list_clock',$this->data);
@@ -593,8 +595,6 @@ class User extends MY_Controller {
 		$results = $this->user_model->get_clock_list($data)->result_array();
 		
 		$output['aaData'] = array();
-//		$columns_per_row = 5;
-//		$counter = 0;
 		foreach($results as $result)
 		{
 			//如果在門口就進不去(A0)或刷出(01)，就忽略
@@ -611,10 +611,6 @@ class User extends MY_Controller {
 				if(!$facility) continue;
 				if($facility['location_ID']!=$result['location_ID']) continue;
 			}
-//			if($counter%$columns_per_row==0){
-//				$row = array();
-//			}
-//			$row[] = $result['access_last_datetime'];
 			$row = array();
 			if(empty($result['user_name'])){
 				if(empty($result['guest_name'])){
@@ -626,19 +622,7 @@ class User extends MY_Controller {
 				$row[] = $result['user_name'];
 			}
 			$output['aaData'][] = $row;
-//			$row[] = $result['access_first_datetime'];
-//			$row[] = $result['facility_cht_name'];
-//			$counter++;
-//			if(($counter%$columns_per_row)==0){
-//				$output['aaData'][] = $row;
-//			}
 		}
-//		if(($counter%$columns_per_row)!=0){
-//			for(;$counter%$columns_per_row!=0;$counter++){
-//				$row[] = "";
-//			}
-//			$output['aaData'][] = $row;
-//		}
 		echo json_encode($output);
 	}
 	public function add_clock()
