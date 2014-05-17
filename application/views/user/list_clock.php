@@ -99,7 +99,7 @@
 				output_array.push(row);
 			}
 			//顯示
-			$("#table_user_clock_list").html('<th colspan='+columns_per_row+'>'+moment().format('LLLL')+'</th>');
+			$("#table_user_clock_list").html('<tr><th colspan='+columns_per_row+'>'+moment().format('LLLL')+'</th></tr>');
 			if(idx!=0){
 				$.each(output_array,function(idx,value){
 					output_array[idx] = '<td>'+value.join('</td><td>')+'</td>';	
@@ -108,6 +108,7 @@
 					'<tr>'+output_array.join('</tr><tr>')+'</tr>'
 				);
 			}
+			$("#table_user_clock_list th").fitText(1);
 			$("#table_user_clock_list td").css("width",100/columns_per_row+"%");
 			$("#table_user_clock_list td").fitText(0.5);
 		});
