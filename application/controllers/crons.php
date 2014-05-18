@@ -42,7 +42,11 @@ class Crons extends MY_Controller {
 		
 		echo "DONE";
 	}
-	
+	//-----------------------儀器預約系統-----------------------
+	public function send_privilege_expiration_notification(){
+		$this->load->model('facility_model');
+
+	} 	
 	//------------------------課程系統--------------------------
 	//判斷開課或停開
 	public function update_curriculum_class_state()
