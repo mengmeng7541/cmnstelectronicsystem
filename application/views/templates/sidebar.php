@@ -14,6 +14,7 @@
 					</a>
 					<ul class="sub">
 						<li><a class="" href="<?=site_url();?>/admin/clock/list">中心人員所在位置</a></li>
+	                    <li><a class="" href="<?=site_url();?>/user/clock/list/3">使用者所在位置</a></li>
 						<li><a class="" href="<?=site_url();?>/admin/list">管理者資料維護</a></li>
 						<li><a class="" href="<?=site_url();?>/user/list">使用者資料維護</a></li>
 						<li><a class="" href="<?=site_url();?>/boss/list">老師主管資料維護</a></li>
@@ -85,7 +86,6 @@
 	                    <li><a class="" href="<?=site_url();?>/facility/admin/access/card/list">進出紀錄</a></li>
 	                    <li><a class="" href="<?=site_url();?>/facility/admin/access/link/list">連線設定</a></li>
 	                    <li><a class="" href="<?=site_url();?>/access/config/edit">系統設置</a></li>
-	                    <li><a class="" href="<?=site_url();?>/user/clock/list/3">建置中</a></li>
 					</ul>
 				</li>
 				<li><a class="" href="<?=site_url();?>/logout"><span class="icon-box"><i class="icon-user"></i></span> 登出</a></li>
