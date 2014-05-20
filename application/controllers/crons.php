@@ -6,7 +6,7 @@ class Crons extends MY_Controller {
 
 		parent::__construct();
 
-		if(!$this->input->is_cli_request())	die('F');
+//		if(!$this->input->is_cli_request())	die('F');
 
 	}
 	
@@ -50,14 +50,30 @@ class Crons extends MY_Controller {
 			"expiration_date_start"=>date("Y-m-d H:i:s",strtotime("+2weeks")),
 			"expiration_date_end"=>date("Y-m-d H:i:s",strtotime("+2weeks+1day"))
 		))->result_array();
-		
 		//一周前通知
-		
+		$user_privileges = array_merge($user_privileges,$this->facility_model->get_user_privilege_list(array(
+			"expiration_date_start"=>date("Y-m-d H:i:s",strtotime("+1weeks")),
+			"expiration_date_end"=>date("Y-m-d H:i:s",strtotime("+1weeks+1day"))
+		))->result_array());
 		//3天前通知
+		$user_privileges = array_merge($user_privileges,$this->facility_model->get_user_privilege_list(array(
+			"expiration_date_start"=>date("Y-m-d H:i:s",strtotime("+3days")),
+			"expiration_date_end"=>date("Y-m-d H:i:s",strtotime("+3days+1day"))
+		))->result_array());
 		
-		
-		
-//		var_dump($user_privileges);
+		$this->load->model('user_model');
+		foreach($user_privileges as $user_privilege)
+		{
+			$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$user_privilege['user_ID']))->row_array();
+			$this->email->to($user_privilege['email']);
+			$this->email->subject("成大微奈米科技研究中心 -儀器權限即將過期通知-");
+			$this->email->message("
+				{$user_profile['name']} 您好：<br>
+				您於本中心 {$user_privilege['facility_cht_name']}({$user_privilege['facility_eng_name']}) 儀器之使用權限因久未使用，將於 {$user_privilege['expiration_date']} 過期，<br>
+				若您尚有使用的需求，請盡早預約以便延長權限到期日，謝謝！
+			");
+			$this->email->send();
+		}
 	} 	
 	//------------------------課程系統--------------------------
 	//判斷開課或停開
