@@ -28,6 +28,10 @@ class Facility_model extends MY_Model {
 			$this->facility_db->where("parent_ID",$options['parent_ID']);
 		if(isset($options['ctrl_no']))
 			$this->facility_db->where("ctrl_no",$options['ctrl_no']);
+		if(isset($options['horizontal_group_ID']))
+		{
+			$this->facility_db->where("horizontal_group_ID",$options['horizontal_group_ID']);
+		}
 		return $this->facility_db->get("facility_list");
 	}
 	public function get_facility_list_array($input_data)
@@ -774,7 +778,7 @@ class Facility_model extends MY_Model {
 	}
 	/**
 	* 
-	* @param $ID 單一儀器ID
+	* @param $IDs 單一儀器ID或複數儀器IDs
 	* @param $options [facility_only]只找儀器類(不要門),[no_child]不尋找小孩
 	* @param $results 遞回傳入參數兼回傳之結果
 	* 
@@ -842,9 +846,22 @@ class Facility_model extends MY_Model {
 		return $results;
 	}
 	
-	public function get_horizontal_group_facilities()
+	public function get_horizontal_group_facilities($IDs)
 	{
-		
+		$output = array();
+		foreach((array)$IDs as $ID)
+		{
+			//確認儀器或門存在，且有水平群組
+			$facility = $this->get_facility_list(array("ID"=>$ID))->row_array();
+			if(!$facility || empty($facility['horizontal_group_ID']))
+			{
+				continue;
+			}
+			
+			$facilities = $this->get_facility_list(array("horizontal_group_ID"=>$facility['horizontal_group_ID']))->result_array();
+			$output = array_merge($output,sql_result_to_column($facilities,"ID"));
+		}
+		return array_unique($output);
 	}
 
 	
