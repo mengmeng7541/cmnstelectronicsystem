@@ -259,7 +259,14 @@ class Facility_model extends MY_Model {
 		{
 			$this->facility_db->where_in("$sTable.privilege",$input_data['privilege']);
 		}
-			
+		if(isset($input_data['expiration_date_start']))
+		{
+			$this->facility_db->where("$sTable.expiration_date >=",$input_data['expiration_date_start']);
+		}
+		if(isset($input_data['expiration_date_end']))
+		{
+			$this->facility_db->where("$sTable.expiration_date <=",$input_data['expiration_date_end']);
+		}
 		
 		return $this->facility_db->get();
 	}

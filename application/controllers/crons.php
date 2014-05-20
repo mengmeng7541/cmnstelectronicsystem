@@ -45,7 +45,19 @@ class Crons extends MY_Controller {
 	//-----------------------儀器預約系統-----------------------
 	public function send_privilege_expiration_notification(){
 		$this->load->model('facility_model');
-			
+		//兩周前通知
+		$user_privileges = $this->facility_model->get_user_privilege_list(array(
+			"expiration_date_start"=>date("Y-m-d H:i:s",strtotime("+2weeks")),
+			"expiration_date_end"=>date("Y-m-d H:i:s",strtotime("+2weeks+1day"))
+		))->result_array();
+		
+		//一周前通知
+		
+		//3天前通知
+		
+		
+		
+//		var_dump($user_privileges);
 	} 	
 	//------------------------課程系統--------------------------
 	//判斷開課或停開

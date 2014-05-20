@@ -66,15 +66,18 @@ class Reg_model extends MY_Model {
 		$this->load->model('curriculum/class_model');
 		if($this->class_model->is_certification_class_only($class['class_type']))
 		{
+			
 			//只選這堂課之前先確認已有權限，只是因為過期所以才要重報，或者曾經選過只是最後認證未過
 			
 			//先判斷有沒有選過，>=confirmed
 			$reg = $this->curriculum_model->get_reg_list(array(
 				"course_ID"=>$class['course_ID'],
+				"user_ID"=>$user_ID,
 				"reg_state"=>array('confirmed','certified')
 			))->row_array();
 			if(!$reg)
 			{
+				
 				//沒選過就要判斷是否已有權限
 				$this->load->model('curriculum/course_model');
 				$facility_IDs = $this->course_model->get_course_map_facility_ID($class['course_ID']);

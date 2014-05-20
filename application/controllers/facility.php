@@ -1231,6 +1231,20 @@ class Facility extends MY_Controller {
 			//確認輸入了正確的時間
 			$this->booking_model->check_input_time($input_data['booking_time'],$facility['unit_sec']);
 			
+			//新增一筆記錄(若為自行操作，要判斷是否跨日，要拆單)
+			if(empty($input_data['purpose']) || $input_data['purpose']=="DIY")
+			{
+				foreach(split_utime_by_day($min_time,$max_time) as $time){
+					$this->booking_model->add($facility['ID'],$user_profile['ID'],$time[0],$time[1],"DIY");
+				}
+			}else{
+				$this->booking_model->add($facility['ID'],$user_profile['ID'],$min_time,$max_time,$input_data['purpose']);
+			}
+			
+			
+			//更新權限到期日與總使用時數
+			$this->user_privilege_model->update($user_profile['ID'],$facility['ID']);
+			
 			//寄信(給使用者與老師)
 			if(empty($user_profile['email']))
 			{
@@ -1246,22 +1260,6 @@ class Facility extends MY_Controller {
 								   預約時段：".date("Y-m-d H:i:s",$min_time)." ~ ".date("Y-m-d H:i:s",$max_time)."<br>
 								   <br>");
 			$this->email->send();
-			
-			//新增一筆記錄(若為自行操作，要判斷是否跨日，要拆單)
-			if(empty($input_data['purpose']) || $input_data['purpose']=="DIY")
-			{
-				$this->load->helper('date');
-				foreach(split_utime_by_day($min_time,$max_time) as $time){
-					$this->booking_model->add($facility['ID'],$user_profile['ID'],$time[0],$time[1],"DIY");
-				}
-			}else{
-				$this->booking_model->add($facility['ID'],$user_profile['ID'],$min_time,$max_time,$input_data['purpose']);
-			}
-			
-			
-			//更新權限到期日與總使用時數
-			$this->user_privilege_model->update($user_profile['ID'],$facility['ID']);
-			
 			
 			echo $this->info_modal("預約成功","/facility/".$this->session->userdata('status')."/booking/list");
 		}catch(Exception $e){

@@ -118,7 +118,6 @@ class Curriculum_model extends MY_Model {
 				$sTable.class_reg_end_time_auto,
 				$sTable.class_state,
 				$sTable.class_remark,
-				{$sJoinTable['course']}.course_ID,
 				{$sJoinTable['course']}.course_cht_name,
 				{$sJoinTable['course']}.course_eng_name,
 				MIN({$sJoinTable['lesson']}.lesson_start_time) AS class_start_time,
@@ -130,7 +129,6 @@ class Curriculum_model extends MY_Model {
 		}else{
 			$sSelect = "
 				$sTable.*,
-				{$sJoinTable['course']}.course_ID,
 				{$sJoinTable['course']}.course_cht_name,
 				{$sJoinTable['course']}.course_eng_name,
 				MIN({$sJoinTable['lesson']}.lesson_start_time) AS class_start_time,

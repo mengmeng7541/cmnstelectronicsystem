@@ -435,7 +435,7 @@ class User_model extends MY_Model {
 					   ->join($sJoinTable['user'],"card.CardNo = {$sJoinTable['user']}.card_num","LEFT")
 					   ->join($sJoinTable['facility'],"card.CtrlNo = {$sJoinTable['facility']}.ctrl_no","LEFT")
 					   ->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT")
-					   //注意這裡要小心，目前中心只有刷出是01，所以可以這樣用，如果關掉儀器也是01時，記得這裡要改
+					   //注意這裡要小心，目前中心只有刷出是01，所以可以這樣用，如果關掉儀器也是01時，記得這裡要改，也因為目前這樣寫意外順便過濾掉了按鈕開門
 					   ->join("(SELECT MAX(FDateTime) AS access_out_last_datetime,CardNo FROM $sTable WHERE Status='01' AND FDateTime > NOW() - INTERVAL 1 DAY GROUP BY CardNo) card2","card2.CardNo = card.CardNo","LEFT")
 					   ->join("(SELECT * FROM {$sJoinTable['temp']} ORDER BY issuance_time DESC) temp","card.CardNo = temp.guest_access_card_num","LEFT");
 					   
