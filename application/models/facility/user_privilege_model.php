@@ -62,29 +62,36 @@ class User_privilege_model extends MY_Model {
 	$this->facility_model->add_user_privilege($data);
   }
   /**
-  * 可手動更新到期日，或是停權
+  * 更新總使用時數與到期日
   * 
   * @return
   */
   public function update($user_ID,$facility_ID)
   {
-  	//更新總使用時數與到期日
-	$privilege = $this->facility_model->get_user_privilege_list(
-	array("user_ID"=>$user_ID,
-		  "facility_ID"=>$facility_ID)
-	)->row_array();
-	if($privilege)
-	{
+	//先找尋上下關係的儀器
+	$facility_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("facility_only"=>TRUE,"no_child"=>TRUE));
+	foreach($facility_IDs as $facility_ID){
+		//取得此儀器權限
+		$privilege = $this->facility_model->get_user_privilege_list(array(
+			"user_ID"=>$user_ID,
+			"facility_ID"=>$facility_ID
+		))->row_array();
+		if(!$privilege)
+		{
+			continue;
+		}
+		$temp_facility_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("facility_only"=>TRUE));
 		//(先取得過往的預約紀錄，找出最近一次的預約紀錄，加上延展時間)
 		$old_booking = $this->facility_model->get_facility_booking_list(
 		array("user_ID"=>$user_ID,
-			  "facility_ID"=>$facility_ID)
+			  "facility_ID"=>$temp_facility_IDs)
 		)->row_array();
-		//(沒有過往紀錄則根據認證時間判斷)
-		$expiration_date = date("Y-m-d H:i:s",strtotime($privilege['verification_time'])+$privilege['extension_sec']);
 		if($old_booking)
 		{
 			$expiration_date = date("Y-m-d H:i:s",strtotime($old_booking['end_time'])+$privilege['extension_sec']);	
+		}else{
+			//(沒有過往紀錄則根據認證時間判斷)
+			$expiration_date = date("Y-m-d H:i:s",strtotime($privilege['verification_time'])+$privilege['extension_sec']);
 		}
 		//(最後更新資料)
 		$this->facility_model->update_user_privilege(
@@ -93,6 +100,8 @@ class User_privilege_model extends MY_Model {
 			  "total_secs_used"=>$this->get_total_secs_used($user_ID,$facility_ID))
 		);
 	}
+	
+	
   }
   
   public function get_total_secs_used($user_ID,$facility_ID)

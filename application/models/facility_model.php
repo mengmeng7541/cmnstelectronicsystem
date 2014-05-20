@@ -841,6 +841,11 @@ class Facility_model extends MY_Model {
 		}
 		return $results;
 	}
+	
+	public function get_horizontal_group_facilities()
+	{
+		
+	}
 
 	
 	public function get_max_pre_open_sec($f_ID = NULL)
