@@ -70,6 +70,8 @@ class User_privilege_model extends MY_Model {
   {
 	//先找尋上下關係的儀器
 	$facility_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("facility_only"=>TRUE,"no_child"=>TRUE));
+	//再尋找水平關係
+	$facility_IDs = array_merge($facility_IDs,$this->facility_model->get_horizontal_group_facilities($facility_ID));
 	foreach($facility_IDs as $facility_ID){
 		//取得此儀器權限
 		$privilege = $this->facility_model->get_user_privilege_list(array(
@@ -81,6 +83,7 @@ class User_privilege_model extends MY_Model {
 			continue;
 		}
 		$temp_facility_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("facility_only"=>TRUE));
+		$temp_facility_IDs = array_merge($temp_facility_IDs,$this->facility_model->get_horizontal_group_facilities($facility_ID));
 		//(先取得過往的預約紀錄，找出最近一次的預約紀錄，加上延展時間)
 		$old_booking = $this->facility_model->get_facility_booking_list(
 		array("user_ID"=>$user_ID,

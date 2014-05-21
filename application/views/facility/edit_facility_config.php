@@ -42,11 +42,19 @@
 											           </div>
 											        </div>
 												</div>
-												<div class="control-group">
-										           <label class="control-label">父機台</label>
-										           <div class="controls">
-												      <?=form_dropdown("parent_ID",$facility_ID_select_options,empty($parent_ID)?"":$parent_ID,"class='span12 chosen-with-diselect'")?>
-										           </div>
+												<div class="row-fluid">
+													<div class="control-group span8">
+											           <label class="control-label">上層儀器</label>
+											           <div class="controls">
+													      <?=form_dropdown("parent_ID",$facility_ID_select_options,empty($parent_ID)?"":$parent_ID,"class='span12 chosen-with-diselect'")?>
+											           </div>
+													</div>
+													<div class="control-group span4">
+											           <label class="control-label">平行群組</label>
+											           <div class="controls">
+													      <input type="text" name="horizontal_group_ID" value="<?=isset($horizontal_group_ID)?$horizontal_group_ID:"";?>" class="input-small"/>
+											           </div>
+													</div>
 												</div>
 												<div class="row-fluid">
 													<div class="control-group span6">

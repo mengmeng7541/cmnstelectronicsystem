@@ -58,6 +58,7 @@ class Booking_model extends MY_Model {
 			);
 		}
 		
+		
 		//寫入卡機控制
 		$this->load->model('facility/access_ctrl_model');
 		foreach($f_IDs as $f_ID){

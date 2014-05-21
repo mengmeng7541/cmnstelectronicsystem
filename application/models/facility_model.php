@@ -79,6 +79,7 @@ class Facility_model extends MY_Model {
 		$this->facility_db->set("ID",$input_data['ID']);
 		$this->facility_db->set("new_ID",$input_data['new_ID']);
 		$this->facility_db->set("parent_ID",$input_data['parent_ID']);
+		$this->facility_db->set("horizontal_group_ID",$input_data['horizontal_group_ID']);
 		$this->facility_db->set("Facility_Tech",$input_data['facility_tech_ID']);
 		$this->facility_db->set("Facility_Class",$input_data['facility_class_ID']);
 		$this->facility_db->set("state",$input_data['status']);
@@ -103,6 +104,7 @@ class Facility_model extends MY_Model {
 	{
 		$this->facility_db->set("new_ID",$input_data['new_ID']);
 		$this->facility_db->set("parent_ID",$input_data['parent_ID']);
+		$this->facility_db->set("horizontal_group_ID",$input_data['horizontal_group_ID']);
 		$this->facility_db->set("Facility_Tech",$input_data['facility_tech_ID']);
 		$this->facility_db->set("Facility_Class",$input_data['facility_class_ID']);
 		$this->facility_db->set("state",$input_data['status']);

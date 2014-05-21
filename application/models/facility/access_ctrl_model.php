@@ -38,7 +38,6 @@ class Access_ctrl_model extends MY_Model {
 	}else{
 		$f_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("no_child"=>TRUE,"facility_only"=>$user_profile['group']=="admin","door_only"=>$door_only));
 	}
-  	//$f_IDs = (array)$f_IDs;
   	
   	//判斷是否有借用卡
   	$this->load->model('access_model');
