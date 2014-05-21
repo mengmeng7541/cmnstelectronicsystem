@@ -262,7 +262,7 @@ class Admin extends MY_Controller {
 			$input_data = $this->input->post(NULL,TRUE);
 			
 			
-			if(isset($input_data['clock_end_date'])&&isset($input_data['clock_end_time']))
+			if(!empty($input_data['clock_end_date'])&&!empty($input_data['clock_end_time']))
 			{
 				//檢查起始時間必須小於結束時間
 				if(strtotime($input_data['clock_end_date'].' '.$input_data['clock_end_time'])<=strtotime($input_data['clock_start_date'].' '.$input_data['clock_start_time']))
