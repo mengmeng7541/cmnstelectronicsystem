@@ -342,18 +342,16 @@ class User extends MY_Controller {
 		try{
 			$org_name = $this->input->post("org",TRUE);
 			//判斷是否已存在
-			$org = $this->user_model->get_org_by_name($org_name);
-			if(!empty($org))
+			$org = $this->user_model->get_org_list(array("name"=>$org_name))->row_array();
+			if($org)
 			{
-				echo $this->info_modal("該組織單位已存在","/user/form","warning");
-				return;
+				throw new Exception("該組織單位已存在",ERROR_CODE);
 			}
 			
-			$result = $this->user_model->add_org($org_name);
+			$insert_id = $this->user_model->add_org(array("name"=>$org_name));
 			//for old db-----
-			$org = $this->user_model->get_org_by_name($org_name);
 			$org_name = $this->utf8_to_big5($org_name);
-			$result = $this->user_model->add_org_for_old_db($org['serial_no'],$org_name);
+			$result = $this->user_model->add_org_for_old_db($insert_id,$org_name);
 			//---------------
 			
 			if($result)
