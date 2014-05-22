@@ -105,7 +105,8 @@ class Unittest extends MY_Controller {
 				"user_ID"=>$result['user_ID'],
 				"class_ID"=>$class_ID,
 				"reg_by"=>$result['user_ID'],
-				"reg_time"=>$result['reg_time']
+				"reg_time"=>$result['reg_time'],
+				"reg_rank"=>0
 			));
 			//更新註冊
 			if($result['join_check'])
