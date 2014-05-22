@@ -14,8 +14,10 @@ class Unittest extends MY_Controller {
   		
 		$this->load->model('curriculum_model');
 //		$this->benchmark->mark('code_start');
+		$this->load->model('curriculum/reg_model');
+//		$this->reg_model->refresh_rank();
 				$options = array(
-					"class_code"=>"2014-05"
+					"class_code"=>'2014-01'
 				);
 				$classes = $this->curriculum_model->get_class_list($options)->result_array();
 				
@@ -32,9 +34,7 @@ class Unittest extends MY_Controller {
 					$row[] = $class['class_end_time'];
 					$row[] = $class['class_total_secs']/3600;
 					$row[] = $class['prof_name'];
-					$this->benchmark->mark('code_start');
 					$reg_participants = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID']))->num_rows();
-					$this->benchmark->mark('code_end');
 					$row[] = "$reg_participants/{$class['class_max_participants']}";
 					$row[] = self::$class_state[$class['class_state']];
 					$row[] = $class['class_remark'];
@@ -58,8 +58,6 @@ class Unittest extends MY_Controller {
 					));
 					
 					$output['aaData'][] = $row;
-					
-					break;
 				}
 //		$this->benchmark->mark('code_end');
 		

@@ -65,7 +65,7 @@ class Crons extends MY_Controller {
 		foreach($user_privileges as $user_privilege)
 		{
 			$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$user_privilege['user_ID']))->row_array();
-			$this->email->to($user_privilege['email']);
+			$this->email->to($user_profile['email']);
 			$this->email->subject("成大微奈米科技研究中心 -儀器權限即將過期通知-");
 			$this->email->message("
 				{$user_profile['name']} 您好：<br>

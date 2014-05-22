@@ -94,20 +94,27 @@ class Reg_model extends MY_Model {
 					}
 				}
 			}
-			
-			$data = array("class_ID"=>$class_ID,"user_ID"=>$user_ID,"reg_by"=>$reg_by);
+			//取得排名
+			$reg_rank = $this->curriculum_model->get_reg_list(array("class_ID"=>$class_ID))->num_rows()+1;
+			$data = array("class_ID"=>$class_ID,"user_ID"=>$user_ID,"reg_by"=>$reg_by,"reg_rank"=>$reg_rank);
 			$this->curriculum_model->add_reg($data);
 		}else{
 			//先確認沒有選其他同課程ID與同開課代碼，有就刪掉
-			$regs = $this->curriculum_model->get_reg_list(array("user_ID"=>$user_ID,"course_ID"=>$class['course_ID'],"class_code"=>$class['class_code']))->result_array();
-			foreach($regs as $reg){
-				$this->curriculum_model->del_reg(array("reg_ID"=>$reg['reg_ID']));
+			$reg = $this->curriculum_model->get_reg_list(array(
+				"user_ID"=>$user_ID,
+				"course_ID"=>$class['course_ID'],
+				"class_code"=>$class['class_code']
+			))->row_array();
+			if($reg){
+				$this->del($reg['reg_ID']);
 			}
 			//把同開課代碼的課都選起來
 			$classes = $this->curriculum_model->get_class_list(array("course_ID"=>$class['course_ID'],"class_code"=>$class['class_code']))->result_array();
 			foreach($classes as $c)
 			{
-				$data = array("class_ID"=>$c['class_ID'],"user_ID"=>$user_ID,"reg_by"=>$reg_by);
+				//取得排名
+				$reg_rank = $this->curriculum_model->get_reg_list(array("class_ID"=>$c['class_ID']))->num_rows()+1;
+				$data = array("class_ID"=>$c['class_ID'],"user_ID"=>$user_ID,"reg_by"=>$reg_by,"reg_rank"=>$reg_rank);
 				$this->curriculum_model->add_reg($data);
 			}
 		}
@@ -203,26 +210,47 @@ class Reg_model extends MY_Model {
 		}else{
 			//報名全套的
 			//(取得第一堂課的開課資訊)
-			$class = $this->curriculum_model->get_class_list(array("class_ID"=>$reg['class_ID']))->row_Array();
-			//課程管理者不受限制
-			if(!$this->curriculum_model->is_super_admin())
-			{
-				//先檢查是否在可選課日期內
-				if(time()<strtotime($class['class_reg_start_time'])){
-					throw new Exception("尚未到選課開放時間",ERROR_CODE);
-				}
-				if(time()>strtotime($class['class_reg_end_time'])){
-					throw new Exception("已超過選課截止時間",ERROR_CODE);
-				}
+			$class = $this->curriculum_model->get_class_list(array("class_ID"=>$reg['class_ID']))->row_array();
+		}
+		
+		//課程管理者不受限制
+		if(!$this->curriculum_model->is_super_admin())
+		{
+			//先檢查是否在可選課日期內
+			if(time()<strtotime($class['class_reg_start_time'])){
+				throw new Exception("尚未到選課開放時間",ERROR_CODE);
+			}
+			if(time()>strtotime($class['class_reg_end_time'])){
+				throw new Exception("已超過選課截止時間",ERROR_CODE);
 			}
 		}
 		
-		$data = array(	"user_ID"=>$reg['user_ID'],
-						"course_ID"=>$reg['course_ID'],
-						"class_code"=>$reg['class_code'],
-						"reg_canceled_by"=>$reg_canceled_by);
-		$this->curriculum_model->del_reg($data);
+		//取得所有的相關課程報名資訊
+		$regs = $this->curriculum_model->get_reg_list(array(
+			"user_ID"=>$reg['user_ID'],
+			"course_ID"=>$reg['course_ID'],
+			"class_code"=>$reg['class_code']
+		))->result_array();
+		foreach($regs as $reg){
+//			$data = array(	"user_ID"=>$reg['user_ID'],
+//						"course_ID"=>$reg['course_ID'],
+//						"class_code"=>$reg['class_code'],
+//						"reg_canceled_by"=>$reg_canceled_by);
+//			$this->curriculum_model->del_reg($data);
+			$this->curriculum_model->del_reg(array("reg_ID"=>$reg['reg_ID']));
+			
+			//更新排名
+			//1.先取得往後的排名
+			$behind_regs = $this->curriculum_model->get_reg_list(array("class_ID"=>$reg['class_ID'],"reg_rank_start"=>$reg['reg_rank']+1))->result_array();
+			foreach($behind_regs as $behind_reg)
+			{
+				//排名往前
+				$this->curriculum_model->update_reg(array("reg_ID"=>$behind_reg['reg_ID'],"reg_rank"=>$behind_reg['reg_rank']-1));
+			}
+		}
+		
 	}
+	
 	//變更註冊狀態
 //	public function update($reg_IDs = "",$updated_by = NULL)
 //	{
@@ -408,5 +436,17 @@ class Reg_model extends MY_Model {
 		}
 	}
 	
-	
+	//重整排名
+	public function refresh_rank(){
+		$classes = $this->curriculum_model->get_class_list()->result_array();
+		foreach($classes as $class){
+			$regs = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID']))->result_array();
+			foreach($regs as $key=>$reg){
+				$this->curriculum_model->update_reg(array(
+					"reg_rank"=>$key+1,
+					"reg_ID"=>$reg['reg_ID']
+				));
+			}
+		}
+	}
 }

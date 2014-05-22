@@ -421,23 +421,24 @@ class Curriculum_model extends MY_Model {
 				{$sJoinTable['course']}.course_cht_name,
 				{$sJoinTable['course']}.course_eng_name
 				FROM
-				(SELECT IF(@cur_group<>$sTable.class_ID,@cur_rank:=1,@cur_rank:=@cur_rank+1) AS reg_rank,@cur_group:=$sTable.class_ID,$sTable.* FROM $sTable, (SELECT @cur_rank:=0,@cur_group:=null) r WHERE reg_canceled_by IS NULL ORDER BY $sTable.class_ID ASC,$sTable.reg_time ASC) $sTable
+				 $sTable
 			";
+//(SELECT IF(@cur_group<>$sTable.class_ID,@cur_rank:=1,@cur_rank:=@cur_rank+1) AS reg_rank,@cur_group:=$sTable.class_ID,$sTable.* FROM $sTable, (SELECT @cur_rank:=0,@cur_group:=null) r WHERE reg_canceled_by IS NULL ORDER BY $sTable.class_ID ASC,$sTable.reg_time ASC)
 		}else{
-			$additional_where = array();
-			if(isset($options['class_code']))
-			{
-				$additional_where[] = "class_code like '{$options['class_code']}%'";
-			}
-			if(isset($options['class_ID']))
-			{
-				$additional_where[] = "class_ID = '{$options['class_ID']}'";
-			}
-			if(!empty($additional_where)){
-				$additional_where = ' AND '.implode(' AND ',$additional_where);
-			}else{
-				$additional_where = "";
-			}
+//			$additional_where = array();
+//			if(isset($options['class_code']))
+//			{
+//				$additional_where[] = "class_code like '{$options['class_code']}%'";
+//			}
+//			if(isset($options['class_ID']))
+//			{
+//				$additional_where[] = "class_ID = '{$options['class_ID']}'";
+//			}
+//			if(!empty($additional_where)){
+//				$additional_where = ' AND '.implode(' AND ',$additional_where);
+//			}else{
+//				$additional_where = "";
+//			}
 			$sSelect = "
 				$sTable.*,
 				{$sJoinTable['class']}.class_code,
@@ -448,14 +449,15 @@ class Curriculum_model extends MY_Model {
 				{$sJoinTable['course']}.course_cht_name,
 				{$sJoinTable['course']}.course_eng_name
 				FROM
-				(SELECT IF(@cur_group<>$sTable.class_ID,@cur_rank:=1,@cur_rank:=@cur_rank+1) AS reg_rank,@cur_group:=$sTable.class_ID,$sTable.* FROM $sTable, (SELECT @cur_rank:=0,@cur_group:=null) r WHERE reg_canceled_by IS NULL $additional_where ORDER BY $sTable.class_ID ASC,$sTable.reg_time ASC) $sTable
+				 $sTable
 			";
 		}
-		
+//(SELECT IF(@cur_group<>$sTable.class_ID,@cur_rank:=1,@cur_rank:=@cur_rank+1) AS reg_rank,@cur_group:=$sTable.class_ID,$sTable.* FROM $sTable, (SELECT @cur_rank:=0,@cur_group:=null) r WHERE reg_canceled_by IS NULL $additional_where ORDER BY $sTable.class_ID ASC,$sTable.reg_time ASC)
 		$this->curriculum_db->select($sSelect,FALSE);
 		$this->curriculum_db->join("(SELECT * FROM {$sJoinTable['class']} ORDER BY {$sJoinTable['class']}.class_type DESC) {$sJoinTable['class']}","{$sJoinTable['class']}.class_ID = $sTable.class_ID","LEFT");
 //		$this->curriculum_db->join($sJoinTable['class'],"{$sJoinTable['class']}.class_ID = $sTable.class_ID","LEFT");
 		$this->curriculum_db->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = {$sJoinTable['class']}.course_ID","LEFT");
+		$this->curriculum_db->where("$sTable.reg_canceled_by",NULL);
 		if(isset($options['user_ID']))
 			$this->curriculum_db->where("$sTable.user_ID",$options['user_ID']);
 		if(isset($options['course_ID']))
@@ -484,9 +486,18 @@ class Curriculum_model extends MY_Model {
 		{
 			$this->curriculum_db->where("{$sJoinTable['class']}.class_state",$options['class_state']);
 		}
+		if(isset($options['reg_rank_start']))
+		{
+			$this->curriculum_db->where("$sTable.reg_rank >=",$options['reg_rank_start']);
+		}
+		if(isset($options['reg_rank_end']))
+		{
+			$this->curriculum_db->where("$sTable.reg_rank <=",$options['reg_rank_end']);
+		}
 		$this->curriculum_db->order_by("{$sJoinTable['course']}.course_ID","ASC");
 		$this->curriculum_db->order_by("{$sJoinTable['class']}.class_code","ASC");
 		$this->curriculum_db->order_by("{$sJoinTable['class']}.class_type","ASC");
+		$this->curriculum_db->order_by("$sTable.class_ID","ASC");
 		$this->curriculum_db->order_by("$sTable.reg_time","ASC");
 		
 		if(isset($options['group_class_suite']) && $options['group_class_suite']==TRUE)
@@ -502,6 +513,7 @@ class Curriculum_model extends MY_Model {
 	{
 		$this->curriculum_db->set("user_ID",$data['user_ID']);
 		$this->curriculum_db->set("class_ID",$data['class_ID']);
+		$this->curriculum_db->set("reg_rank",$data['reg_rank']);
 		if(isset($data['reg_by']))
 		{
 			$this->curriculum_db->set("reg_by",$data['reg_by']);
@@ -515,6 +527,10 @@ class Curriculum_model extends MY_Model {
 	}
 	public function update_reg($data = array())
 	{
+		if(isset($data['reg_rank']))
+		{
+			$this->curriculum_db->set("reg_rank",$data['reg_rank']);
+		}
 		if(isset($data['reg_confirmed_by'])){
 			$this->curriculum_db->set("reg_confirmed_by",$data['reg_confirmed_by']);
 			$this->curriculum_db->set("reg_confirmation_time",date("Y-m-d H:i:s"));
@@ -523,7 +539,10 @@ class Curriculum_model extends MY_Model {
 			$this->curriculum_db->set("reg_certified_by",$data['reg_certified_by']);
 			$this->curriculum_db->set("reg_certification_time",date("Y-m-d H:i:s"));
 		}
-		$this->curriculum_db->set("reg_state",$data['reg_state']);
+		if(isset($data['reg_state']))
+		{
+			$this->curriculum_db->set("reg_state",$data['reg_state']);
+		}
 		$this->curriculum_db->where("reg_ID",$data['reg_ID']);
 		$this->curriculum_db->update("class_registration");
 		return $this->curriculum_db->affected_rows();
@@ -542,10 +561,7 @@ class Curriculum_model extends MY_Model {
 			$this->curriculum_db->where("$sTable.reg_state",$data['reg_state']);
 		if(isset($data['reg_ID']))
 			$this->curriculum_db->where("$sTable.reg_ID",$data['reg_ID']);
-		if(isset($data['reg_canceled_by']))
-		{
-			$this->curriculum_db->set("$sTable.reg_canceled_by",$data['reg_canceled_by']);
-		}
+		$this->curriculum_db->set("$sTable.reg_canceled_by",isset($data['reg_canceled_by'])?$data['reg_canceled_by']:$this->session->userdata('ID'));
 		$this->curriculum_db->set("$sTable.reg_cancel_time",date("Y-m-d H:i:s"));
 		$this->curriculum_db->update($sTable." JOIN {$sJoinTable['class']} ON $sTable.class_ID = {$sJoinTable['class']}.class_ID");
 	}
