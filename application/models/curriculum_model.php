@@ -473,7 +473,7 @@ class Curriculum_model extends MY_Model {
 			$this->curriculum_db->where("{$sJoinTable['class']}.class_reg_start_time <=",$options['class_reg_end_time']);
 		}
 		if(isset($options['class_ID']))
-			$this->curriculum_db->where("$sTable.class_ID",$options['class_ID']);
+			$this->curriculum_db->where("{$sJoinTable['class']}.class_ID",$options['class_ID']);
 		if(isset($options['reg_state']))
 			$this->curriculum_db->where_in("$sTable.reg_state",$options['reg_state']);
 		if(isset($options['reg_ID']))
