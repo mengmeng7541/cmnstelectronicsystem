@@ -15,7 +15,7 @@ class Unittest extends MY_Controller {
 		$this->load->model('curriculum_model');
 //		$this->benchmark->mark('code_start');
 		$this->load->model('curriculum/reg_model');
-//		$this->reg_model->refresh_rank();
+		$this->reg_model->refresh_rank();
 //				$options = array(
 //					"class_code"=>'2014-01'
 //				);
