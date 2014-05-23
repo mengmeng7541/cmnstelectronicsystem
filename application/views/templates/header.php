@@ -12,7 +12,7 @@
 	<meta content="" name="Description">
 	<meta content="" name="author">
 	<meta http-equiv="x-ua-compatible" content="IE=edge">
-	<link href="<?=base_url();?>assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="<?=base_url();?>assets/bootstrap/css/bootstrap.css" rel="stylesheet">
 	<!--<link href="<?=base_url();?>assets/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">-->
 	<link href="<?=base_url();?>assets/bootstrap/css/bootstrap-fileupload.css" rel="stylesheet" />
 	<link href="<?=base_url();?>assets/font-awesome/css/font-awesome.css" rel="stylesheet">

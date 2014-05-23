@@ -584,6 +584,18 @@ class User extends MY_Controller {
 		$this->load->view('user/list_clock',$this->data);
 		$this->load->view('templates/footer');
 	}
+	//for advertisment
+	public function list_clock2($location_ID = NULL)
+	{
+		$location_ID = $this->security->xss_clean($location_ID);
+		$this->data['location_ID'] = $location_ID;
+		$this->load->model('common_model');
+		$this->data['location_ID_select_options'] = $this->common_model->get_location_ID_select_options();
+		$this->load->view('templates/header');
+		$this->load->view('templates/sidebar');
+		$this->load->view('user/list_clock2',$this->data);
+		$this->load->view('templates/footer');
+	}
 	public function query_clock()
 	{
 		$input_data = $this->input->get(NULL,TRUE);
