@@ -162,6 +162,18 @@ blueimp.Gallery.prototype.textFactory = function (obj, callback) {
 		    href: base_url+'gallery/ad1.jpg',
 		    title: '',
 		});
+		carouselLinks.push({
+		    href: base_url+'gallery/ad2.jpg',
+		    title: '',
+		});
+		carouselLinks.push({
+		    href: base_url+'gallery/ad3.jpg',
+		    title: '',
+		});
+		carouselLinks.push({
+		    href: base_url+'gallery/ad4.jpg',
+		    title: '',
+		});
 		
 		var gallery = blueimp.Gallery(
 		    carouselLinks,
