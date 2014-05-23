@@ -81,8 +81,8 @@ $route['user/clock/list/(:num)'] = 'user/list_clock/$1';
 $route['user/clock/query'] = 'user/query_clock';
 $route['user/clock/add'] = 'user/add_clock';
 
-$route['user/clock2/list'] = 'user/list_clock2';
-$route['user/clock2/list/(:num)'] = 'user/list_clock2/$1';
+$route['advertisement'] = 'user/list_advertisement';
+$route['advertisement/(:num)'] = 'user/list_advertisement/$1';
 
 $route['org/list'] = 'user/list_org';
 $route['org/query'] = 'user/query_org';
