@@ -2338,6 +2338,52 @@ var App = function () {
                 }
             },
         });
+        
+        var table_admin_org_chart = $("#table_admin_org_chart").dataTable({
+	        "sAjaxSource": site_url+"admin/org/query",
+            "sDom": "t",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+            "fnServerParams": function ( aoData ) {
+				aoData.push(
+					{"name":"admin_ID","value":$("input[name='ID']").val()}
+				);
+	        },
+        });
+        $("#form_admin_register").on("click","button[name='add']",function(){
+        	$.ajax({
+        		url: site_url+'admin/org/add',
+        		data: {
+        			admin_ID:$("#form_admin_register :input[name='ID']").val(),
+        			group_no:$("#form_admin_register :input[name='group_no']").val(),
+        			team_no:$("#form_admin_register :input[name='team_no']").val(),
+        			status_no:$("#form_admin_register :input[name='status_no']").val()},
+        		type: "POST",
+        		beforeSend: function(){
+					showRequest();
+				}
+        	}).done(function(data){
+        		showResponse(data);
+        		table_admin_org_chart.fnReloadAjax();
+        	});
+        });
+        $("#table_admin_org_chart").on("click","button[name='del']",function(){
+        	$.ajax({
+        		url: site_url+'admin/org/del/'+$(this).val(),
+        		beforeSend: function(){
+					showRequest();
+				}
+        	}).done(function(data){
+        		showResponse(data);
+        		table_admin_org_chart.fnReloadAjax();
+        	});
+        });
 	}
 	var handleFormAccount = function(){
 		//表單驗證

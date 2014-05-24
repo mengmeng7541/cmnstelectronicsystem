@@ -82,6 +82,27 @@
 								  	  <input type="file" name="userfile" class="default" />
 	                              </div>
 	                            </div>
+	                            <div class="control-group">
+	                            	<label class="control-label">人員權限</label>
+	                            	<div class="controls">
+	                            		<?=form_dropdown("group_no",isset($org_chart_group_no_name_array)?$org_chart_group_no_name_array:array(),"","");?>
+	                            		<?=form_dropdown("team_no",isset($org_chart_team_no_name_array)?$org_chart_team_no_name_array:array(),"","");?>
+	                            		<?=form_dropdown("status_no",isset($org_chart_status_no_name_array)?$org_chart_status_no_name_array:array(),"","");?>
+	                            		<button name="add" type="button" class="btn btn-warning btn-small">新增</button>
+	                            	</div>
+	                            	
+	                            </div>
+	                            <table id="table_admin_org_chart" class="table table-striped table-bordered">
+                            		<thead>
+                            			<th>群組</th>
+                            			<th>團隊</th>
+                            			<th>身分</th>
+                            			<th width="100"></th>
+                            		</thead>
+                            		<tbody>
+                            			
+                            		</tbody>
+                            	</table>
                             <? } ?>
 						   <div class="form-actions">
 							  <input type="submit" class="btn btn-primary" value="送出" />

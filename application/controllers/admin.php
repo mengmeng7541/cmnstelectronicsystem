@@ -56,6 +56,8 @@ class Admin extends MY_Controller {
   public function list_account()
   {
   	$this->is_admin_login();
+  	
+  	
 	
 	$this->load->view('templates/header');
     $this->load->view('templates/sidebar');
@@ -107,6 +109,10 @@ class Admin extends MY_Controller {
 		$this->data['stamp'] = $admin_profile['stamp'];
 		$this->data['action'] = site_url()."/admin/update";
 	}
+	
+	$this->data['org_chart_group_no_name_array'] = $this->admin_model->get_org_chart_group_array();
+	$this->data['org_chart_team_no_name_array'] = $this->admin_model->get_org_chart_team_array();
+	$this->data['org_chart_status_no_name_array'] = $this->admin_model->get_org_chart_status_array();
 	
 	$this->load->view('templates/header');
     $this->load->view('templates/sidebar');
@@ -301,7 +307,71 @@ class Admin extends MY_Controller {
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
 	}
-	
+	//------------------------人員組織架構----------------------
+	public function query_org_chart()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$input_data = $this->input->get(NULL,TRUE);
+			
+			$charts = $this->admin_model->get_org_chart_list(array(
+				"admin_ID"=>$input_data['admin_ID']
+			))->result_array();
+			
+			$output['aaData'] = array();
+			foreach($charts as $chart){
+				$row = array();
+				$row[] = $chart['group_name'];
+				$row[] = $chart['team_name'];
+				$row[] = $chart['status_name'];
+				$row[] = form_button("del","刪除","class='btn btn-danger btn-small' value='{$chart['serial_no']}'");
+				$output['aaData'][] = $row;
+			}
+			echo json_encode($output);
+		}catch(Exception $e){
+			echo json_encode($output);
+		}
+	}
+	public function add_org_chart()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$this->form_validation->set_rules("admin_ID","人員","required");
+			$this->form_validation->set_rules("group_no","群組","required");
+			$this->form_validation->set_rules("team_no","團隊","required");
+			$this->form_validation->set_rules("status_no","身分","required");
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			$input_data = $this->input->post(NULL,TRUE);
+			$this->admin_model->add_org_chart(elements(array("admin_ID","group_no","team_no","status_no"),$input_data));
+			
+			echo $this->info_modal("新增成功");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+	}
+	public function update_org_chart()
+	{
+		
+	}
+	public function del_org_chart($SN="")
+	{
+		try{
+			$this->is_admin_login();
+			
+			$SN = $this->security->xss_clean($SN);
+			$this->admin_model->del_org_chart(array("serial_no"=>$SN));
+			
+			echo $this->info_modal("刪除成功");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+	}
   //-----------------------------------------------------------------------------
   public function clock(){
   	

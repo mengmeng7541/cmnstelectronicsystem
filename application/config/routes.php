@@ -58,6 +58,11 @@ $route['admin/clock/query/manual'] = 'admin/query_manual_clock';
 $route['admin/clock/add'] = 'admin/add_clock';
 $route['admin/clock/del/(:num)'] = 'admin/del_clock/$1';
 
+$route['admin/org/query'] = 'admin/query_org_chart';
+$route['admin/org/add'] = 'admin/add_org_chart';
+$route['admin/org/update'] = 'admin/update_org_chart';
+$route['admin/org/del/(:num)'] = 'admin/del_org_chart/$1';
+
 $route['boss/list'] = 'user/list_boss';
 $route['boss/query'] = 'user/query_boss';
 $route['boss/form'] = 'user/form_boss';

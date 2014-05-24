@@ -175,6 +175,87 @@ class Admin_model extends MY_Model {
 		$this->clock_db->delete("clock_admin_manual");
 	}
 	
+	//--------------------------人員組織-------------
+	public function get_org_chart_list($options = array())
+	{
+		$sTable = "admin_org_chart";
+		$sJoinTable = array("group"=>"enum_admin_org_group","team"=>"enum_admin_org_team","status"=>"enum_admin_org_status");
+		$this->common_db->join($sJoinTable['group'],"{$sJoinTable['group']}.group_no = $sTable.group_no","LEFT")
+						->join($sJoinTable['team'],"{$sJoinTable['team']}.team_no = $sTable.team_no","LEFT")
+						->join($sJoinTable['status'],"{$sJoinTable['status']}.status_no = $sTable.status_no","LEFT");
+		if(isset($options['admin_ID']))
+		{
+			$this->common_db->where("$sTable.admin_ID",$options['admin_ID']);
+		}
+		if(isset($options['group_no']))
+		{
+			$this->common_db->where("$sTable.group_no",$options['group_no']);
+		}
+		if(isset($options['group_ID']))
+		{
+			$this->common_db->where("{$sJoinTable['group']}.group_ID",$options['group_ID']);
+		}
+		if(isset($options['team_no']))
+		{
+			$this->common_db->where("$sTable.team_no",$options['team_no']);
+		}
+		if(isset($options['team_ID']))
+		{
+			$this->common_db->where("{$sJoinTable['team']}.team_ID",$options['team_ID']);
+		}
+		if(isset($options['status_no']))
+		{
+			$this->common_db->where("$sTable.status_no",$options['status_no']);
+		}
+		if(isset($options['status_ID']))
+		{
+			$this->common_db->where("{$sJoinTable['status']}.status_ID",$options['status_ID']);
+		}
+		return $this->common_db->get($sTable);
+	}
+	public function add_org_chart($data)
+	{
+		$this->common_db->insert("admin_org_chart",$data);
+	}
+	public function update_org_chart($data)
+	{
+		
+	}
+	public function del_org_chart($data)
+	{
+		$this->common_db->where("serial_no",$data['serial_no']);
+		$this->common_db->delete("admin_org_chart");
+	}
+	public function get_enum_org_chart_group_list($options = array())
+	{
+		$sTable = "enum_admin_org_group";
+		return $this->common_db->get($sTable);
+	}
+	public function get_org_chart_group_array()
+	{
+		$groups = $this->get_enum_org_chart_group_list()->result_array();
+		return sql_column_to_key_value_array($groups,"group_name","group_no");
+	}
+	public function get_enum_org_chart_team_list($options = array())
+	{
+		$sTable = "enum_admin_org_team";
+		return $this->common_db->get($sTable);
+	}
+	public function get_org_chart_team_array()
+	{
+		$teams = $this->get_enum_org_chart_team_list()->result_array();
+		return sql_column_to_key_value_array($teams,"team_name","team_no");
+	}
+	public function get_enum_org_chart_status_list($options = array())
+	{
+		$sTable = "enum_admin_org_status";
+		return $this->common_db->get($sTable);
+	}
+	public function get_org_chart_status_array()
+	{
+		$statuss = $this->get_enum_org_chart_status_list()->result_array();
+		return sql_column_to_key_value_array($statuss,"status_name","status_no");
+	}
 	//-----------------通用------------------
 	public function get_admin_ID_select_options()
 	{
