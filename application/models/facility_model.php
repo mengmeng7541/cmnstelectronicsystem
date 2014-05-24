@@ -37,7 +37,7 @@ class Facility_model extends MY_Model {
 	public function get_facility_list_array($input_data)
 	{
 		$sTable = "cmnst_facility.facility_list";
-		$sJoinTable = array("cmnst_facility.facility_user_privilege","cmnst_common.admin_profile");
+		$sJoinTable = array("cmnst_facility.facility_user_privilege","cmnst_common.user_profile");
 		$aColumns = array("$sTable.ID"=>"facility_ID",
 						  "$sTable.new_ID"=>"facility_new_ID",
 						  "$sTable.ctrl_no"=>"facility_ctrl_no",
@@ -476,7 +476,7 @@ class Facility_model extends MY_Model {
 		$sJoinTable = array("booking"=>"cmnst_facility.facility_booking",
 							"facility"=>"cmnst_facility.facility_list",
 							"user"=>"cmnst_common.user_profile",
-							"admin"=>"cmnst_common.admin_profile");
+							"admin"=>"cmnst_common.user_profile");
 		$this->facility_db->select("{$sTable}.booking_ID,
 									{$sTable}.apply_date,
 									{$sTable}.reason,
@@ -491,12 +491,12 @@ class Facility_model extends MY_Model {
 									{$sJoinTable['facility']}.eng_name AS facility_eng_name,
 									{$sJoinTable['booking']}.start_time,
 									{$sJoinTable['booking']}.end_time,
-									{$sJoinTable['admin']}.name AS admin_name")
+									admin.name AS admin_name")
 						  ->from("facility_booking_nocharge")
 						  ->join($sJoinTable['booking'],"{$sJoinTable['booking']}.serial_no = {$sTable}.booking_ID","LEFT")
 						  ->join($sJoinTable['facility'],"{$sJoinTable['facility']}.ID = {$sJoinTable['booking']}.facility_ID")
 						  ->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = {$sJoinTable['booking']}.user_ID")
-						  ->join($sJoinTable['admin'],"{$sJoinTable['admin']}.ID = {$sTable}.admin_ID","LEFT");
+						  ->join("{$sJoinTable['admin']} AS admin","admin.ID = {$sTable}.admin_ID","LEFT");
 		if(!empty($input_data['booking_ID']))
 			$this->facility_db->where("{$sTable}.booking_ID",$input_data['booking_ID']);
 		if(!empty($input_data['facility_ID']))
@@ -699,7 +699,7 @@ class Facility_model extends MY_Model {
 	public function get_card_application_list($input_data = array())
 	{
 		$sTable = "cmnst_facility.facility_card_application";
-		$sJoinTable = array("cmnst_common.user_profile","cmnst_common.admin_profile");
+		$sJoinTable = array("cmnst_common.user_profile","cmnst_common.user_profile");
 		$this->facility_db->select("$sTable.serial_no,
 									$sTable.type,
 									$sTable.user_ID,
@@ -711,10 +711,10 @@ class Facility_model extends MY_Model {
 									$sJoinTable[0].name AS user_name,
 									$sJoinTable[0].email,
 									$sJoinTable[0].mobile,
-									$sJoinTable[1].name AS admin_name")
+									admin.name AS admin_name")
 						  ->from($sTable)
 						  ->join($sJoinTable[0],"$sJoinTable[0].ID = $sTable.user_ID","LEFT")
-						  ->join($sJoinTable[1],"$sJoinTable[1].ID = $sTable.officer_ID","LEFT")
+						  ->join("{$sJoinTable[1]} AS admin","admin.ID = $sTable.officer_ID","LEFT")
 						  ->order_by("$sTable.serial_no","desc");
 		
 		if(!empty($input_data['type']))

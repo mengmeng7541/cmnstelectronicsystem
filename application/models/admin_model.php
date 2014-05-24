@@ -65,10 +65,13 @@ class Admin_model extends MY_Model {
   	$this->common_db->insert("admin_access");
 
 	$this->common_db->set("ID",$input_data['ID']);
+  	$this->common_db->insert("admin_profile");
+  	
+  	$this->common_db->set("ID",$input_data['ID']);
   	$this->common_db->set("name",$input_data['name']);
   	$this->common_db->set("email",$input_data['email']);
   	$this->common_db->set("mobile",$input_data['mobile']);
-  	$this->common_db->insert("admin_profile");
+  	$this->common_db->insert("user_profile");
   }
   public function update_account($input_data)
   {
@@ -79,13 +82,17 @@ class Admin_model extends MY_Model {
 		$this->common_db->update("admin_access");
 	}
 	
+	if(!empty($input_data['stamp'])){
+		$this->common_db->set("stamp",$input_data['stamp']);
+		$this->common_db->where("ID",$input_data['ID']);
+		$this->common_db->update("admin_profile");
+	}
+	
 	$this->common_db->set("name",$input_data['name']);
   	$this->common_db->set("email",$input_data['email']);
   	$this->common_db->set("mobile",$input_data['mobile']);
-  	if(!empty($input_data['stamp']))
-  		$this->common_db->set("stamp",$input_data['stamp']);
   	$this->common_db->where("ID",$input_data['ID']);
-	$this->common_db->update("admin_profile");
+	$this->common_db->update("user_profile");
 	return $this->common_db->affected_rows();
   }
   //-------------------PASSWORD----------------------

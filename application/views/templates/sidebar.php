@@ -36,7 +36,7 @@
 				</li>
 				<li class="has-sub">
 					<a href="javascript:;" class="">
-					<span class="icon-box"><i class="icon-cogs"></i></span> 訓練課程(測試中)
+					<span class="icon-box"><i class="icon-cogs"></i></span> 訓練課程
 					<span class="arrow"></span>
 					</a>
 					<ul class="sub">

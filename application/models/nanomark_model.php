@@ -1067,22 +1067,21 @@ class Nanomark_model extends MY_Model {
 		if(!$application) throw new Exception("無此委託單，無法送信",ERROR_CODE);
 		//取得需要審核的admin email
 		$admin_IDs = $this->get_application_unsigned_facility_admin($app_SN);
-		$this->load->model('user_model');
-		$admin_profiles = $this->user_model->get_user_profile_list(
-			array("user_ID"=>$admin_IDs)
+		$this->load->model('admin_model');
+		$admin_profiles = $this->admin_model->get_admin_profile_list(
+			array("admin_ID"=>$admin_IDs)
 		)->result_array();
 		if($admin_profiles){
 			foreach($admin_profiles as $admin_profile)
 			{
-				$admin_email[] = $admin_profile['email'];
+				$this->email->to($admin_profile['email']);
+				$this->email->subject("成大微奈米技研中心 -奈米標章檢測件審核通知-");
+				$this->email->message(
+					"{$admin_profile['name']} 您好：<br>
+					客戶 {$application['report_title']} 申請了奈米標章委託，其中有部分檢測件為您所管理之儀器，故請上本中心網站預約並審核，謝謝。"
+				);
+				$this->email->send();
 			}
-			$this->email->to($admin_email);
-			$this->email->subject("成大微奈米技研中心 -奈米標章檢測件審核通知-");
-			$this->email->message(
-				"{$admin_profile['name']} 您好：<br>
-				客戶 {$application['report_title']} 申請了奈米標章委託，其中有部分檢測件為您所管理之儀器，故請上本中心網站預約並審核，謝謝。"
-			);
-			$this->email->send();
 		}
 		
 		
