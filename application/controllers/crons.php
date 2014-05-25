@@ -9,6 +9,72 @@ class Crons extends MY_Controller {
 //		if(!$this->input->is_cli_request())	die('F');
 
 	}
+	//---------------------打卡系統----------------------------
+	//偵測是否逾時未歸
+	public function send_admin_clock_timeout_notification()
+	{
+		//非上班時段不運作
+		if(date("H:i:s")<"08:00:00"||date("H:i:s")>"17:00:00")
+		{
+			return;
+		}
+		$this->load->model('admin_model');
+		$this->load->model('facility_model');
+		//取出啟始時間在前一小時，無結束時間，且為今天打卡的打卡紀錄
+		//還有結束時間小於現在時間，且為今天打卡的打卡紀錄
+		$clocks = $this->admin_model->get_manual_clock_list(array(
+			"clock_start_time_start_time"=>date("Y-m-d 00:00:00"),
+			"clock_end_time_start_time"=>"2038-01-01 00:00:00",
+			"clock_start_time_end_time"=>date("Y-m-d H:i:s",strtotime("-1hour")),
+		))->result_array();
+		$clocks = array_merge($clocks,$this->admin_model->get_manual_clock_list(array(
+			"clock_start_time_start_time"=>date("Y-m-d 00:00:00"),
+			"clock_end_time_end_time"=>date("Y-m-d H:i:s"),
+		))->result_array());
+		foreach($clocks as $clock){
+			if(!empty($clock['clock_checkpoint'])){
+				continue;
+			}
+			//取得本日最後刷卡紀錄
+			$auto_clock = $this->admin_model->get_auto_clock_list(array("admin_ID"=>$clock['clock_user_ID']))->row_array();
+			if($auto_clock['access_last_datetime']==NULL || strtotime($auto_clock['access_last_datetime'])<strtotime($clock['clock_start_time'])){
+				//如果沒有刷卡紀錄或最後刷卡時間小於起始時間
+				//逾時未歸，發信通知
+				$this->admin_model->update_clock(array("clock_checkpoint"=>"notified","clock_ID"=>$clock['clock_ID']));
+				//取得組長資訊
+				$org_charts = $this->admin_model->get_org_chart_list(array(
+					"admin_ID"=>$clock['clock_user_ID'],
+				))->result_array();
+				$this->load->model('common/admin_org_chart_model');
+				foreach($org_charts as $org_chart)
+				{
+					$manager_org_charts = $this->admin_model->get_org_chart_list(array(
+						"group_no"=>$org_chart['group_no'],
+						"team_no"=>$org_chart['team_no'],
+						"status_ID"=>array("CTO","section_chief")
+					))->result_array();
+					foreach($manager_org_charts as $manager_org_chart)
+					{
+						$this->email->to($manager_org_chart['admin_email']);
+						$this->email->subject("成大微奈米科技研究中心 -逾時未歸通知-");
+						if(empty($clock['clock_end_time']))
+						{
+							$this->email->message(
+								"{$manager_org_chart['admin_name']} 您好<br>
+								{$org_chart['admin_name']} 於 {$clock['clock_start_time']} 因 {$clock['clock_reason']} 至 {$clock['clock_location']} 外出，已超過一小時，但目前仍尚未歸來，請留意，謝謝。"
+							);
+						}else{
+							$this->email->message(
+								"{$manager_org_chart['admin_name']} 您好<br>
+								{$org_chart['admin_name']} 於 {$clock['clock_start_time']} 因 {$clock['clock_reason']} 至 {$clock['clock_location']} 外出，預計於 {$clock['clock_end_time']} 結束，但目前仍尚未歸來，請留意，謝謝。"
+							);
+						}
+						$this->email->send();
+					}
+				}
+			}
+		}
+	}
 	
 	//----------------------卡機系統---------------------------
 	//corntab中設定每分鐘同步舊資料庫的刷卡紀錄到新資料庫一次

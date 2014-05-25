@@ -102,7 +102,7 @@ class Admin_model extends MY_Model {
 	return md5($code);
   }
   //--------------------人員位置------------------------------
-	public function get_auto_clock_list()
+	public function get_auto_clock_list($options = array())
 	{
 		$sTable = "cmnst_common.user_profile";
 		$sJoinTable = array("card"=>"cmnst_facility.Card","facility"=>"cmnst_facility.facility_list","location"=>"cmnst_common.location","clock"=>"cmnst_clock.clock_admin_manual","constant_user_status"=>"cmnst_common.constant_user_status");
@@ -113,6 +113,7 @@ class Admin_model extends MY_Model {
 									IFNULL(card.CardNo,$sTable.serial_no) AS uni_card_num,
 									card.FDate AS access_last_date,
 									card.FTime AS access_last_time,
+									card.FDateTime AS access_last_datetime,
 									card.Status AS access_state,
 									{$sJoinTable['facility']}.type AS facility_type,
 									{$sJoinTable['facility']}.cht_name AS facility_cht_name,
@@ -134,10 +135,14 @@ class Admin_model extends MY_Model {
 		$this->facility_db->join("(SELECT * FROM {$sJoinTable['clock']} WHERE (NOW() BETWEEN clock_start_time AND clock_end_time) OR (NOW() > clock_start_time AND DATE(clock_start_time) = CURDATE()) ORDER BY clock_time DESC) clock","clock.clock_user_ID = $sTable.ID","LEFT");
 		$this->facility_db->join($sJoinTable['constant_user_status'],"$sTable.status = {$sJoinTable['constant_user_status']}.status_no","LEFT");
 		$this->facility_db->where("$sTable.group","admin");
+		if(isset($options['admin_ID']))
+		{
+			$this->facility_db->where("$sTable.ID",$options['admin_ID']);
+		}
 		$query = $this->facility_db->get();
 		return $query;
 	}
-	public function get_manual_clock_list($option)
+	public function get_manual_clock_list($option = array())
 	{
 		$sTable = "clock_admin_manual";
 		$sJoinTable = array("user"=>"cmnst_common.user_profile");
@@ -148,10 +153,42 @@ class Admin_model extends MY_Model {
 		$this->clock_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.clock_user_ID","LEFT");
 		if(isset($option['clock_user_ID']))
 			$this->clock_db->where("clock_user_ID",$option['clock_user_ID']);
-		if(isset($option['clock_start_time'])){
-			$this->clock_db->where("((ISNULL(clock_end_time) AND clock_start_time >='".date("Y-m-d H:i:s",strtotime("-30minutes"))."') OR clock_end_time >= '{$option['clock_start_time']}')");
+		if(isset($option['clock_start_time']))
+		{
+			$this->clock_db->where("ISNULL(clock_end_time) OR clock_end_time >= '{$option['clock_start_time']}'");
 		}
-			
+		if(isset($option['clock_end_time']))
+		{
+			$this->clock_db->where("clock_start_time <=",$option['clock_end_time']);
+		}
+		if(isset($option['clock_start_time_start_time']))
+		{
+			$this->clock_db->where("clock_start_time >=",$option['clock_start_time_start_time']);
+		}
+		if(isset($option['clock_start_time_end_time']))
+		{
+			$this->clock_db->where("clock_start_time <=",$option['clock_start_time_end_time']);
+		}
+		if(isset($option['clock_end_time_start_time']))
+		{
+			$this->clock_db->where("ISNULL(clock_end_time) OR clock_end_time >= '{$option['clock_end_time_start_time']}'");
+		}
+		if(isset($option['clock_end_time_end_time']))
+		{
+			$this->clock_db->where("clock_end_time <=",$option['clock_end_time_end_time']);
+		}
+		if(isset($option['clock_time_start_time']))
+		{
+			$this->clock_db->where("clock_time >=",$option['clock_time_start_time']);
+		}
+		if(isset($option['clock_time_end_time']))
+		{
+			$this->clock_db->where("clock_time <=",$option['clock_time_end_time']);
+		}
+		if(isset($option['clock_checkpoint']))
+		{
+			$this->clock_db->where("clock_checkpoint",$option['clock_checkpoint']);
+		}	
 		return $this->clock_db->get("clock_admin_manual");
 	}
 	public function add_clock($input_data)
@@ -169,6 +206,12 @@ class Admin_model extends MY_Model {
 		}
 		$this->clock_db->insert("clock_admin_manual");
 	}
+	public function update_clock($data)
+	{
+		$this->clock_db->set("clock_checkpoint",$data['clock_checkpoint']);
+		$this->clock_db->where("clock_ID",$data['clock_ID']);
+		$this->clock_db->update("clock_admin_manual");
+	}
 	public function del_clock($data)
 	{
 		$this->clock_db->where("clock_ID",$data['clock_ID']);
@@ -179,10 +222,22 @@ class Admin_model extends MY_Model {
 	public function get_org_chart_list($options = array())
 	{
 		$sTable = "admin_org_chart";
-		$sJoinTable = array("group"=>"enum_admin_org_group","team"=>"enum_admin_org_team","status"=>"enum_admin_org_status");
+		$sJoinTable = array("group"=>"enum_admin_org_group","team"=>"enum_admin_org_team","status"=>"enum_admin_org_status","user"=>"cmnst_common.user_profile");
+		$this->common_db->select("
+			$sTable.*,
+			{$sJoinTable['group']}.group_ID AS group_ID,
+			{$sJoinTable['group']}.group_name AS group_name,
+			{$sJoinTable['team']}.team_ID AS team_ID,
+			{$sJoinTable['team']}.team_name AS team_name,
+			{$sJoinTable['status']}.status_ID AS status_ID,
+			{$sJoinTable['status']}.status_name AS status_name,
+			{$sJoinTable['user']}.name AS admin_name,
+			{$sJoinTable['user']}.email AS admin_email
+		");
 		$this->common_db->join($sJoinTable['group'],"{$sJoinTable['group']}.group_no = $sTable.group_no","LEFT")
 						->join($sJoinTable['team'],"{$sJoinTable['team']}.team_no = $sTable.team_no","LEFT")
-						->join($sJoinTable['status'],"{$sJoinTable['status']}.status_no = $sTable.status_no","LEFT");
+						->join($sJoinTable['status'],"{$sJoinTable['status']}.status_no = $sTable.status_no","LEFT")
+						->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.admin_ID","LEFT");
 		if(isset($options['admin_ID']))
 		{
 			$this->common_db->where("$sTable.admin_ID",$options['admin_ID']);
@@ -209,7 +264,7 @@ class Admin_model extends MY_Model {
 		}
 		if(isset($options['status_ID']))
 		{
-			$this->common_db->where("{$sJoinTable['status']}.status_ID",$options['status_ID']);
+			$this->common_db->where_in("{$sJoinTable['status']}.status_ID",$options['status_ID']);
 		}
 		return $this->common_db->get($sTable);
 	}
