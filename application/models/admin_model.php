@@ -294,21 +294,29 @@ class Admin_model extends MY_Model {
 	public function get_enum_org_chart_team_list($options = array())
 	{
 		$sTable = "enum_admin_org_team";
+		if(isset($options['group_no']))
+		{
+			$this->common_db->where("group_no",$options['group_no']);
+		}
 		return $this->common_db->get($sTable);
 	}
-	public function get_org_chart_team_array()
+	public function get_org_chart_team_array($g_no = NULL)
 	{
-		$teams = $this->get_enum_org_chart_team_list()->result_array();
+		$teams = $this->get_enum_org_chart_team_list(array("group_no"=>$g_no))->result_array();
 		return sql_column_to_key_value_array($teams,"team_name","team_no");
 	}
 	public function get_enum_org_chart_status_list($options = array())
 	{
 		$sTable = "enum_admin_org_status";
+		if(isset($options['group_no']))
+		{
+			$this->common_db->where("group_no",$options['group_no']);
+		}
 		return $this->common_db->get($sTable);
 	}
-	public function get_org_chart_status_array()
+	public function get_org_chart_status_array($g_no = NULL)
 	{
-		$statuss = $this->get_enum_org_chart_status_list()->result_array();
+		$statuss = $this->get_enum_org_chart_status_list(array("group_no"=>$g_no))->result_array();
 		return sql_column_to_key_value_array($statuss,"status_name","status_no");
 	}
 	//-----------------通用------------------

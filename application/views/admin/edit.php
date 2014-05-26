@@ -122,4 +122,34 @@
          <!-- END PAGE CONTAINER-->
       </div>
       <!-- END PAGE -->  
-
+<script type="text/javascript">
+	
+			
+	$(document).ready(function(){
+		$.ajax({
+			url: site_url+'admin/get_org_chart_group_team_status_json',
+			type: "GET",
+			dataType: "json"
+		}).done(function(jdata){
+			$("select[name='group_no']").empty();
+			for(var gIdx in jdata){
+				$("select[name='group_no']").append('<option value='+jdata[gIdx].group_no+'>'+jdata[gIdx].group_name+'</option>');
+			}
+			
+			$("select[name='group_no']").change(jdata,function(event){
+				console.log(event.data);
+				var gIdx = $(this).find(":selected").val();
+				$("select[name='team_no']").empty();
+				for(var tIdx in event.data[gIdx].team){
+					$("select[name='team_no']").append('<option value='+event.data[gIdx].team[tIdx].team_no+'>'+event.data[gIdx].team[tIdx].team_name+'</option>');
+				}
+				$("select[name='status_no']").empty();
+				for(var sIdx in event.data[gIdx].status){
+					$("select[name='status_no']").append('<option value='+event.data[gIdx].status[sIdx].status_no+'>'+event.data[gIdx].status[sIdx].status_name+'</option>');
+				}
+			});
+			
+			$("select[name='group_no']").trigger("change");
+		});
+	});
+</script>

@@ -308,6 +308,19 @@ class Admin extends MY_Controller {
 		}
 	}
 	//------------------------人員組織架構----------------------
+	public function get_org_chart_group_team_status_json()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$this->load->model('common/admin_org_chart_model');
+			$output = $this->admin_org_chart_model->get_group_team_status_array();
+			
+			echo json_encode($output);
+		}catch(Exception $e){
+			echo json_encode(array());
+		}
+	}
 	public function query_org_chart()
 	{
 		try{
