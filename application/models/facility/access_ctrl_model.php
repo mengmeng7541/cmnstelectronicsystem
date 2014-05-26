@@ -400,28 +400,10 @@ class Access_ctrl_model extends MY_Model {
   {
   	//取得所有門禁資訊
   	$doors = $this->facility_model->get_facility_list(array("type"=>"door"))->result_array();
-  	//取得所有門禁關聯的卡機
-  	$ctrl_nos = sql_result_to_column($doors,"ctrl_no");
-  	//準備資料
-  	$data = array();
-  	foreach($ctrl_nos as $ctrl_no){
-		$row = array();
-		$row['date_time'] = $start;
-		$row['fun'] = "Add";
-		$row['card_num'] = $card_num;
-		$row['ctrl_no'] = $ctrl_no;
-		$data[] = $row;
-	}
-	foreach($ctrl_nos as $ctrl_no){
-		$row = array();
-		$row['date_time'] = $end;
-		$row['fun'] = "Del";
-		$row['card_num'] = $card_num;
-		$row['ctrl_no'] = $ctrl_no;
-		$data[] = $row;
-	}
-	//寫入
-	$this->facility_model->add_access_ctrl($data);
+  	//取得所有門禁的編號
+  	$door_IDs = sql_result_to_column($doors,"ID");
+  	//新增
+  	$this->add_by_card_num($door_IDs,$card_num,$start,$end);
   }
 
 }

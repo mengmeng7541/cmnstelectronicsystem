@@ -185,4 +185,12 @@ class Access_model extends MY_Model {
 		$this->access_db->where("serial_no",$data['serial_no']);
 		$this->access_db->delete("access_card_temp_application");
 	}
+	//---------------------------ACCESS LOG----------------------------
+	public function get_access_card_log_list($options = array())
+	{
+		$sTable = "cmnst_facility.Card";
+		$sJoinTable = array("user"=>"cmnst_common.user_profile");
+		
+		return $result;
+	}
 }

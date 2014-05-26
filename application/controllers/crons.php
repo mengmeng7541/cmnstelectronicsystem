@@ -10,7 +10,7 @@ class Crons extends MY_Controller {
 
 	}
 	//---------------------打卡系統----------------------------
-	//偵測是否逾時未歸
+	//偵測中心人員是否逾時未歸(建議每十分鐘執行一次)
 	public function send_admin_clock_timeout_notification()
 	{
 		//非上班時段不運作
@@ -75,6 +75,12 @@ class Crons extends MY_Controller {
 			}
 		}
 	}
+	//偵測使用者是否短時間內連續刷卡
+	public function send_user_access_duplicately_notification()
+	{
+		
+	}
+	//偵測使用者是否在同一地方待超過十二小時
 	
 	//----------------------卡機系統---------------------------
 	//corntab中設定每分鐘同步舊資料庫的刷卡紀錄到新資料庫一次
