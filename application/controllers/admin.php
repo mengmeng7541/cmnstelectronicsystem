@@ -231,11 +231,11 @@ class Admin extends MY_Controller {
 		
 		if($this->admin_clock_model->is_super_admin())
 		{
-			$data = array("clock_start_time"=>date("Y-m-d H:i:s"));
+			$data = array("clock_start_time_start_time"=>date("Y-m-d H:i:s",strtotime("-30minutes")));
 		}else{
 			$data = array(
 				"clock_user_ID"=>$this->session->userdata('ID'),
-				"clock_start_time"=>date("Y-m-d H:i:s")
+				"clock_start_time_start_time"=>date("Y-m-d H:i:s",strtotime("-30minutes"))
 			);
 		}
 		
