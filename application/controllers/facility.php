@@ -1468,8 +1468,8 @@ class Facility extends MY_Controller {
 		
 		$data = array();
 		
-		//非超級管理者且非儀器維修調教主管
-		if(!$this->facility_model->is_facility_super_admin() && !$this->facility_model->get_admin_privilege_list(array("privilege"=>"facility_maintenance_manager","admin_ID"=>$this->session->userdata('ID')))->row_array())
+		//非超級管理者
+		if(!$this->facility_model->is_facility_super_admin())
 		{
 			$privileges = $this->facility_model->get_user_privilege_list(array("user_ID"=>$this->session->userdata('ID'),"privilege"=>"admin"))->result_array();
 			if($privileges)
@@ -1583,10 +1583,12 @@ class Facility extends MY_Controller {
 						array("ID"=>$input_data['facility_ID'])
 						)->row_array();
 			
-			//取得維修組組長資料
-			$manager = $this->facility_model->get_admin_privilege_list(
-			array("privilege"=>"facility_maintenance_manager")
-			)->row_array();
+			//取得共同實驗室組組長資料
+			$this->load->model('admin_model');
+			$managers = $this->admin_model->get_org_chart_list(array(
+				"team_ID"=>"common_lab",
+				"status_ID"=>"section_chief"
+			))->result_array();
 			
 			if($input_data['subject'] == "外部維修")
 			{
@@ -1600,12 +1602,15 @@ class Facility extends MY_Controller {
 				$serial_no = $this->facility_model->add_maintenance($data);
 				
 				//寄信通知組長審核
-				$this->email->to($manager['email']);
-				$this->email->subject("成大微奈米科技研究中心 -儀器維修調教通知-");
-				$this->email->message("{$manager['name']} 您好：<br>
-										中心儀器：{$facility['cht_name']}<br>
-										被該管理員 {$user_profile['name']} 申請外部維修，請<a href=''>點此</a>審查，謝謝");
-				$this->email->send();
+				foreach($managers as $manager){
+					$this->email->to($manager['admin_email']);
+					$this->email->subject("成大微奈米科技研究中心 -儀器維修調教通知-");
+					$this->email->message("{$manager['admin_name']} 您好：<br>
+											中心儀器：{$facility['cht_name']}<br>
+											被該管理員 {$user_profile['name']} 申請外部維修，請<a href=''>點此</a>審查，謝謝");
+					$this->email->send();
+				}
+				
 			}else{
 				
 				//確認選擇了連續時段
@@ -1626,14 +1631,18 @@ class Facility extends MY_Controller {
 				$serial_no = $this->facility_model->add_maintenance($data);
 				
 				//寄信通知組長
-				$this->email->to($manager['email']);
-				$this->email->subject("成大微奈米科技研究中心 -儀器維修調教通知-");
-				$this->email->message("{$manager['name']} 您好：<br>
-										中心儀器：{$facility['cht_name']}<br>
-										被該儀器管理員 {$user_profile['name']} 申請 {$input_data['subject']}<br>
-										使用時段為：".date("Y-m-d H:i:s",$min_time)."~".date("Y-m-d H:i:s",$max_time)."<br>
-										特此告知，謝謝");
-				$this->email->send();
+				foreach($managers as $manager){
+					$this->email->to($manager['admin_email']);
+					$this->email->subject("成大微奈米科技研究中心 -儀器維修調教通知-");
+					$this->email->message("共同實驗室組組長 {$manager['admin_name']} 您好：<br>
+											中心儀器：{$facility['cht_name']}<br>
+											被該儀器管理員 {$user_profile['name']} 申請 {$input_data['subject']}<br>
+											申請原因： {$input_data['content']}<br>
+											使用時段為：".date("Y-m-d H:i:s",$min_time)."~".date("Y-m-d H:i:s",$max_time)."<br>
+											系統特此通知，謝謝");
+					$this->email->send();
+				}
+				
 			}
 			
 			echo $this->info_modal("新增成功","/facility/admin/booking/list/");	
@@ -1658,9 +1667,13 @@ class Facility extends MY_Controller {
 			}
 			
 			$maintenance = $this->facility_model->get_maintenance_list(array("serial_no"=>$input_data['serial_no']))->row_array();
-			if(!isset($maintenance['result']) && $this->facility_model->get_admin_privilege_list(
-				array("admin_ID"=>$this->session->userdata('ID'),"privilege"=>"facility_maintenance_manager")
-				)->row_array())
+			$this->load->model('admin_model');
+			if(	!isset($maintenance['result']) && 
+				in_array($this->session->userdata('ID'),sql_result_to_column($this->admin_model->get_org_chart_list(array(
+					"team_ID"=>"common_lab",
+					"status_ID"=>"section_chief"
+				))->result_array(),"admin_ID"))
+			)
 			{
 				//審核者
 				$this->form_validation->set_rules("result","審核結果","required");

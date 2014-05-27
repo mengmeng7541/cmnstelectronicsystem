@@ -72,6 +72,8 @@ class Crons extends MY_Controller {
 						$this->email->send();
 					}
 				}
+			}else{
+				$this->admin_model->update_clock(array("clock_checkpoint"=>"returned","clock_ID"=>$clock['clock_ID']));
 			}
 		}
 	}
