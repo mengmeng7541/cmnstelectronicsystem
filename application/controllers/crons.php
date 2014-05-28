@@ -51,7 +51,7 @@ class Crons extends MY_Controller {
 					$manager_org_charts = $this->admin_model->get_org_chart_list(array(
 						"group_no"=>$org_chart['group_no'],
 						"team_no"=>$org_chart['team_no'],
-						"status_ID"=>array("CTO","section_chief")
+						"status_ID"=>"section_chief"
 					))->result_array();
 					foreach($manager_org_charts as $manager_org_chart)
 					{
