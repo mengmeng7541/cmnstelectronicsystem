@@ -239,7 +239,11 @@
 			});
 			//SORTING，根據資料長度由少到多
 			block_obj.sort(function(a,b){
-				return (a.title=='其它')?100:(a.content.length - b.content.length);
+				if(a.title=='其它'){
+					return 100;
+				}else{
+					return a.content.length - b.content.length;
+				}
 			});
 			//資料整理完畢，開始產生內容
 			$.each(block_obj,function(idx,i_val){
