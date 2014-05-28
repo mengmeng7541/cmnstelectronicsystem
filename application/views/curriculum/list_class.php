@@ -85,7 +85,6 @@
 	<div class='modal-body'>
 		<div class="alert alert-block alert-warning">
 			<h4>Notice!</h4>
-			
 			<p>請問您是否確定要報名？</p>
 		</div>
 	</div>

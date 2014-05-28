@@ -92,10 +92,10 @@ class Access_card_temp_application_model extends MY_Model {
 				throw new Exception("結束時間需大於起始時間",WARNING_CODE);
 			}
 			//廠商維修限制須小於四小時
-			if(strtotime($end_time)-strtotime($start_time)>4*60*60)
-			{
-				throw new Exception("臨時卡不可超過四小時",ERROR_CODE);
-			}
+//			if(strtotime($end_time)-strtotime($start_time)>4*60*60)
+//			{
+//				throw new Exception("臨時卡不可超過四小時",ERROR_CODE);
+//			}
 			//寫入資料
 			foreach((array)$data['guest_name'] as $idx => $guest_name){
 				$guest_name = trim($guest_name);
