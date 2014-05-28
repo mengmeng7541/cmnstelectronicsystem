@@ -109,6 +109,7 @@ class Admin_model extends MY_Model {
 									card.FDateTime AS access_last_datetime,
 									card.Status AS access_state,
 									{$sJoinTable['facility']}.type AS facility_type,
+									{$sJoinTable['facility']}.tel_ext AS facility_tel_ext,
 									{$sJoinTable['facility']}.cht_name AS facility_cht_name,
 									{$sJoinTable['facility']}.eng_name AS facility_eng_name,
 									{$sJoinTable['location']}.location_cht_name,

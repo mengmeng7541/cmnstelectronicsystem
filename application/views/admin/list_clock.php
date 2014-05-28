@@ -93,7 +93,7 @@
 						<thead>
 							<th>時間</th>
 							<th>姓名</th>
-							<th>電話</th>
+							<th>分機/行動</th>
 						</thead>
 						<tbody>
 							
@@ -135,10 +135,12 @@
 				var location_tel = value.pop();
 				//取得location
 				var location_name = value.pop();
+				//取得儀器的分機
+				var facility_tel_ext = value.pop();
 				//取得手機
 				var user_mobile = value.pop();
 				//取得電話
-				var user_tel = value.pop();
+				var user_tel_ext = value.pop();
 				//取得身分
 				var user_status = value.pop();
 				//取得姓名
@@ -201,12 +203,12 @@
 				//根據所在地不同show出不同的資訊格式
 				if(location_name == '科技5F辦公室' || location_name == '老師辦公室')
 				{
-					show_array = [access_time,user_name,user_tel+'<br>['+user_mobile+']'];
+					show_array = [access_time,user_name,user_tel_ext+'<br>['+user_mobile+']'];
 				}else if(location_name == '其它')
 				{
 					show_array = [clock_reason+'@'+clock_location+'<br>預計直到：<br>'+(clock_end_time==null?'未知':moment(clock_end_time).format('MM-DD HH:mm')),user_name,user_mobile];
 				}else{
-					show_array = [access_time,user_name,user_mobile];
+					show_array = [access_time,user_name,facility_tel_ext+'<br>['+user_mobile+']'];
 				}
 				
 				//function，匹配location是否吻合，回傳index，皆否則回傳-1

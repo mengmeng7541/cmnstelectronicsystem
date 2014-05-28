@@ -207,6 +207,7 @@ class Admin extends MY_Controller {
 			$row[] = $r['user_status_ID'];
 			$row[] = $r['admin_tel_ext'];
 			$row[] = $r['user_mobile'];
+			$row[] = $r['facility_tel_ext'];
 			$row[] = $r['location_cht_name'];
 			$row[] = $r['location_tel'];
 			$row[] = $r['clock_start_time'];
@@ -280,6 +281,20 @@ class Admin extends MY_Controller {
 			);
 			
 			$this->admin_model->add_clock($data);
+			
+			//寄信給組長
+			$org_charts = $this->admin_model->get_org_chart_list(array("admin_ID"=>$data['clock_user_ID']))->result_array();
+			foreach($org_charts as $org_chart){
+				$managers = $this->admin_model->get_org_chart_list(array("team_no"=>$org_chart['team_no'],"status_ID"=>"section_chief"))->result_array();
+				foreach($managers as $manager){
+					$this->email->to($manager['admin_email']);
+					$this->email->subject("成大微奈米科技研究中心 -中心人員外出通知-");
+					$this->email->message("
+						{$manager['team_name']} {$manager['status_name']} {$manager['admin_name']} 您好：<br>
+					");
+					$this->email->send();
+				}
+			}
 			
 			echo $this->info_modal("新增成功");
 		}catch(Exception $e){
