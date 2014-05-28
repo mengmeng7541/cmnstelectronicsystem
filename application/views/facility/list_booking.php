@@ -71,10 +71,10 @@
 	    <h3 id='myModalLabel'>再次確認</h3>
 	</div>
 	<div class='modal-body'>
-		請問您是否確定要執行此動作？
+		<div class="alert alert-block alert-warning"><h4>Warning!</h4><p>自行操作者，若離預約使用時段開始前24小時內取消，<strong>將收取1/3費用</strong></p><p>請問您是否確定要執行此動作？</p></div>
 	</div>
 	<div class='modal-footer'>
-		<button type='button' name="confirm" class='btn btn-warning' data-dismiss='modal'>確認</button>
+		<button type='button' id="facility_booking_cancel_confirm" name="confirm" class='btn btn-warning' data-dismiss='modal'>確認</button>
 		<button type='button' class='btn btn-primary' data-dismiss='modal'>取消</button>
 	</div>
 </div>

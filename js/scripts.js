@@ -2537,7 +2537,17 @@ var App = function () {
 		    },
         });
         
-
+		$("#form_facility_booking").on("click","button[name='book']",function(){
+			if($("input[name='purpose']").length==0||$("input[name='purpose']:checked").val()=="DIY"){
+				$("#confirm_modal").modal('show');
+			}else{
+				$("#form_facility_booking").submit();
+			}
+		});
+		
+		$("#confirm_modal #facility_booking_confirm").click(function(){
+			$("#form_facility_booking").submit();
+		});
         
         $("#form_facility_booking input[name='purpose']").click(function(){
         	if($("#form_facility_booking input[name='purpose']:checked").val() == "DIY")
@@ -2649,7 +2659,7 @@ var App = function () {
 		$("#table_list_booking").on("click","button[name='del']",function(){
 			$("#confirm_modal").data("ID",$(this).val()).modal('show');
 		});
-		$("#confirm_modal button[name='confirm']").click(function(){
+		$("#confirm_modal #facility_booking_cancel_confirm").click(function(){
 			$.ajax({
 				url: site_url+'facility/user/booking/del/'+$("#confirm_modal").data("ID"),
 				beforeSend: function(){
@@ -2958,8 +2968,11 @@ var App = function () {
         });
         //使用者方的註冊
         $("#table_curriculum_class_list").on("click","button[name='reg']",function(){
+        	$("#confirm_modal").data("class_ID",$(this).val()).modal('show');
+        });
+        $("#confirm_modal #curriculum_registration_confirm").click(function(){
         	$.ajax({
-        		url:site_url+"curriculum/reg/add/"+$(this).val(),
+        		url:site_url+"curriculum/reg/add/"+$("#confirm_modal").data("class_ID"),
         		beforeSend:function(xhr){
 					showRequest();
 				}

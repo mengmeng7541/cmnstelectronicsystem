@@ -109,28 +109,28 @@
                         <div class="control-group">
                            <label class="control-label">* 指導老師姓名</label>
                            <div class="controls">
-                              <input type="text" class="span6" name="boss_name" value="<?=$boss['name']?>"/>
+                              <input type="text" class="span6" name="boss_name" value="<?=isset($boss['name'])?$boss['name']:"";?>"/>
                               <p class="help-block">(填姓名即可;若無請填入自己的姓名)</p>
                            </div>
                         </div>
 						<div class="control-group">
                            <label class="control-label">* 服務單位</label>
                            <div class="controls">
-                              <input type="text" class="span6" name="boss_department" value="<?=$boss['department']?>"/>
+                              <input type="text" class="span6" name="boss_department" value="<?=isset($boss['department'])?$boss['department']:"";?>"/>
                               <span class="help-inline"></span>
                            </div>
                         </div>
 						<div class="control-group">
                            <label class="control-label">* Email</label>
                            <div class="controls">
-                              <input type="text" class="span6" name="boss_email" value="<?=$boss['email']?>"/>
+                              <input type="text" class="span6" name="boss_email" value="<?=isset($boss['email'])?$boss['email']:"";?>"/>
                               <span class="help-inline"></span>
                            </div>
                         </div>
 						<div class="control-group">
                            <label class="control-label">* 聯絡電話</label>
                            <div class="controls">
-                              <input type="text" class="span6" name="boss_tel" value="<?=$boss['tel']?>"/>
+                              <input type="text" class="span6" name="boss_tel" value="<?=isset($boss['tel'])?:"";?>"/>
                               <span class="help-inline"></span>
                            </div>
                         </div>

@@ -35,8 +35,8 @@
 								<div class="control-group">
 	                     			<label class="control-label">預約目的</label>
 	                     			<div class="controls">
-	                     				<label class="radio"><input type="radio" name="purpose" value="DIY" checked="checked">自行操作</label>
-	                     				<label class="radio"><input type="radio" name="purpose" value="OEM">客戶代工</label>
+	                     				<label class="radio"><input type="radio" name="purpose" value="DIY" >自行操作</label>
+	                     				<label class="radio"><input type="radio" name="purpose" value="OEM" checked="checked">客戶代工</label>
 	                     				<?=anchor("/facility/admin/maintenance/form/{$ID}","維修調校","class='btn btn-warning'");?>
 	                     			</div>
 	                     		</div>
@@ -72,9 +72,11 @@
                      		</table>
 	                     	
 	                     	<div class="form-actions">
-	                     		<button type="submit" class="btn btn-primary">送出</button>
+	                     		<button type="button" name="book" class="btn btn-primary">送出</button>
 	                     		<a href="<?=site_url();?>/facility/<?=$this->session->userdata('status');?>/available/list" class="btn btn-warning">取消</a>
 	                     	</div>
+	                     	
+	                     	
                      	</form>
                      	
                      </div>
@@ -88,3 +90,22 @@
       </div>
       <!-- END PAGE -->  
 
+<div id="confirm_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class='modal-header'>
+	    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button>
+	    <h3 id='myModalLabel'>再次確認</h3>
+	</div>
+	<div class='modal-body'>
+		<div class="alert alert-block alert-warning">
+			<h4>Notice!</h4>
+			<p>1小時前不可取消預約，若無來使用，仍收費。<br>
+			24小時內取消收取1/3之費用。<br>
+			預約時間的前一天取消預約，不需收費（一個月以內三次為限）。</p>
+			<p>請問您是否確定要預約？</p>
+		</div>
+	</div>
+	<div class='modal-footer'>
+		<button type='button' id="facility_booking_confirm" name="confirm" class='btn btn-warning' data-dismiss='modal'>確認</button>
+		<button type='button' class='btn btn-primary' data-dismiss='modal'>取消</button>
+	</div>
+</div>

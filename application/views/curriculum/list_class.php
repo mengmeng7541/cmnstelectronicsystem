@@ -77,4 +77,20 @@
          <!-- END PAGE CONTAINER-->
       </div>
       <!-- END PAGE -->  
-
+<div id="confirm_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class='modal-header'>
+	    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button>
+	    <h3 id='myModalLabel'>再次確認</h3>
+	</div>
+	<div class='modal-body'>
+		<div class="alert alert-block alert-warning">
+			<h4>Notice!</h4>
+			
+			<p>請問您是否確定要報名？</p>
+		</div>
+	</div>
+	<div class='modal-footer'>
+		<button type='button' id="curriculum_registration_confirm" name="confirm" class='btn btn-warning' data-dismiss='modal'>確認</button>
+		<button type='button' class='btn btn-primary' data-dismiss='modal'>取消</button>
+	</div>
+</div>
