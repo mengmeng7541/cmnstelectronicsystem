@@ -99,14 +99,8 @@ class Admin extends MY_Controller {
 		$this->data['action'] = site_url()."/admin/add";
 	}else{
 		$admin_profile = $this->admin_model->get_admin_profile_by_ID($ID);
-		$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$ID))->row_array();
 		
-		$this->data['ID'] = $admin_profile['ID'];
-		$this->data['name'] = $admin_profile['name'];
-		$this->data['email'] = $admin_profile['email'];
-		$this->data['mobile'] = $admin_profile['mobile'];
-		$this->data['card_num'] = $user_profile['card_num'];
-		$this->data['stamp'] = $admin_profile['stamp'];
+		$this->data = $admin_profile;
 		$this->data['action'] = site_url()."/admin/update";
 	}
 	

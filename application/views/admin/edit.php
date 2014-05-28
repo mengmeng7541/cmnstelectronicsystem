@@ -52,6 +52,13 @@
 	                              <span class="help-inline"></span>
 	                           </div>
 	                        </div>
+	                        <div class="control-group">
+	                           <label class="control-label">分機</label>
+	                           <div class="controls">
+	                              <input type="text" class="span6" name="tel_ext" value="<?=isset($tel_ext)?$tel_ext:"";?>"/>
+	                              <span class="help-inline"></span>
+	                           </div>
+	                        </div>
 							<div class="control-group">
 	                           <label class="control-label">* E-Mail</label>
 	                           <div class="controls">
