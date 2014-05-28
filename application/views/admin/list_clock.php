@@ -241,6 +241,8 @@
 			block_obj.sort(function(a,b){
 				if(a.title=='其它'){
 					return 100;
+				}else if(b.title=='其它'){
+					return -100;
 				}else{
 					return a.content.length - b.content.length;
 				}
