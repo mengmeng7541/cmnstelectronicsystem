@@ -88,6 +88,7 @@ class Facility_model extends MY_Model {
 		$this->facility_db->set("location_ID",$input_data['location_ID']);
 		$this->facility_db->set("note",$input_data['note']);
 		$this->facility_db->set("ctrl_no",$input_data['ctrl_no']);
+		$this->facility_db->set("tel_ext",$input_data['tel_ext']);
 		$this->facility_db->set("error_comment",$input_data['error_comment']);
 		$this->facility_db->set("min_sec",$input_data['min_sec']);
 		$this->facility_db->set("unit_sec",$input_data['unit_sec']);
@@ -113,6 +114,7 @@ class Facility_model extends MY_Model {
 		$this->facility_db->set("location_ID",$input_data['location_ID']);
 		$this->facility_db->set("note",$input_data['note']);
 		$this->facility_db->set("ctrl_no",$input_data['ctrl_no']);
+		$this->facility_db->set("tel_ext",$input_data['tel_ext']);
 		$this->facility_db->set("error_comment",$input_data['error_comment']);
 		$this->facility_db->set("min_sec",$input_data['min_sec']);
 		$this->facility_db->set("unit_sec",$input_data['unit_sec']);

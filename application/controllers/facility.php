@@ -1602,14 +1602,14 @@ class Facility extends MY_Controller {
 				$serial_no = $this->facility_model->add_maintenance($data);
 				
 				//寄信通知組長審核
-				foreach($managers as $manager){
-					$this->email->to($manager['admin_email']);
-					$this->email->subject("成大微奈米科技研究中心 -儀器維修調教通知-");
-					$this->email->message("{$manager['admin_name']} 您好：<br>
-											中心儀器：{$facility['cht_name']}<br>
-											被該管理員 {$user_profile['name']} 申請外部維修，請<a href=''>點此</a>審查，謝謝");
-					$this->email->send();
-				}
+//				foreach($managers as $manager){
+//					$this->email->to($manager['admin_email']);
+//					$this->email->subject("成大微奈米科技研究中心 -儀器維修調教通知-");
+//					$this->email->message("{$manager['admin_name']} 您好：<br>
+//											中心儀器：{$facility['cht_name']}<br>
+//											被該管理員 {$user_profile['name']} 申請外部維修，請<a href=''>點此</a>審查，謝謝");
+//					$this->email->send();
+//				}
 				
 			}else{
 				
@@ -1634,11 +1634,11 @@ class Facility extends MY_Controller {
 				foreach($managers as $manager){
 					$this->email->to($manager['admin_email']);
 					$this->email->subject("成大微奈米科技研究中心 -儀器維修調教通知-");
-					$this->email->message("共同實驗室組組長 {$manager['admin_name']} 您好：<br>
+					$this->email->message("{$manager['team_name']} {$manager['status_name']} {$manager['admin_name']} 您好：<br>
 											中心儀器：{$facility['cht_name']}<br>
 											被該儀器管理員 {$user_profile['name']} 申請 {$input_data['subject']}<br>
 											申請原因： {$input_data['content']}<br>
-											使用時段為：".date("Y-m-d H:i:s",$min_time)."~".date("Y-m-d H:i:s",$max_time)."<br>
+											使用時段為：".date("Y-m-d H:i",$min_time)."~".date("Y-m-d H:i",$max_time)."<br>
 											系統特此通知，謝謝");
 					$this->email->send();
 				}

@@ -23,22 +23,30 @@
 		                                 <div id="collapse_1" class="accordion-body collapse in">
 		                                    <div class="accordion-inner">
 		                                        <div class="row-fluid">
-													<div class="control-group span4">
+													<div class="control-group span6">
 											           <label class="control-label">機台ID</label>
 											           <div class="controls">
 													      <input name="ID" type="text" class="input-small" value="<?=empty($ID)?"":$ID;?>" <?=(!empty($ID))?'readonly="readonly"':'';?>/>
 											           </div>
 											        </div>
-											        <div class="control-group span4">
+											        <div class="control-group span6">
 											           <label class="control-label">新ID</label>
 											           <div class="controls">
 													      <input name="new_ID" type="text" class="input-small" value="<?=empty($new_ID)?"":$new_ID;?>" />
 											           </div>
 											        </div>
-													<div class="control-group span4">
+												</div>
+												<div class="row-fluid">
+													<div class="control-group span6">
 											           <label class="control-label">控制卡機編號</label>
 											           <div class="controls">
 													      <input name="ctrl_no" type="text" class="input-small" value="<?=isset($ctrl_no)?$ctrl_no:"";?>"/>
+											           </div>
+											        </div>
+											        <div class="control-group span6">
+											           <label class="control-label">儀器電話分機</label>
+											           <div class="controls">
+													      <input name="tel_ext" type="text" class="input-small" value="<?=isset($tel_ext)?$tel_ext:"";?>"/>
 											           </div>
 											        </div>
 												</div>
