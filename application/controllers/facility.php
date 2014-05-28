@@ -600,22 +600,14 @@ class Facility extends MY_Controller {
 	{
 		$this->is_user_login();
 		
-		if($this->is_admin_login(FALSE))
-		{
-			
-		}
-		else if($this->is_user_login())
-		{
-			//使用者
-			
-		}
+		
 		$facility_ID_select_options = array(""=>"");
 		$facilities = $this->facility_model->get_facility_list(array("type"=>"facility"))->result_array();
 		foreach($facilities as $facility)
 		{
 			$facility_ID_select_options[$facility['ID']] = "{$facility['cht_name']} ({$facility['eng_name']})";
 		}
-		$this->data['facility_ID_select'] = form_dropdown("facility_ID[]",$facility_ID_select_options,"","multiple='multiple' class='span12 chosen'");
+		$this->data['facility_ID_select_options'] = $facility_ID_select_options;
 		
 		$this->load->view('templates/header');
 		$this->load->view('templates/sidebar');

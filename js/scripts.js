@@ -2645,17 +2645,20 @@ var App = function () {
             },
 			"aaSorting": [[4,'desc']],
 			"fnServerParams": function ( aoData ) {
-				aoData.push({"name":"facility_ID","value":$("select[name='facility_ID[]']").val().join("|")},
-							{"name":"start_date","value":$("#start_date").val()},
-							{"name":"end_date","value":$("#end_date").val()},
-							{"name":"start_time","value":$("#start_time").val()},
-							{"name":"end_time","value":$("#end_time").val()}
+				aoData.push({"name":"facility_ID","value":$("#query_booking_list_facility_ID").val().join("|")},
+							{"name":"start_date","value":$("#query_booking_list_start_date").val()},
+							{"name":"end_date","value":$("#query_booking_list_end_date").val()},
+							{"name":"start_time","value":$("#query_booking_list_start_time").val()},
+							{"name":"end_time","value":$("#query_booking_list_end_time").val()}
 							);
 	        },
 		});
-		$("#query_facility_booking").click(function(){
-			facility_booking_table.fnReloadAjax();
+		$("#query_booking_list_facility_ID,#query_booking_list_start_date,#query_booking_list_end_date,#query_booking_list_start_time,#query_booking_list_end_time").change(function(){
+			facility_booking_table.fnReloadAjax(null,null,true);
 		});
+		$("#query_booking_list_start_date,#query_booking_list_end_date").on('changeDate', function(ev){
+            $(this).trigger("change");
+        });
 		$("#table_list_booking").on("click","button[name='del']",function(){
 			$("#confirm_modal").data("ID",$(this).val()).modal('show');
 		});

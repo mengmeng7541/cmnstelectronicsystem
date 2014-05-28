@@ -26,17 +26,17 @@
 	                        	<div class="control-group">
 	                        		<label class="control-label">選擇儀器</label>
 	                        		<div class="controls">
-	                        			<?=$facility_ID_select;?>
+	                        			<?=form_dropdown("facility_ID[]",isset($facility_ID_select_options)?$facility_ID_select_options:array(),"","multiple='multiple' class='span12 chosen' id='query_booking_list_facility_ID'");?>
 	                        		</div>
 	                        	</div>
 								<div class="control-group">
 	                            	<label class="control-label">設定日期</label>
 	                            	<div class="controls">
-	                                    <input id="start_date" type="text" class="input-small date-picker" value="<?=date("Y-m-d",strtotime("-1 days"));?>"/>
-										<input id="start_time" type="text" class="input-small timepicker-24" value="<?=date("H:i:s");?>"/>
+	                                    <input id="query_booking_list_start_date" type="text" class="input-small date-picker" value="<?=date("Y-m-d",strtotime("-1 days"));?>"/>
+										<input id="query_booking_list_start_time" type="text" class="input-small timepicker-24-30m" value="<?=date("H:i");?>"/>
 										~
-										<input id="end_date" type="text" class="input-small date-picker" value="<?=date("Y-m-d",strtotime("+5 days"));?>"/>
-										<input id="end_time" type="text" class="input-small timepicker-24" value="<?=date("H:i:s");?>"/>
+										<input id="query_booking_list_end_date" type="text" class="input-small date-picker" value="<?=date("Y-m-d",strtotime("+5 days"));?>"/>
+										<input id="query_booking_list_end_time" type="text" class="input-small timepicker-24-30m" value="<?=date("H:i");?>"/>
 	                                </div>
 	                            </div>
 	                        	<div class="control-group"></div>
@@ -52,9 +52,9 @@
 									<th width="100">動作/狀態</th>
 								</thead>
 							</table>
-							<div class="form-actions">
+							<!--<div class="form-actions">
 	                        	<button id="query_facility_booking" class="btn btn-primary">查詢</button>
-	                        </div>
+	                        </div>-->
                         </div>
                     </div>
                     <!-- END EXAMPLE TABLE widget-->
