@@ -289,9 +289,14 @@ class Admin extends MY_Controller {
 				foreach($managers as $manager){
 					$this->email->to($manager['admin_email']);
 					$this->email->subject("成大微奈米科技研究中心 -中心人員外出通知-");
-					$this->email->message("
+					$message = "
 						{$manager['team_name']} {$manager['status_name']} {$manager['admin_name']} 您好：<br>
-					");
+						{$org_chart['team_name']} {$org_chart['status_name']} {$org_chart['admin_name']} 將於 {$data['clock_start_time']} 因 {$data['clock_reason']} 外出至 {$data['clock_location']}，系統特此通知，謝謝。
+					";
+					if(isset($data['clock_end_time'])){
+						$message .= "預計直到 {$data['clock_end_time']}";
+					}
+					$this->email->message($message);
 					$this->email->send();
 				}
 			}
