@@ -128,7 +128,7 @@ class Admin_model extends MY_Model {
 		$this->facility_db->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT");
 		$this->facility_db->join("(SELECT * FROM {$sJoinTable['clock']} WHERE (NOW() BETWEEN clock_start_time AND clock_end_time) OR (NOW() > clock_start_time AND DATE(clock_start_time) = CURDATE()) ORDER BY clock_time DESC) clock","clock.clock_user_ID = $sTable.ID","LEFT");
 		$this->facility_db->join($sJoinTable['constant_user_status'],"{$sJoinTable['user']}.status = {$sJoinTable['constant_user_status']}.status_no","LEFT");
-//		$this->facility_db->where("$sTable.group","admin");
+		$this->facility_db->where("$sTable.suspended","0");
 		if(isset($options['admin_ID']))
 		{
 			$this->facility_db->where("$sTable.ID",$options['admin_ID']);
