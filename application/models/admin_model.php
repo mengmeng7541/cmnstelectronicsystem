@@ -96,13 +96,14 @@ class Admin_model extends MY_Model {
   //--------------------人員位置------------------------------
 	public function get_auto_clock_list($options = array())
 	{
-		$sTable = "cmnst_common.user_profile";
-		$sJoinTable = array("card"=>"cmnst_facility.Card","facility"=>"cmnst_facility.facility_list","location"=>"cmnst_common.location","clock"=>"cmnst_clock.clock_admin_manual","constant_user_status"=>"cmnst_common.constant_user_status");
-		$this->facility_db->select("$sTable.name AS user_name,
-									$sTable.tel AS user_tel,
-									$sTable.mobile AS user_mobile,
-									$sTable.card_num AS user_card_num,
-									IFNULL(card.CardNo,$sTable.serial_no) AS uni_card_num,
+		$sTable = "cmnst_common.admin_profile";
+		$sJoinTable = array("card"=>"cmnst_facility.Card","facility"=>"cmnst_facility.facility_list","location"=>"cmnst_common.location","clock"=>"cmnst_clock.clock_admin_manual","constant_user_status"=>"cmnst_common.constant_user_status","user"=>"cmnst_common.user_profile");
+		$this->facility_db->select("$sTable.tel_ext AS admin_tel_ext,
+									{$sJoinTable['user']}.name AS user_name,
+									{$sJoinTable['user']}.tel AS user_tel,
+									{$sJoinTable['user']}.mobile AS user_mobile,
+									{$sJoinTable['user']}.card_num AS user_card_num,
+									IFNULL(card.CardNo,{$sJoinTable['user']}.serial_no) AS uni_card_num,
 									card.FDate AS access_last_date,
 									card.FTime AS access_last_time,
 									card.FDateTime AS access_last_datetime,
@@ -120,13 +121,14 @@ class Admin_model extends MY_Model {
 									clock.clock_start_time AS clock_start_time,
 									clock.clock_end_time AS clock_end_time",FALSE);
 		$this->facility_db->from($sTable);
-		$this->facility_db->join("(SELECT * FROM {$sJoinTable['card']} WHERE FDate = '".date("Y-m-d")."' ORDER BY FDate DESC, FTime DESC) card","$sTable.card_num = card.CardNo","LEFT");
+		$this->facility_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.ID");
+		$this->facility_db->join("(SELECT * FROM {$sJoinTable['card']} WHERE FDate = '".date("Y-m-d")."' ORDER BY FDate DESC, FTime DESC) card","{$sJoinTable['user']}.card_num = card.CardNo","LEFT");
 		$this->facility_db->group_by("uni_card_num");
 		$this->facility_db->join($sJoinTable['facility'],"{$sJoinTable['facility']}.ctrl_no = card.CtrlNo","LEFT");
 		$this->facility_db->join($sJoinTable['location'],"{$sJoinTable['facility']}.location_ID = {$sJoinTable['location']}.location_ID","LEFT");
 		$this->facility_db->join("(SELECT * FROM {$sJoinTable['clock']} WHERE (NOW() BETWEEN clock_start_time AND clock_end_time) OR (NOW() > clock_start_time AND DATE(clock_start_time) = CURDATE()) ORDER BY clock_time DESC) clock","clock.clock_user_ID = $sTable.ID","LEFT");
-		$this->facility_db->join($sJoinTable['constant_user_status'],"$sTable.status = {$sJoinTable['constant_user_status']}.status_no","LEFT");
-		$this->facility_db->where("$sTable.group","admin");
+		$this->facility_db->join($sJoinTable['constant_user_status'],"{$sJoinTable['user']}.status = {$sJoinTable['constant_user_status']}.status_no","LEFT");
+//		$this->facility_db->where("$sTable.group","admin");
 		if(isset($options['admin_ID']))
 		{
 			$this->facility_db->where("$sTable.ID",$options['admin_ID']);

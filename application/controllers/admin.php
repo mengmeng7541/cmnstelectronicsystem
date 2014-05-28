@@ -205,7 +205,7 @@ class Admin extends MY_Controller {
 			$row[] = $r['access_state'];
 			$row[] = $r['user_name'];
 			$row[] = $r['user_status_ID'];
-			$row[] = $r['user_tel'];
+			$row[] = $r['admin_tel_ext'];
 			$row[] = $r['user_mobile'];
 			$row[] = $r['location_cht_name'];
 			$row[] = $r['location_tel'];

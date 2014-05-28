@@ -71,7 +71,15 @@
 	    <h3 id='myModalLabel'>再次確認</h3>
 	</div>
 	<div class='modal-body'>
-		<div class="alert alert-block alert-warning"><h4>Warning!</h4><p>自行操作者，若離預約使用時段開始前24小時內取消，<strong>將收取1/3費用</strong></p><p>請問您是否確定要執行此動作？</p></div>
+		<div class="alert alert-block alert-warning">
+			<h4>Notice!預約機台取消相關規定如下：</h4>
+			<p>
+預約自行操作時段的前一小時無法取消預約<br>
+若於預約自行操作時段的前1小時至前24小時取消，本中心酌收預約時段費用的1/3。<br>
+預約時間的前一天取消預約，不需收費（一個月以內三次為限)
+			</p>
+			<p>請問您是否確定要取消預約？</p>
+		</div>
 	</div>
 	<div class='modal-footer'>
 		<button type='button' id="facility_booking_cancel_confirm" name="confirm" class='btn btn-warning' data-dismiss='modal'>確認</button>
