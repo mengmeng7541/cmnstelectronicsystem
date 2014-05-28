@@ -51,7 +51,7 @@
                         <div class="control-group">
                            <label class="control-label">* 服務單位</label>
                            <div class="controls">
-                              <?=form_dropdown("organization",isset($org_select_options)?$org_select_options:array(),"","class='span6 chosen'");?>
+                              <?=form_dropdown("organization",isset($org_select_options)?$org_select_options:array(),isset($organization)?$organization:"","class='span6 chosen'");?>
 							  <!--<a href="#form_modal_org" role="button" class="btn btn-link" data-toggle="modal" data-backdrop="static">若貴單位不在列表中請點此新增</a>-->
                            </div>
                         </div>
