@@ -21,14 +21,14 @@ class Crons extends MY_Controller {
 		$this->load->model('admin_model');
 		$this->load->model('facility_model');
 		//取出啟始時間在前一小時，無結束時間，且為今天打卡的打卡紀錄
-		//還有結束時間小於現在時間，且為今天打卡的打卡紀錄
+		//還有結束時間小於現在時間，且結束時間為今天的打卡紀錄
 		$clocks = $this->admin_model->get_manual_clock_list(array(
-			"clock_start_time_start_time"=>date("Y-m-d 00:00:00"),
 			"clock_end_time_start_time"=>"2038-01-01 00:00:00",
+			"clock_start_time_start_time"=>date("Y-m-d 00:00:00"),
 			"clock_start_time_end_time"=>date("Y-m-d H:i:s",strtotime("-1hour")),
 		))->result_array();
 		$clocks = array_merge($clocks,$this->admin_model->get_manual_clock_list(array(
-			"clock_start_time_start_time"=>date("Y-m-d 00:00:00"),
+			"clock_end_time_start_time"=>date("Y-m-d 00:00:00"),
 			"clock_end_time_end_time"=>date("Y-m-d H:i:s"),
 		))->result_array());
 		foreach($clocks as $clock){
