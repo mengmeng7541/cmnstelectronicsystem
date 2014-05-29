@@ -2316,7 +2316,7 @@ var App = function () {
             },
 			"aoColumnDefs": [ 
 				{
-			      "aTargets": [ 7 ],
+			      "aTargets": [ 8 ],
 				  "bSortable": false,
 				  "mData": null,
 			      "mRender": function ( data, type, full ) {

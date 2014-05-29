@@ -141,6 +141,7 @@ class User_model extends MY_Model {
   						"$sTable.mobile"=>"mobile",
   						"$sTable.email"=>"email",
   						"$sTable.card_num"=>"card_num",
+  						"$sTable.enable_date"=>"enable_date",
   						"{$sJoinTable['org']}.name"=>"org_name",
   						"{$sJoinTable['boss']}.name"=>"boss_name");
 	

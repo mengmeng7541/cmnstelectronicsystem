@@ -26,12 +26,13 @@
                         <table class="table table-striped table-bordered" id="user_list_table">
                         	<thead>
                         		<th>ID</th>
-                        		<th>姓名</th>
-                        		<th>電話</th>
+                        		<th width="50">姓名</th>
+                        		<th width="80">電話</th>
                         		<th>Email</th>
-                        		<th>卡號</th>
+                        		<th width="70">卡號</th>
+                        		<th width="80">註冊日期</th>
                         		<th>組織</th>
-                        		<th>老師</th>
+                        		<th width="50">老師</th>
                         		<th width="60"></th>
                         	</thead>
                         </table>
