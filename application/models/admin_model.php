@@ -150,7 +150,7 @@ class Admin_model extends MY_Model {
 			$this->clock_db->where("clock_user_ID",$option['clock_user_ID']);
 		if(isset($option['clock_start_time']))
 		{
-			$this->clock_db->where("ISNULL(clock_end_time) OR clock_end_time >= '{$option['clock_start_time']}'");
+			$this->clock_db->where("(ISNULL(clock_end_time) OR clock_end_time >= '{$option['clock_start_time']}')");
 		}
 		if(isset($option['clock_end_time']))
 		{
@@ -166,7 +166,7 @@ class Admin_model extends MY_Model {
 		}
 		if(isset($option['clock_end_time_start_time']))
 		{
-			$this->clock_db->where("ISNULL(clock_end_time) OR clock_end_time >= '{$option['clock_end_time_start_time']}'");
+			$this->clock_db->where("(ISNULL(clock_end_time) OR clock_end_time >= '{$option['clock_end_time_start_time']}')");
 		}
 		if(isset($option['clock_end_time_end_time']))
 		{

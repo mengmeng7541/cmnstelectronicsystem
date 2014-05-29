@@ -27,6 +27,7 @@ class Crons extends MY_Controller {
 			"clock_start_time_start_time"=>date("Y-m-d 00:00:00"),
 			"clock_start_time_end_time"=>date("Y-m-d H:i:s",strtotime("-1hour")),
 		))->result_array();
+		
 		$clocks = array_merge($clocks,$this->admin_model->get_manual_clock_list(array(
 			"clock_end_time_start_time"=>date("Y-m-d 00:00:00"),
 			"clock_end_time_end_time"=>date("Y-m-d H:i:s"),
