@@ -77,6 +77,10 @@ class User_model extends MY_Model {
 		$this->common_db->where_in("{$sTable}.ID",$input_data['user_ID']);
 	if(!empty($input_data['passwd']))
 		$this->common_db->where("{$sTable}.passwd",$input_data['passwd']);
+	if(isset($input_data['user_name']))
+	{
+		$this->common_db->where("$sTable.name",$input_data['user_name']);
+	}
 	if(!empty($input_data['group']))
 		$this->common_db->where("{$sTable}.group",$input_data['group']);
 	if(!empty($input_data['user_email']))

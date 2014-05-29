@@ -30,9 +30,11 @@ class Unittest extends MY_Controller {
 		//先刪除舊的
 		$curriculum_db->where("class_code <=","2014-04-E");
 		$curriculum_db->delete("class_list");
+		$curriculum_db->where("lesson_start_time <=","2014-04-30 00:00:00");
+		$curriculum_db->delete("lesson_list");
 //		return;
 		
-		$curriculum_db->select("SN,user_ID,class_code,class_name,course_ID,MIN(reg_time) AS reg_time,MAX(join_check) AS join_check,su,MAX(cashornot) AS cashornot,");
+		$curriculum_db->select("SN,user_ID,class_code,class_name,course_ID,MIN(reg_time) AS reg_time,MAX(join_check) AS join_check,su,MAX(cashornot) AS cashornot,class_date");
 		$curriculum_db->group_by("course_ID,class_code,user_ID");
 		$results = $curriculum_db->get("old_curriculum")->result_array();
 		foreach($results as $result){
@@ -51,6 +53,22 @@ class Unittest extends MY_Controller {
 					"course_ID"=>$result['course_ID'],
 					"class_code"=>$result['class_code'],
 					"class_type"=>$result['course_ID']==1?"":"training,implement,certification"
+				));
+				//取得SU的ID
+				if(empty($result['su']))
+				{
+					$su = NULL;
+				}else{
+					$su = $this->user_model->get_user_profile_list(array("user_name"=>$result['su']))->row_array();
+				}
+				
+				//新增一假的lesson
+				$this->curriculum_model->add_lesson(array(
+					"class_ID"=>$class_ID,
+					"lesson_prof_ID"=>$su?$su['ID']:NULL,
+					"lesson_start_time"=>date("Y-m-d H:i:s",strtotime($result['class_date'])),
+					"lesson_end_time"=>date("Y-m-d H:i:s",strtotime($result['class_date'])),
+					"lesson_comment"=>""
 				));
 			}else{
 				$class_ID = $class['class_ID'];
