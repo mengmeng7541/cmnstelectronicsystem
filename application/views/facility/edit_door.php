@@ -31,16 +31,22 @@
 								
 								<div class="row-fluid">
 									
-									<div class="control-group span6">
+									<div class="control-group span4">
 									   <label class="control-label">預先開放</label>
 									   <div class="controls">
 										  <?=form_dropdown("pre_open_sec",array("0"=>"不提前","60"=>"1分鐘","1800"=>"30分鐘","3600"=>"1小時"),empty($pre_open_sec)?0:$pre_open_sec,"class='input-small'");?>
 							           </div>
 									</div>
-									<div class="control-group span6">
+									<div class="control-group span4">
 									   <label class="control-label">門禁位置</label>
 									   <div class="controls">
 										  <?=form_dropdown("location_ID",isset($facility_location_ID_select_options)?$facility_location_ID_select_options:array(),isset($location_ID)?$location_ID:"","class='span12' ");?>
+							           </div>
+									</div>
+									<div class="control-group span4">
+									   <label class="control-label">電話分機</label>
+									   <div class="controls">
+										  <input type="text" name="tel_ext" value="<?=isset($tel_ext)?$tel_ext:"";?>" class="input-small"/>
 							           </div>
 									</div>
 								</div>
