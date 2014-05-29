@@ -190,7 +190,12 @@
 											           <div class="controls ">
 													      <?php
 														  $unit_sec_options = array("1800"=>"30分鐘",
-														  						   "3600"=>"1小時");
+														  						   "3600"=>"1小時",
+																				   "7200"=>"2小時",
+																				   "10800"=>"3小時",
+																				   "14400"=>"4小時",
+																				   "28800"=>"8小時",
+																				   "86400"=>"24小時");
 														  echo form_dropdown("unit_sec",$unit_sec_options,empty($unit_sec)?"3600":$unit_sec);
 														  ?>
 											           </div>
