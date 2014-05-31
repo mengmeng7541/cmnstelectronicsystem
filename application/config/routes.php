@@ -268,7 +268,9 @@ $route['curriculum/reg/add/(:num)'] = 'curriculum/add_reg/$1';
 $route['curriculum/reg/update'] = 'curriculum/update_reg';
 $route['curriculum/reg/del/(:num)'] = 'curriculum/del_reg/$1';
 
-
+//Cash
+$route['cash/curriculum/list'] = 'cash/list_curriculum';
+$route['cash/curriculum/query'] = 'cash/query_curriculum';
 
 //nanomark
 //$route['nanomark/add_application'] = 'nanomark/add_application';

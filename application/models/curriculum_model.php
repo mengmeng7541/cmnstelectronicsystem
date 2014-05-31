@@ -425,20 +425,6 @@ class Curriculum_model extends MY_Model {
 			";
 //(SELECT IF(@cur_group<>$sTable.class_ID,@cur_rank:=1,@cur_rank:=@cur_rank+1) AS reg_rank,@cur_group:=$sTable.class_ID,$sTable.* FROM $sTable, (SELECT @cur_rank:=0,@cur_group:=null) r WHERE reg_canceled_by IS NULL ORDER BY $sTable.class_ID ASC,$sTable.reg_time ASC)
 		}else{
-//			$additional_where = array();
-//			if(isset($options['class_code']))
-//			{
-//				$additional_where[] = "class_code like '{$options['class_code']}%'";
-//			}
-//			if(isset($options['class_ID']))
-//			{
-//				$additional_where[] = "class_ID = '{$options['class_ID']}'";
-//			}
-//			if(!empty($additional_where)){
-//				$additional_where = ' AND '.implode(' AND ',$additional_where);
-//			}else{
-//				$additional_where = "";
-//			}
 			$sSelect = "
 				$sTable.*,
 				{$sJoinTable['class']}.class_code,

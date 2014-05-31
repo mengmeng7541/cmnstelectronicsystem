@@ -218,6 +218,22 @@ $db['curriculum']['swap_pre'] = "";
 $db['curriculum']['autoinit'] = TRUE;
 $db['curriculum']['stricton'] = FALSE;
 
+$db['cash']['hostname'] = "127.0.0.1";
+$db['cash']['username'] = "cmnst";
+$db['cash']['password'] = "2080103";
+$db['cash']['database'] = "cmnst_cash";
+$db['cash']['dbdriver'] = "mysql";
+$db['cash']['dbprefix'] = "";
+$db['cash']['pconnect'] = FALSE;
+$db['cash']['db_debug'] = TRUE;
+$db['cash']['cache_on'] = FALSE;
+$db['cash']['cachedir'] = "";
+$db['cash']['char_set'] = "utf8";
+$db['cash']['dbcollat'] = "utf8_general_ci";
+$db['cash']['swap_pre'] = "";
+$db['cash']['autoinit'] = TRUE;
+$db['cash']['stricton'] = FALSE;
+
 $db['test']['hostname'] = "127.0.0.1";
 $db['test']['username'] = "cmnst";
 $db['test']['password'] = "2080103";
