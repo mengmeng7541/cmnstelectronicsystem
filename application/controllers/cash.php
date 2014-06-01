@@ -24,16 +24,36 @@ class Cash extends MY_Controller {
 		try{
 			$this->is_admin_login();
 			
+//			$this->form_validation->set_rules("bill_type","帳單型態","required");
+//			$this->form_validation->set_rules("bill_ID[]","帳單編號","required");
+//			if(!$this->form_validation->run())
+//			{
+//				throw new Exception(validation_errors(),WARNING_CODE);
+//			}
+			
 			$input_data = $this->input->get(NULL,TRUE);
 			
 			if($input_data['bill_type']=="curriculum")
 			{
-				$curriculum_bills = $this->cash_model->get_curriculum_list(array("reg_ID"=>$input_data['bill_ID']))->result_array();
-				echo json_encode($curriculum_bills);
+				$curriculum_bills = $this->cash_model->get_curriculum_list(array("reg_ID"=>isset($input_data['bill_ID'])?$input_data['bill_ID']:""))->result_array();
+				$output['aaData'] = array();
+				foreach($curriculum_bills as $bill)
+				{
+					$row = array();
+					$row[] = "儀器訓練課程";
+					$row[] = $bill['reg_ID'];
+					$row[] = $bill['bill_fee'];
+					$row[] = $bill['bill_discount_percent'];
+					$row[] = $bill['bill_fee']*$bill['bill_discount_percent'];
+					$row[] = form_input("bill_fee[]",$bill['bill_fee']*$bill['bill_discount_percent'],"");
+					$output['aaData'][] = $row;
+				}
+				echo json_encode($output);
 			}
 			
 		}catch(Exception $e){
 			
+			echo json_encode($e);
 		}
 	}
 	public function list_curriculum()
@@ -94,7 +114,7 @@ class Cash extends MY_Controller {
 				}
 				
 				
-				$row[] = form_button("open","開立","class='btn btn-primary btn-small' value='{$curriculum_bill['reg_ID']}'");
+				$row[] = form_checkbox("bill_ID[]",$curriculum_bill['reg_ID'],"","");
 				$row[] = "";
 				$output['aaData'][] = $row;
 			}

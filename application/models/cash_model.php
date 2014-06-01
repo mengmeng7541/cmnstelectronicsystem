@@ -53,12 +53,12 @@ class Cash_model extends MY_Model {
 			IFNULL({$sJoinTable['aliance']}.discount_percent/10,1) AS bill_discount_percent,
 			SUM({$sJoinTable['ab_map']}.amount_paid) AS bill_amount_paid
 			FROM
-			 (SELECT $sTable.* FROM $sTable LEFT JOIN  {$sJoinTable['class']} ON {$sJoinTable['class']}.class_ID = $sTable.class_ID ORDER BY {$sJoinTable['class']}.class_code ASC ) reg_table
+			 (SELECT $sTable.* FROM $sTable LEFT JOIN  {$sJoinTable['class']} ON {$sJoinTable['class']}.class_ID = $sTable.class_ID ORDER BY {$sJoinTable['class']}.class_type ASC ) reg_table
 		",FALSE);
 		$this->cash_db->where("reg_table.reg_canceled_by",NULL);
 		
 		
-		$this->cash_db->join("(SELECT * FROM {$sJoinTable['class']} ORDER BY {$sJoinTable['class']}.class_type DESC) class_table","class_table.class_ID = reg_table.class_ID","LEFT");
+		$this->cash_db->join("(SELECT * FROM {$sJoinTable['class']} ) class_table","class_table.class_ID = reg_table.class_ID","LEFT");
 		$this->cash_db->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = class_table.course_ID","LEFT");
 		$this->cash_db->join("(SELECT * FROM {$sJoinTable['lesson']} ORDER BY {$sJoinTable['lesson']}.lesson_start_time ASC) lesson_table","lesson_table.class_ID = class_table.class_ID","LEFT");
 		
