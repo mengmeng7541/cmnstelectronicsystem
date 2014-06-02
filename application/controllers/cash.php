@@ -19,7 +19,89 @@ class Cash extends MY_Controller {
 		$this->load->view('templates/footer');
 
 	}
-	public function get_bill_list()
+	//---------------------RECEIPT-------------------
+	public function list_receipt()
+	{
+		
+	}
+	public function query_receipt()
+	{
+		
+	}
+	public function add_receipt()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			$this->form_validation->set_rules("bill_type[]","帳單類別","required");
+			$this->form_validation->set_rules("bill_ID[]","帳單編號","required");
+			$this->form_validation->set_rules("bill_amount_received[]","實收金額","required");
+			$this->form_validation->set_rules("account_boss","帳戶擁有者編號","required");
+			$this->form_validation->set_rules("receipt_type","收據類別","required");
+			$this->form_validation->set_rules("receipt_ID","收據編號","required");
+			$this->form_validation->set_rules("receipt_title","收據抬頭","required");
+			$this->form_validation->set_rules("account_amount","收據金額","required");
+			if(isset($input_data['receipt_type'])&&$input_data['receipt_type']=='receipt')
+			{
+				$this->form_validation->set_rules("receipt_delivery_way","收據作業","required");
+				if(isset($input_data['receipt_delivery_way'])&&$input_data['receipt_delivery_way']=='pickup')
+				{
+					$this->form_validation->set_rules("receipt_contact_email","電子郵件","required");
+				}else{
+					$this->form_validation->set_rules("receipt_contact_address","郵寄地址","required");
+				}
+				$this->form_validation->set_rules("receipt_contact_name","連絡人姓名","required");
+				$this->form_validation->set_rules("receipt_contact_tel","連絡電話","required");
+			}
+			
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			$this->load->model('cash/receipt_model');
+			//寫入收據資訊並開立帳戶
+			$account_no = $this->receipt_model->add($input_data);
+			//取得帳單資訊，然後寫入帳戶抵扣帳單資訊
+			foreach($input_data['bill_type'] as $key => $bill_type)
+			{
+				if($bill_type=='curriculum')
+				{
+					$bill = $this->cash_model->get_curriculum_list(array("reg_ID"=>$input_data['bill_ID'][$key]))->row_array();
+					$bill_no = $this->cash_model->add_bill(array(
+						"bill_type"=>$input_data['bill_type'],
+						"bill_ID"=>$input_data['bill_ID'][$key],
+						"bill_org"=>$bill['user_org_no'],
+						"bill_boss"=>$bill['user_boss_no'],
+						"bill_amount_original"=>$bill['bill_amount'],
+						"bill_discount_percent"=>$bill['bill_discount_percent'],
+						"bill_amount_receivable"=>$bill['bill_amount']*$bill['bill_discount_percent'],
+						"bill_time"=>date("Y-m-d H:i:s")
+					));
+					
+					$this->cash_model->add_account_bill_map(array(
+						"account_no"=>$account_no,
+						"bill_no"=>$bill_no,
+						"amount_transacted"=>$input_data['bill_amount_received'][$key],
+						"transacted_by"=>$this->session->userdata('ID'),
+						"transaction_time"=>date("Y-m-d H:i:s")
+					));
+				}
+			}
+			
+			echo $this->info_modal("開立完成");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+	}
+	public function del_receipt($SN = "")
+	{
+		
+	}
+	//-----------------BILL--------------------
+	public function query_bill()
 	{
 		try{
 			$this->is_admin_login();
@@ -36,18 +118,7 @@ class Cash extends MY_Controller {
 			if($input_data['bill_type']=="curriculum")
 			{
 				$curriculum_bills = $this->cash_model->get_curriculum_list(array("reg_ID"=>isset($input_data['bill_ID'])?$input_data['bill_ID']:""))->result_array();
-				$output['aaData'] = array();
-				foreach($curriculum_bills as $bill)
-				{
-					$row = array();
-					$row[] = "儀器訓練課程";
-					$row[] = $bill['reg_ID'];
-					$row[] = $bill['bill_fee'];
-					$row[] = $bill['bill_discount_percent'];
-					$row[] = $bill['bill_fee']*$bill['bill_discount_percent'];
-					$row[] = form_input("bill_fee[]",$bill['bill_fee']*$bill['bill_discount_percent'],"");
-					$output['aaData'][] = $row;
-				}
+				$output['aaData'] = $curriculum_bills;
 				echo json_encode($output);
 			}
 			
@@ -56,6 +127,20 @@ class Cash extends MY_Controller {
 			echo json_encode($e);
 		}
 	}
+//	public function add_bill()
+//	{
+//		try{
+//			$this->is_admin_login();
+//			
+//			$input_data = $this->input->post(NULL,TRUE);
+//			
+//			
+//			
+//		}catch(Exception $e){
+//			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+//		}
+//	}
+	//------------------LIST CURRICULUM BILL--------------
 	public function list_curriculum()
 	{
 		try{
@@ -96,23 +181,12 @@ class Cash extends MY_Controller {
 				$row[] = $this->curriculum_model->get_class_type_str($curriculum_bill['class_type']);
 				$row[] = $curriculum_bill['user_name'];
 				
-				if(empty($curriculum_bill['reg_confirmed_by']))//未到
+				if(isset($curriculum_bill['bill_discount_percent']))
 				{
-					if(isset($curriculum_bill['bill_discount_percent']))
-					{
-						$row[] = $curriculum_bill['bill_fee']." * 0.5 * ".($curriculum_bill['bill_discount_percent'])." = ".round($curriculum_bill['bill_fee']*0.5*$curriculum_bill['bill_discount_percent']);
-					}else{
-						$row[] = $curriculum_bill['bill_fee']." * 0.5 = ".round($curriculum_bill['bill_fee']*0.5);
-					}
+					$row[] = $curriculum_bill['bill_amount']." * ".($curriculum_bill['bill_discount_percent'])." = ".round($curriculum_bill['bill_amount']*$curriculum_bill['bill_discount_percent']);
 				}else{
-					if(isset($curriculum_bill['bill_discount_percent']))
-					{
-						$row[] = $curriculum_bill['bill_fee']." * ".($curriculum_bill['bill_discount_percent'])." = ".round($curriculum_bill['bill_fee']*$curriculum_bill['bill_discount_percent']);
-					}else{
-						$row[] = $curriculum_bill['bill_fee'];
-					}
+					$row[] = $curriculum_bill['bill_amount'];
 				}
-				
 				
 				$row[] = form_checkbox("bill_ID[]",$curriculum_bill['reg_ID'],"","");
 				$row[] = "";

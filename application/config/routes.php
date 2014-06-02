@@ -271,6 +271,12 @@ $route['curriculum/reg/del/(:num)'] = 'curriculum/del_reg/$1';
 //Cash
 $route['cash/curriculum/list'] = 'cash/list_curriculum';
 $route['cash/curriculum/query'] = 'cash/query_curriculum';
+$route['cash/receipt/list'] = 'cash/list_receipt';
+$route['cash/receipt/query'] = 'cash/query_receipt';
+//$route['cash/receipt/form'] = 'cash/form_receipt';
+$route['cash/receipt/add'] = 'cash/add_receipt';
+$route['cash/receipt/update'] = 'cash/update_receipt';
+$route['cash/receipt/del'] = 'cash/del_receipt';
 
 //nanomark
 //$route['nanomark/add_application'] = 'nanomark/add_application';
