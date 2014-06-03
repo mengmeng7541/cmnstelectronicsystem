@@ -88,6 +88,16 @@
 	                    <li><a class="" href="<?=site_url();?>/access/config/edit">系統設置</a></li>
 					</ul>
 				</li>
+				<li class="has-sub">
+					<a href="javascript:;" class="">
+					<span class="icon-box"><i class="icon-cogs"></i></span> 現金帳務
+					<span class="arrow"></span>
+					</a>
+					<ul class="sub">
+						<li><a class="" href="<?=site_url();?>/cash/curriculum/list">訓練課程繳費</a></li>
+						<li><a class="" href="<?=site_url();?>/cash/receipt/list">收據列表</a></li>
+					</ul>
+				</li>
 				<li><a class="" href="<?=site_url();?>/logout"><span class="icon-box"><i class="icon-user"></i></span> 登出</a></li>
 	        <?php }else if($this->session->userdata('ID')){ ?>
 				<li><a class="" href="<?=site_url();?>/user/edit"><span class="icon-box"><i class="icon-user"></i></span> 個人資料維護</a></li>

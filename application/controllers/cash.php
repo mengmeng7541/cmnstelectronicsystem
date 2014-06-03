@@ -22,16 +22,53 @@ class Cash extends MY_Controller {
 	//---------------------RECEIPT-------------------
 	public function list_receipt()
 	{
-		
+		try{
+			$this->is_admin_login();
+			
+			$this->load->view('templates/header');
+			$this->load->view('templates/sidebar');
+			$this->load->view('cash/list_receipt');
+			$this->load->view('templates/footer');
+		}catch(Exception $e){
+			
+		}
 	}
 	public function query_receipt()
 	{
-		
+		try{
+			$this->is_admin_login();
+			
+			$receipts = $this->cash_model->get_receipt_list()->result_array();
+			
+			$output['aaData'] = $receipts;
+//			foreach($receipts as $receipt)
+//			{
+//				$row = array();
+//				$row[] = "";
+//				$row[] = "";
+//				$row[] = "";
+//				$row[] = "";
+//				$row[] = "";
+//				$row[] = "";
+//				$row[] = "";
+//				$row[] = "";
+//				$output['aaData'][] = $row;
+//			}
+			
+			echo json_encode($output);
+		}catch(Exception $e){
+			echo json_encode($output);
+		}
 	}
 	public function add_receipt()
 	{
 		try{
 			$this->is_admin_login();
+			
+			if(!$this->cash_model->is_super_admin())
+			{
+				throw new Exception("權限不足",ERROR_CODE);
+			}
 			
 			$input_data = $this->input->post(NULL,TRUE);
 			
@@ -71,7 +108,7 @@ class Cash extends MY_Controller {
 				{
 					$bill = $this->cash_model->get_curriculum_list(array("reg_ID"=>$input_data['bill_ID'][$key]))->row_array();
 					$bill_no = $this->cash_model->add_bill(array(
-						"bill_type"=>$input_data['bill_type'],
+						"bill_type"=>$bill_type,
 						"bill_ID"=>$input_data['bill_ID'][$key],
 						"bill_org"=>$bill['user_org_no'],
 						"bill_boss"=>$bill['user_boss_no'],
@@ -88,6 +125,8 @@ class Cash extends MY_Controller {
 						"transacted_by"=>$this->session->userdata('ID'),
 						"transaction_time"=>date("Y-m-d H:i:s")
 					));
+				}else if($bill_type=='nanomark'){
+					
 				}
 			}
 			
@@ -188,7 +227,20 @@ class Cash extends MY_Controller {
 					$row[] = $curriculum_bill['bill_amount'];
 				}
 				
-				$row[] = form_checkbox("bill_ID[]",$curriculum_bill['reg_ID'],"","");
+				$display = array();
+				if(isset($curriculum_bill['receipt_ID']))
+				{
+					if($curriculum_bill['bill_amount']*$curriculum_bill['bill_discount_percent']>$curriculum_bill['bill_amount_received'])//應收大於已收
+					{
+						$display[] = form_checkbox("bill_ID[]",$curriculum_bill['reg_ID'],"","");
+					}
+					$display[] = $curriculum_bill['receipt_ID'];
+					$display[] = "($".$curriculum_bill['bill_amount_received'].")";
+				}else{
+					$display[] = form_checkbox("bill_ID[]",$curriculum_bill['reg_ID'],"","");
+				}
+				$row[] = implode(' ',$display);
+				
 				$row[] = "";
 				$output['aaData'][] = $row;
 			}

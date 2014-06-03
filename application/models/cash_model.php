@@ -9,15 +9,41 @@ class Cash_model extends MY_Model {
 	}
 	
 	//--------------------------PRIVILEGE-------------------------
-	
+	public function is_super_admin($admin_ID = "")
+	{
+		if(empty($admin_ID)) $admin_ID = $this->session->userdata('ID');
+		
+		return $this->get_admin_privilege_list(array("admin_ID"=>$admin_ID,"privilege"=>"cash_super_admin"))->num_rows();
+	}
+	public function get_admin_privilege_list($options = array())
+	{
+		if(isset($options['admin_ID']))
+			$this->cash_db->where("admin_ID",$options['admin_ID']);
+		if(isset($options['privilege']))
+			$this->cash_db->where("privilege",$options['privilege']);
+		return $this->cash_db->get("cash_admin_privilege");
+	}
 	//--------------------RECEIPT-------------------------
+	public function get_receipt_list($options = array())
+	{
+		$sTable = "cash_receipt";
+		$sJoinTable = array("account"=>"cash_account");
+		
+		$this->cash_db->select("
+			$sTable.*,
+			{$sJoinTable['account']}.account_amount AS receipt_amount
+		");
+		$this->cash_db->join($sJoinTable['account'],"{$sJoinTable['account']}.account_no = $sTable.receipt_account","LEFT");
+		
+		return $this->cash_db->get($sTable);	
+	}
 	public function add_receipt($data)
 	{
 		$this->cash_db->set("receipt_type",$data['receipt_type']);
 		$this->cash_db->set("receipt_ID",$data['receipt_ID']);
 		$this->cash_db->set("receipt_title",$data['receipt_title']);
 		$this->cash_db->set("receipt_opened_by",$data['receipt_opened_by']);
-		$this->cash_db->set("receipt_opened_time",$data['receipt_opened_time']);
+		$this->cash_db->set("receipt_opening_time",$data['receipt_opening_time']);
 		if(isset($data['receipt_contact_name']))
 			$this->cash_db->set("receipt_contact_name",$data['receipt_contact_name']);
 		if(isset($data['receipt_contact_tel']))
@@ -88,7 +114,7 @@ class Cash_model extends MY_Model {
 	public function get_curriculum_list($options = array()){
 		$sTable = "cmnst_curriculum.class_registration";
 		$sJoinTable = array(
-			"ab_map"=>"cash_account_bill_map",
+			"ab_map"=>"cmnst_cash.cash_account_bill_map",
 			"lesson"=>"cmnst_curriculum.lesson_list",
 			"class"=>"cmnst_curriculum.class_list",
 			"course"=>"cmnst_curriculum.course_list",
@@ -96,8 +122,8 @@ class Cash_model extends MY_Model {
 			"org"=>"cmnst_common.organization",
 			"aliance"=>"cmnst_accounting.aliance_discount",
 			"price"=>"cmnst_report.Course_Price_List",
-			"bill"=>"cash_bill",
-			"receipt"=>"cash_receipt"
+			"bill"=>"cmnst_cash.cash_bill",
+			"receipt"=>"cmnst_cash.cash_receipt"
 		);
 		
 		$this->cash_db->select("
@@ -114,14 +140,14 @@ class Cash_model extends MY_Model {
 			reg_table.reg_certification_time,
 			reg_table.reg_state AS reg_state,
 			MIN(reg_table.reg_rank) AS reg_rank,
-			class_table.class_code,
-			GROUP_CONCAT(DISTINCT(class_table.class_type) ORDER BY class_table.class_type ASC) AS class_type,
-			MIN(class_table.class_max_participants) AS class_max_participants,
-			class_table.class_state,
+			{$sJoinTable['class']}.class_code,
+			GROUP_CONCAT(DISTINCT({$sJoinTable['class']}.class_type) ORDER BY {$sJoinTable['class']}.class_type ASC) AS class_type,
+			MIN({$sJoinTable['class']}.class_max_participants) AS class_max_participants,
+			{$sJoinTable['class']}.class_state,
 			{$sJoinTable['course']}.course_ID,
 			{$sJoinTable['course']}.course_cht_name,
 			{$sJoinTable['course']}.course_eng_name,
-			lesson_table.lesson_start_time AS lesson_start_time,
+			MIN({$sJoinTable['lesson']}.lesson_start_time) AS lesson_start_time,
 			{$sJoinTable['user']}.name AS user_name,
 			{$sJoinTable['user']}.email AS user_email,
 			{$sJoinTable['user']}.mobile AS user_mobile,
@@ -130,45 +156,52 @@ class Cash_model extends MY_Model {
 			{$sJoinTable['user']}.organization AS user_org_no,
 			{$sJoinTable['org']}.name AS org_name,
 			{$sJoinTable['org']}.status_ID AS org_status_ID,
+			'curriculum' AS bill_type,
 			IF({$sJoinTable['org']}.status_ID='academia',IF(reg_table.reg_confirmed_by IS NULL,price_table.Price_Count*0.5,price_table.Price_Count),IF(reg_table.reg_confirmed_by IS NULL,price_table.Price_Count_Ent*0.5,price_table.Price_Count_Ent)) AS bill_amount,
 			IFNULL({$sJoinTable['aliance']}.discount_percent/10,1) AS bill_discount_percent,
-			SUM({$sJoinTable['ab_map']}.amount_transacted) AS bill_amount_received
+			SUM({$sJoinTable['ab_map']}.amount_transacted) AS bill_amount_received,
+			GROUP_CONCAT({$sJoinTable['receipt']}.receipt_ID) AS receipt_ID,
+			{$sJoinTable['receipt']}.receipt_delivery_way AS receipt_delivery_way,
+			{$sJoinTable['receipt']}.receipt_checkpoint AS receipt_checkpoint
 			FROM
 			 (SELECT $sTable.* FROM $sTable LEFT JOIN  {$sJoinTable['class']} ON {$sJoinTable['class']}.class_ID = $sTable.class_ID ORDER BY {$sJoinTable['class']}.class_type ASC ) reg_table
 		",FALSE);
 		$this->cash_db->where("reg_table.reg_canceled_by",NULL);
 		
 		
-		$this->cash_db->join("(SELECT * FROM {$sJoinTable['class']} ) class_table","class_table.class_ID = reg_table.class_ID","LEFT");
-		$this->cash_db->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = class_table.course_ID","LEFT");
-		$this->cash_db->join("(SELECT * FROM {$sJoinTable['lesson']} ORDER BY {$sJoinTable['lesson']}.lesson_start_time ASC) lesson_table","lesson_table.class_ID = class_table.class_ID","LEFT");
+		$this->cash_db->join($sJoinTable['class'],"{$sJoinTable['class']}.class_ID = reg_table.class_ID","LEFT");
+		$this->cash_db->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = {$sJoinTable['class']}.course_ID","LEFT");
+		$this->cash_db->join($sJoinTable['lesson'],"{$sJoinTable['lesson']}.class_ID = {$sJoinTable['class']}.class_ID","LEFT");
 		
-		$this->cash_db->group_by("class_table.course_ID,class_table.class_code,reg_table.user_ID");
+		$this->cash_db->group_by("{$sJoinTable['class']}.course_ID,{$sJoinTable['class']}.class_code,reg_table.user_ID");
 		$this->cash_db->order_by("{$sJoinTable['course']}.course_ID","ASC");
-		$this->cash_db->order_by("class_table.class_code","ASC");
-		$this->cash_db->order_by("class_table.class_type","ASC");
+		$this->cash_db->order_by("{$sJoinTable['class']}.class_code","ASC");
+		$this->cash_db->order_by("{$sJoinTable['class']}.class_type","ASC");
 		$this->cash_db->order_by("reg_table.class_ID","ASC");
 		$this->cash_db->order_by("reg_table.reg_time","ASC");
 		
 		$this->cash_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = reg_table.user_ID","LEFT");
 		$this->cash_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = {$sJoinTable['user']}.organization","LEFT");
-		$this->cash_db->join($sJoinTable['aliance'],"{$sJoinTable['aliance']}.aliance_type = {$sJoinTable['org']}.aliance_no AND {$sJoinTable['aliance']}.discount_type = 1 AND DATE(lesson_table.lesson_start_time) BETWEEN DATE({$sJoinTable['aliance']}.discount_start) AND DATE({$sJoinTable['aliance']}.discount_end)","LEFT");//課程discount_type=1
-		//AND DATE(lesson_table.lesson_start_time) >= {$sJoinTable['aliance']}.discount_start AND DATE(lesson_table.lesson_start_time) <= {$sJoinTable['aliance']}.discount_end
+		$this->cash_db->join($sJoinTable['aliance'],"{$sJoinTable['aliance']}.aliance_type = {$sJoinTable['org']}.aliance_no AND {$sJoinTable['aliance']}.discount_type = 1 AND DATE({$sJoinTable['lesson']}.lesson_start_time) BETWEEN DATE({$sJoinTable['aliance']}.discount_start) AND DATE({$sJoinTable['aliance']}.discount_end)","LEFT");//課程discount_type=1
 		$this->cash_db->join($sJoinTable['bill'],"{$sJoinTable['bill']}.bill_ID = reg_table.reg_ID AND {$sJoinTable['bill']}.bill_type = 'curriculum'","LEFT");
 		$this->cash_db->join($sJoinTable['ab_map'],"{$sJoinTable['ab_map']}.bill_no = {$sJoinTable['bill']}.bill_no","LEFT");
+		$this->cash_db->join($sJoinTable['receipt'],"{$sJoinTable['receipt']}.receipt_account = {$sJoinTable['ab_map']}.account_no","LEFT");
 		if(isset($options['class_code']))
 		{
-			$this->cash_db->like("class_table.class_code",$options['class_code'],'after');
+			$this->cash_db->like("{$sJoinTable['class']}.class_code",$options['class_code'],'after');
 		}
 		
 		//price
-		$this->cash_db->join("(SELECT * FROM {$sJoinTable['price']} ORDER BY Price_Start_Date DESC) price_table","price_table.Course_ID = class_table.course_ID AND price_table.Price_Start_Date <= lesson_table.lesson_start_time AND ((class_table.class_type='certification' AND price_table.Is_Certification = 1) OR (class_table.class_type!='certification' AND price_table.Is_Certification = 0))","LEFT");
+		$this->cash_db->join("(SELECT * FROM {$sJoinTable['price']} ORDER BY Price_Start_Date DESC) price_table","price_table.Course_ID = {$sJoinTable['class']}.course_ID AND price_table.Price_Start_Date <= {$sJoinTable['lesson']}.lesson_start_time AND (({$sJoinTable['class']}.class_type='certification' AND price_table.Is_Certification = 1) OR ({$sJoinTable['class']}.class_type!='certification' AND price_table.Is_Certification = 0))","LEFT");
 		
 		if(isset($options['reg_ID']))
 		{
 			$this->cash_db->where_in("reg_table.reg_ID",$options['reg_ID']);
 		}
 		
-		return $this->cash_db->get();
+		$q = $this->cash_db->get();
+		
+//		echo $this->cash_db->last_query();
+		return $q;
 	}
 }

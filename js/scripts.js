@@ -1,5 +1,3 @@
-
-
 var App = function () {
 
     var isMainPage = false;
@@ -2251,7 +2249,7 @@ var App = function () {
 			
 			if($(this).valid())
 			{
-				$(this).ajaxSubmit(ajaxSubmitOptions);
+				return $(this).ajaxSubmit(ajaxSubmitOptions);
 			}
 			
 		});
@@ -3632,6 +3630,174 @@ var App = function () {
 	    	}; 	
         });
 	}
+	var handleCash = function () {
+		var table_cash_bill_curriculum_list = $("#table_cash_bill_curriculum_list").dataTable({
+        	"sAjaxSource": site_url+"cash/curriculum/query",
+            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+            "fnDrawCallback": function (oSettings) {
+				handleUniform();	
+			},
+            "fnServerParams": function ( aoData ) {
+		      aoData.push(
+		      	{"name": "class_code", "value": $("#query_cash_bill_curriculum_month").map(function(){return this.value}).get().join('-') }
+		      	
+		      );
+		    },
+//		    "aoColumnDefs": [ {
+//		      "aTargets": [ 0 ],
+//		      "mData": function ( source, type, val ) {
+//		        if (type === 'set') {
+//		          source[0] = val;
+//		          // Store the computed dislay and filter values for efficiency
+//		          source.last_access_datetime_display = moment(val).fromNow();
+//		          return;
+//		        }
+//		        else if (type === 'display') {
+//		          return source.last_access_datetime_display;
+//		        }
+//		        // 'sort', 'type' and undefined all just use the integer
+//		        return source[0];
+//		      }
+//		    } ]
+        });
+        var table_cash_bill_list = $("#table_cash_bill_list").dataTable({
+        	"sAjaxSource": site_url+"cash/query_bill",
+            "sDom": "t",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+            "fnDrawCallback": function (oSettings) {
+            	if(oSettings.aoData.length){
+            		var first_row = oSettings.aoData[0]._aData;
+            		$("#form_cash_receipt").find("input[name='account_boss']").val(first_row.user_boss_no);
+					$("#form_cash_receipt").find("input[name='receipt_title']").val(first_row.org_name);
+					$("#form_cash_receipt").find("input[name='receipt_contact_name']").val(first_row.user_name);
+					$("#form_cash_receipt").find("input[name='receipt_contact_tel']").val(first_row.user_mobile);
+					$("#form_cash_receipt").find("input[name='receipt_contact_email']").val(first_row.user_email);
+					$("#form_cash_receipt").find("input[name='receipt_contact_address']").val(first_row.user_address);
+					//SUM
+					var sum = 0;
+					for(var idx in oSettings.aoData)
+					{
+						sum = sum + (oSettings.aoData[idx]._aData.bill_amount*oSettings.aoData[idx]._aData.bill_discount_percent-oSettings.aoData[idx]._aData.bill_amount_received);
+					}
+					$("#form_cash_receipt").find("input[name='account_amount']").val(sum);
+				}
+			},
+			"aoColumnDefs": [ {
+		      "aTargets": [ 0 ],
+		      "sTitle": "類別",
+		      "mData": function ( source, type, val ) {
+		      	if(source['bill_type']=='curriculum')
+		      	{
+					return '儀器訓練課程'+"<input name='bill_type[]' type='hidden' value='curriculum'/>";
+				}else if(source['bill_type']=='nanomark')
+				{
+					return '';
+				}
+		        return '';
+		      }
+		    },
+		    {
+		      "aTargets": [ 1 ],
+		      "sTitle": "編號",
+		      "mData": function ( source, type, val ) {
+		        return "<input name='bill_ID[]' type='text' value='"+source['reg_ID']+"' class='input-mini' readonly='readonly'/>";
+		      }
+		    },
+		    {
+		      "aTargets": [ 2 ],
+		      "sTitle": "原價",
+		      "mData": function ( source, type, val ) {
+		        return source['bill_amount'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 3 ],
+		      "sTitle": "折扣",
+		      "mData": function ( source, type, val ) {
+		        return source['bill_discount_percent'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 4 ],
+		      "sTitle": "應收",
+		      "mData": function ( source, type, val ) {
+		        return source['bill_amount']*source['bill_discount_percent'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 5 ],
+		      "sTitle": "實收",
+		      "mData": function ( source, type, val ) {
+		        return "<input name='bill_amount_received[]' type='text' value='"+(source['bill_amount']*source['bill_discount_percent']-source['bill_amount_received'])+"' class='input-mini'>";
+		      }
+		    } ],
+            "fnServerParams": function ( aoData ) {
+		      aoData.push(
+		      	{"name": "bill_type", "value": "curriculum" }
+		      );
+		      $("input[name='bill_ID[]']:checked").each(function(idx){
+		      	aoData.push({"name":"bill_ID[]","value":$(this).val()});
+		      });
+		    },
+        });
+        //QUERY
+        $("#query_cash_bill_curriculum_month").datepicker().on('changeDate',function(){
+        	$(this).trigger('change');
+        });
+        $("#query_cash_bill_curriculum_month").change(function(){
+        	setTimeout(function(){
+        		table_cash_bill_curriculum_list.fnReloadAjax(null,null,true);
+        	},100);	
+        });
+        //OPEN BUTTON
+        $("#form_curriculum_bill_list_table").on("click","button[name='open_receipt']",function(){
+        	$("#form_cash_receipt_modal").modal('show');
+        	table_cash_bill_list.fnReloadAjax();
+        });
+        $("#form_cash_receipt_modal").on("click","button[name='confirm_receipt']",function(){
+        	var form = $("#form_cash_receipt").submit();
+        	var jqXHR = form.data('jqxhr');
+        	jqXHR.done(function(){
+        		table_cash_bill_curriculum_list.fnReloadAjax(null,null,true);
+        	});
+        });
+		//RECEIPT BUTTON
+		$("#form_cash_receipt").on("click","input[name='receipt_type']",function(){
+			if($(this).val()=="receipt"){
+				$("#form_cash_receipt .receipt-detail").show();
+			}else if($(this).val()=="invoice"){
+				$("#form_cash_receipt .receipt-detail").hide();
+			}
+		});
+		//DELIVERY Button
+		$("#form_cash_receipt").on("click","input[name='receipt_delivery_way']",function(){
+			if($(this).val()=="pickup")
+			{
+				$("#form_cash_receipt .receipt-email").show();
+				$("#form_cash_receipt .receipt-address").hide();
+			}
+			else if($(this).val()=="post")
+			{
+				$("#form_cash_receipt .receipt-email").hide();
+				$("#form_cash_receipt .receipt-address").show();
+			}
+		});
+	}
 	
     var handleFormWizards = function () {
         if (!jQuery().bootstrapWizard) {
@@ -3821,6 +3987,7 @@ var App = function () {
 			handleRewardApplication();
 			handleRewardPlan();
 			handleAccess();
+			handleCash();
 			handleClock();
 			/*------------------------------*/
 //            handleFormWizards();
