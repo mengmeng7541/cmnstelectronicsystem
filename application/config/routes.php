@@ -278,6 +278,9 @@ $route['cash/receipt/add'] = 'cash/add_receipt';
 $route['cash/receipt/update'] = 'cash/update_receipt';
 $route['cash/receipt/del'] = 'cash/del_receipt';
 
+$route['cash/nanomark/list'] = 'cash/list_nanomark';
+$route['cash/nanomark/query'] = 'cash/query_nanomark';
+
 //nanomark
 //$route['nanomark/add_application'] = 'nanomark/add_application';
 //$route['nanomark/form_application'] = 'nanomark/form_application';

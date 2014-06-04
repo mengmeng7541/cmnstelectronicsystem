@@ -98,7 +98,7 @@ class Cash extends MY_Controller {
 			{
 				if($bill_type=='curriculum')
 				{
-					$bill = $this->cash_model->get_curriculum_list(array("reg_ID"=>$input_data['bill_ID'][$key]))->row_array();
+					$bill = $this->cash_model->get_curriculum_bill_list(array("reg_ID"=>$input_data['bill_ID'][$key]))->row_array();
 					$bill_no = $this->cash_model->add_bill(array(
 						"bill_type"=>$bill_type,
 						"bill_ID"=>$input_data['bill_ID'][$key],
@@ -210,9 +210,12 @@ class Cash extends MY_Controller {
 			
 			if($input_data['bill_type']=="curriculum")
 			{
-				$curriculum_bills = $this->cash_model->get_curriculum_list(array("reg_ID"=>isset($input_data['bill_ID'])?$input_data['bill_ID']:""))->result_array();
+				$curriculum_bills = $this->cash_model->get_curriculum_bill_list(array("reg_ID"=>isset($input_data['bill_ID'])?$input_data['bill_ID']:""))->result_array();
 				$output['aaData'] = $curriculum_bills;
 				echo json_encode($output);
+			}else if($input_data['bill_type']=="nanomark")
+			{
+				
 			}
 			
 		}catch(Exception $e){
@@ -253,7 +256,7 @@ class Cash extends MY_Controller {
 			$this->is_admin_login();
 			
 			$input_data = $this->input->get(NULL,TRUE);
-			$curriculum_bills = $this->cash_model->get_curriculum_list($input_data)->result_array();
+			$curriculum_bills = $this->cash_model->get_curriculum_bill_list($input_data)->result_array();
 			
 			$output['aaData'] = array();
 			$this->load->model('curriculum_model');
@@ -295,6 +298,50 @@ class Cash extends MY_Controller {
 				}
 				$row[] = implode(' ',$display);
 				
+				$row[] = "";
+				$output['aaData'][] = $row;
+			}
+			
+			echo json_encode($output);
+		}catch(Exception $e){
+			echo json_encode($output);
+		}
+	}
+	//------------------------NANOMARK BILL-----------------------
+	public function list_nanomark()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$this->load->view('templates/header');
+			$this->load->view('templates/sidebar');
+			$this->load->view('cash/list_nanomark');
+			$this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
+	}
+	public function query_nanomark()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$input_data = $this->input->get(NULL,TRUE);
+			$nanomark_bills = $this->cash_model->get_nanomark_bill_list($input_data)->result_array();
+			
+			$output['aaData'] = array();
+			$this->load->model('nanomark_model');
+			foreach($nanomark_bills as $nanomark_bill)
+			{
+				$row = array();
+				$row[] = $nanomark_bill['report_title'];
+				$row[] = $nanomark_bill['contact_name'];
+				$row[] = $nanomark_bill['specimen_name'];
+				$row[] = $nanomark_bill['application_date'];
+				$row[] = $nanomark_bill['ID'];
+				$row[] = $nanomark_bill['total_fees'];
+				$row[] = form_checkbox("bill_ID[]",$nanomark_bill['serial_no'],"","");
+				$row[] = "";
 				$row[] = "";
 				$output['aaData'][] = $row;
 			}

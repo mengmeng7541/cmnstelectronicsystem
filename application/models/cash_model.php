@@ -125,7 +125,7 @@ class Cash_model extends MY_Model {
 		$this->cash_db->insert("cash_account_bill_map");
 	}
 	//----------------------CURRICULUM--------------------------
-	public function get_curriculum_list($options = array()){
+	public function get_curriculum_bill_list($options = array()){
 		$sTable = "cmnst_curriculum.class_registration";
 		$sJoinTable = array(
 			"ab_map"=>"cmnst_cash.cash_account_bill_map",
@@ -217,5 +217,30 @@ class Cash_model extends MY_Model {
 		
 //		echo $this->cash_db->last_query();
 		return $q;
+	}
+	//--------------------NANOMARK------------------
+	public function get_nanomark_bill_list($options = array())
+	{
+		$sTable = "cmnst_nanomark.Nanomark_application";
+		$sJoinTable = array(
+			"ab_map"=>"cmnst_cash.cash_account_bill_map",
+			"specimen"=>"cmnst_nanomark.Nanomark_specimen",
+			"user"=>"cmnst_common.user_profile",
+			"org"=>"cmnst_common.organization",
+			"aliance"=>"cmnst_accounting.aliance_discount",
+			"bill"=>"cmnst_cash.cash_bill",
+			"receipt"=>"cmnst_cash.cash_receipt"
+		);
+		
+		$this->cash_db->select("
+			$sTable.*,
+			GROUP_CONCAT({$sJoinTable['specimen']}.name) AS specimen_name
+		",FALSE);
+		$this->cash_db->from($sTable);
+		$this->cash_db->join($sJoinTable['specimen'],"{$sJoinTable['specimen']}.application_SN = $sTable.serial_no","LEFT");
+		$this->cash_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.applicant_ID","LEFT");
+		$this->cash_db->group_by("{$sJoinTable['specimen']}.application_SN");
+		
+		return $this->cash_db->get();
 	}
 }
