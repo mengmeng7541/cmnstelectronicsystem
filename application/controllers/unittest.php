@@ -12,8 +12,9 @@ class Unittest extends MY_Controller {
 	{
 		$this->output->enable_profiler(TRUE);
   		
+  		$this->load->model('cash/receipt_model');
 		$this->benchmark->mark('code_start');
-		
+		$this->receipt_model->delivery_by_post(7,"123222-1123");
 		$this->benchmark->mark('code_end');
 		
 		
