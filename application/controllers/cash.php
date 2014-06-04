@@ -41,19 +41,6 @@ class Cash extends MY_Controller {
 			$receipts = $this->cash_model->get_receipt_list()->result_array();
 			
 			$output['aaData'] = $receipts;
-//			foreach($receipts as $receipt)
-//			{
-//				$row = array();
-//				$row[] = "";
-//				$row[] = "";
-//				$row[] = "";
-//				$row[] = "";
-//				$row[] = "";
-//				$row[] = "";
-//				$row[] = "";
-//				$row[] = "";
-//				$output['aaData'][] = $row;
-//			}
 			
 			echo json_encode($output);
 		}catch(Exception $e){
@@ -74,7 +61,7 @@ class Cash extends MY_Controller {
 			
 			$this->form_validation->set_rules("bill_type[]","帳單類別","required");
 			$this->form_validation->set_rules("bill_ID[]","帳單編號","required");
-			$this->form_validation->set_rules("bill_amount_received[]","實收金額","required");
+			$this->form_validation->set_rules("bill_amount_received[]","帳單實收金額","required");
 			$this->form_validation->set_rules("account_boss","帳戶擁有者編號","required");
 			$this->form_validation->set_rules("receipt_type","收據類別","required");
 			$this->form_validation->set_rules("receipt_ID","收據編號","required");
@@ -96,6 +83,11 @@ class Cash extends MY_Controller {
 			if(!$this->form_validation->run())
 			{
 				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			//確認帳單實收總額<=收據金額
+			if(array_sum($input_data['bill_amount_received'])>$input_data['account_amount']){
+				throw new Exception("帳單實收總額不可大於收據金額",WARNING_CODE);
 			}
 			
 			$this->load->model('cash/receipt_model');
@@ -131,6 +123,68 @@ class Cash extends MY_Controller {
 			}
 			
 			echo $this->info_modal("開立完成");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+	}
+	public function update_receipt()
+	{
+		try{
+			$this->is_admin_login();
+			
+			if(!$this->cash_model->is_super_admin())
+			{
+				throw new Exception("權限不足",ERROR_CODE);
+			}
+			
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			$this->form_validation->set_rules("receipt_no","收據編號","required");
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			$receipt = $this->cash_model->get_receipt_list(array("receipt_no"=>$input_data['receipt_no']))->row_array();
+			if(!$receipt){
+				throw new Exception("無此收據",ERROR_CODE);
+			}
+			
+			$this->load->model('cash/receipt_model');
+			if($receipt['receipt_checkpoint']=='initialized')
+			{
+				if($receipt['receipt_type']=='receipt')
+				{
+					if($receipt['receipt_delivery_way']=='pickup')
+					{
+						//寄信通知已開立，請親自領取
+						$this->receipt_model->notify_collection($input_data['receipt_no']);
+					}
+					else if($receipt['receipt_delivery_way']=='post')
+					{
+						//通知寄出，並填入郵寄代碼
+						$this->form_validation->set_rules("receipt_remark","郵寄代碼","required");
+						if(!$this->form_validation->run())
+						{
+							throw new Exception(validation_errors(),WARNING_CODE);
+						}
+						$this->receipt_model->delivery_by_post($input_data['receipt_no'],$input_data['receipt_remark']);
+					}
+				}
+			}
+			else if($receipt['receipt_checkpoint']=='opened')
+			{
+				if($receipt['receipt_type']=='receipt')
+				{
+					if($receipt['receipt_delivery_way']=='pickup')
+					{
+						//紀錄已領時間
+						$this->receipt_model->delivery_by_collection($input_data['receipt_no']);
+					}
+				}
+			}
+			
+			echo $this->info_modal("更新成功");
 		}catch(Exception $e){
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}

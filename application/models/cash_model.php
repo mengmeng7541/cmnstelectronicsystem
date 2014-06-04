@@ -35,6 +35,11 @@ class Cash_model extends MY_Model {
 		");
 		$this->cash_db->join($sJoinTable['account'],"{$sJoinTable['account']}.account_no = $sTable.receipt_account","LEFT");
 		
+		if(isset($options['receipt_no']))
+		{
+			$this->cash_db->where("$sTable.receipt_no",$options['receipt_no']);
+		}
+		
 		return $this->cash_db->get($sTable);	
 	}
 	public function add_receipt($data)
@@ -61,10 +66,19 @@ class Cash_model extends MY_Model {
 	}
 	public function update_receipt($data)
 	{
-		$this->cash_db->set("receipt_delivered_by",$data['receipt_delivered_by']);
-		$this->cash_db->set("receipt_delivery_time",$data['receipt_delivery_time']);
-		$this->cash_db->set("receipt_remark",$data['receipt_remark']);
-		$this->cash_db->set("receipt_checkpoint",$data['receipt_checkpoint']);
+		if(isset($data['receipt_delivered_by']))
+		{
+			$this->cash_db->set("receipt_delivered_by",$data['receipt_delivered_by']);
+			$this->cash_db->set("receipt_delivery_time",date("Y-m-d H:i:s"));
+		}
+		if(isset($data['receipt_remark']))
+		{
+			$this->cash_db->set("receipt_remark",$data['receipt_remark']);
+		}
+		if(isset($data['receipt_checkpoint']))
+		{
+			$this->cash_db->set("receipt_checkpoint",$data['receipt_checkpoint']);
+		}
 		$this->cash_db->where("receipt_no",$data['receipt_no']);
 		$this->cash_db->update("cash_receipt");
 	}
