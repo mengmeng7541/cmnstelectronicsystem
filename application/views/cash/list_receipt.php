@@ -122,6 +122,29 @@
 			<button type='button' class='btn btn-primary' data-dismiss='modal'>取消</button>
 		</div>
 </div>
+<div id="modal_cash_receipt_opening_form" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class='modal-header'>
+		    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button>
+		    <h3 id='myModalLabel'>收據/發票</h3>
+		</div>
+		<div class='modal-body'>
+			<form id="form_cash_receipt_opening" action="<?=site_url('cash/receipt/update');?>" method="POST" class="form form-horizontal">
+				<input type="hidden" name="receipt_no" value=""/>
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">收據/發票編號</label>
+						<div class="controls">
+							<input type="text" name="receipt_ID" value="" class=""/>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class='modal-footer'>
+			<button type='button' name="confirm_opening" class='btn btn-warning' data-dismiss='modal'>確認</button>
+			<button type='button' class='btn btn-primary' data-dismiss='modal'>取消</button>
+		</div>
+</div>
 <div id="modal_cash_receipt_delivery_form" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class='modal-header'>
 		    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button>

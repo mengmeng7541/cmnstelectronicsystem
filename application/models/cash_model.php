@@ -45,10 +45,13 @@ class Cash_model extends MY_Model {
 	public function add_receipt($data)
 	{
 		$this->cash_db->set("receipt_type",$data['receipt_type']);
-		$this->cash_db->set("receipt_ID",$data['receipt_ID']);
+		if(isset($data['receipt_ID']))
+		{
+			$this->cash_db->set("receipt_ID",$data['receipt_ID']);
+		}
 		$this->cash_db->set("receipt_title",$data['receipt_title']);
-		$this->cash_db->set("receipt_opened_by",$data['receipt_opened_by']);
-		$this->cash_db->set("receipt_opening_time",$data['receipt_opening_time']);
+		$this->cash_db->set("receipt_initialized_by",$data['receipt_initialized_by']);
+		$this->cash_db->set("receipt_initialization_time",$data['receipt_initialization_time']);
 		if(isset($data['receipt_contact_name']))
 			$this->cash_db->set("receipt_contact_name",$data['receipt_contact_name']);
 		if(isset($data['receipt_contact_tel']))
@@ -66,10 +69,19 @@ class Cash_model extends MY_Model {
 	}
 	public function update_receipt($data)
 	{
+		if(isset($data['receipt_ID']))
+		{
+			$this->cash_db->set("receipt_ID",$data['receipt_ID']);
+		}
+		if(isset($data['receipt_opened_by']))
+		{
+			$this->cash_db->set("receipt_opened_by",$data['receipt_opened_by']);
+			$this->cash_db->set("receipt_opening_time",$data['receipt_opening_time']);
+		}
 		if(isset($data['receipt_delivered_by']))
 		{
 			$this->cash_db->set("receipt_delivered_by",$data['receipt_delivered_by']);
-			$this->cash_db->set("receipt_delivery_time",date("Y-m-d H:i:s"));
+			$this->cash_db->set("receipt_delivery_time",$data['receipt_delivery_time']);
 		}
 		if(isset($data['receipt_remark']))
 		{

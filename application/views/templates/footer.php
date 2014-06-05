@@ -89,7 +89,7 @@
    <script type="text/javascript" src="<?=base_url();?>js/jquery.fittext.js"></script>
    <script type="text/javascript" src="<?=base_url();?>js/jquery.fullscreen-0.4.1.min.js"></script>
    
-   <script src="<?=base_url();?>js/scripts.js"></script>
+   <script src="<?=base_url();?>js/scripts.js?20140605"></script>
    <script>
       jQuery(document).ready(function() {       
          // initiate layout and plugins

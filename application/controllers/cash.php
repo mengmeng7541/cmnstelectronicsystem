@@ -64,11 +64,11 @@ class Cash extends MY_Controller {
 			$this->form_validation->set_rules("bill_amount_received[]","帳單實收金額","required");
 			$this->form_validation->set_rules("account_boss","帳戶擁有者編號","required");
 			$this->form_validation->set_rules("receipt_type","收據類別","required");
-			$this->form_validation->set_rules("receipt_ID","收據編號","required");
+//			$this->form_validation->set_rules("receipt_ID","收據編號","required");
 			$this->form_validation->set_rules("receipt_title","收據抬頭","required");
 			$this->form_validation->set_rules("account_amount","收據金額","required");
-			if(isset($input_data['receipt_type'])&&$input_data['receipt_type']=='receipt')
-			{
+//			if(isset($input_data['receipt_type'])&&$input_data['receipt_type']=='receipt')
+//			{
 				$this->form_validation->set_rules("receipt_delivery_way","收據作業","required");
 				if(isset($input_data['receipt_delivery_way'])&&$input_data['receipt_delivery_way']=='pickup')
 				{
@@ -78,7 +78,7 @@ class Cash extends MY_Controller {
 				}
 				$this->form_validation->set_rules("receipt_contact_name","連絡人姓名","required");
 				$this->form_validation->set_rules("receipt_contact_tel","連絡電話","required");
-			}
+//			}
 			
 			if(!$this->form_validation->run())
 			{
@@ -139,7 +139,7 @@ class Cash extends MY_Controller {
 			
 			$input_data = $this->input->post(NULL,TRUE);
 			
-			$this->form_validation->set_rules("receipt_no","收據編號","required");
+			$this->form_validation->set_rules("receipt_no","收據流水號","required");
 			if(!$this->form_validation->run())
 			{
 				throw new Exception(validation_errors(),WARNING_CODE);
@@ -153,34 +153,30 @@ class Cash extends MY_Controller {
 			$this->load->model('cash/receipt_model');
 			if($receipt['receipt_checkpoint']=='initialized')
 			{
-				if($receipt['receipt_type']=='receipt')
+				$this->form_validation->set_rules("receipt_ID","收據編號","required");
+				if(!$this->form_validation->run())
 				{
-					if($receipt['receipt_delivery_way']=='pickup')
-					{
-						//寄信通知已開立，請親自領取
-						$this->receipt_model->notify_collection($input_data['receipt_no']);
-					}
-					else if($receipt['receipt_delivery_way']=='post')
-					{
-						//通知寄出，並填入郵寄代碼
-						$this->form_validation->set_rules("receipt_remark","郵寄代碼","required");
-						if(!$this->form_validation->run())
-						{
-							throw new Exception(validation_errors(),WARNING_CODE);
-						}
-						$this->receipt_model->delivery_by_post($input_data['receipt_no'],$input_data['receipt_remark']);
-					}
+					throw new Exception(validation_errors(),WARNING_CODE);
 				}
+				
+				//寄信通知已開立
+				$this->receipt_model->open($input_data['receipt_no'],$input_data['receipt_ID']);
 			}
 			else if($receipt['receipt_checkpoint']=='opened')
 			{
-				if($receipt['receipt_type']=='receipt')
+				if($receipt['receipt_delivery_way']=='pickup')
 				{
-					if($receipt['receipt_delivery_way']=='pickup')
+					//紀錄已領時間
+					$this->receipt_model->delivery_by_collection($input_data['receipt_no']);
+				}else if($receipt['receipt_delivery_way']=='post' && $receipt['receipt_type']=='receipt')//開收據才會由我們寄出
+				{
+					//通知已郵寄，並填入郵寄代碼
+					$this->form_validation->set_rules("receipt_remark","郵寄代碼","required");
+					if(!$this->form_validation->run())
 					{
-						//紀錄已領時間
-						$this->receipt_model->delivery_by_collection($input_data['receipt_no']);
+						throw new Exception(validation_errors(),WARNING_CODE);
 					}
+					$this->receipt_model->delivery_by_post($input_data['receipt_no'],$input_data['receipt_remark']);
 				}
 			}
 			
@@ -276,6 +272,7 @@ class Cash extends MY_Controller {
 				$row[] = $curriculum_bill['class_code'];
 				$row[] = $this->curriculum_model->get_class_type_str($curriculum_bill['class_type']);
 				$row[] = $curriculum_bill['user_name'];
+				$row[] = $curriculum_bill['org_name'];
 				
 				if(isset($curriculum_bill['bill_discount_percent']))
 				{

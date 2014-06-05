@@ -12,11 +12,6 @@
 	<meta content="" name="Description">
 	<meta content="" name="author">
 	<meta http-equiv="x-ua-compatible" content="IE=edge">
-	<meta http-equiv="cache-control" content="max-age=0" />
-	<meta http-equiv="cache-control" content="no-cache" />
-	<meta http-equiv="expires" content="0" />
-	<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-	<meta http-equiv="pragma" content="no-cache" />
 	<link href="<?=base_url();?>assets/bootstrap/css/bootstrap.css" rel="stylesheet">
 	<!--<link href="<?=base_url();?>assets/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">-->
 	<link href="<?=base_url();?>assets/bootstrap/css/bootstrap-fileupload.css" rel="stylesheet" />
