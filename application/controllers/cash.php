@@ -64,22 +64,18 @@ class Cash extends MY_Controller {
 			$this->form_validation->set_rules("bill_amount_received[]","帳單實收金額","required");
 			$this->form_validation->set_rules("account_boss","帳戶擁有者編號","required");
 			$this->form_validation->set_rules("receipt_type","收據類別","required");
-//			$this->form_validation->set_rules("receipt_ID","收據編號","required");
 			$this->form_validation->set_rules("receipt_title","收據抬頭","required");
 			$this->form_validation->set_rules("account_amount","收據金額","required");
-//			if(isset($input_data['receipt_type'])&&$input_data['receipt_type']=='receipt')
-//			{
-				$this->form_validation->set_rules("receipt_delivery_way","收據作業","required");
-				if(isset($input_data['receipt_delivery_way'])&&$input_data['receipt_delivery_way']=='pickup')
-				{
-					$this->form_validation->set_rules("receipt_contact_email","電子郵件","required");
-				}else{
-					$this->form_validation->set_rules("receipt_contact_address","郵寄地址","required");
-				}
-				$this->form_validation->set_rules("receipt_contact_name","連絡人姓名","required");
-				$this->form_validation->set_rules("receipt_contact_tel","連絡電話","required");
-//			}
-			
+			$this->form_validation->set_rules("receipt_delivery_way","收據作業","required");
+			if(isset($input_data['receipt_delivery_way'])&&$input_data['receipt_delivery_way']=='pickup')
+			{
+				$this->form_validation->set_rules("receipt_contact_email","電子郵件","required");
+			}else{
+				$this->form_validation->set_rules("receipt_contact_address","郵寄地址","required");
+			}
+			$this->form_validation->set_rules("receipt_contact_name","連絡人姓名","required");
+			$this->form_validation->set_rules("receipt_contact_tel","連絡電話","required");
+
 			if(!$this->form_validation->run())
 			{
 				throw new Exception(validation_errors(),WARNING_CODE);
@@ -110,16 +106,29 @@ class Cash extends MY_Controller {
 						"bill_time"=>date("Y-m-d H:i:s")
 					));
 					
-					$this->cash_model->add_account_bill_map(array(
-						"account_no"=>$account_no,
-						"bill_no"=>$bill_no,
-						"amount_transacted"=>$input_data['bill_amount_received'][$key],
-						"transacted_by"=>$this->session->userdata('ID'),
-						"transaction_time"=>date("Y-m-d H:i:s")
-					));
+					
 				}else if($bill_type=='nanomark'){
+					$bill = $this->cash_model->get_nanomark_bill_list(array("application_SN"=>$input_data['bill_ID'][$key]))->row_array();
+					$bill_no = $this->cash_model->add_bill(array(
+						"bill_type"=>$bill_type,
+						"bill_ID"=>$input_data['bill_ID'][$key],
+						"bill_org"=>$bill['user_org_no'],
+						"bill_boss"=>$bill['user_boss_no'],
+						"bill_amount_original"=>$bill['total_fees'],
+						"bill_discount_percent"=>$bill['bill_discount_percent'],
+						"bill_amount_receivable"=>$bill['total_fees']*$bill['bill_discount_percent'],
+						"bill_time"=>date("Y-m-d H:i:s")
+					));
 					
 				}
+				
+				$this->cash_model->add_account_bill_map(array(
+					"account_no"=>$account_no,
+					"bill_no"=>$bill_no,
+					"amount_transacted"=>$input_data['bill_amount_received'][$key],
+					"transacted_by"=>$this->session->userdata('ID'),
+					"transaction_time"=>date("Y-m-d H:i:s")
+				));
 			}
 			
 			echo $this->info_modal("開立完成");
@@ -211,7 +220,9 @@ class Cash extends MY_Controller {
 				echo json_encode($output);
 			}else if($input_data['bill_type']=="nanomark")
 			{
-				
+				$nanomark_bills = $this->cash_model->get_nanomark_bill_list(array("application_SN"=>isset($input_data['bill_ID'])?$input_data['bill_ID']:""))->result_array();
+				$output['aaData'] = $nanomark_bills;
+				echo json_encode($output);
 			}
 			
 		}catch(Exception $e){
@@ -282,16 +293,14 @@ class Cash extends MY_Controller {
 				}
 				
 				$display = array();
-				if(isset($curriculum_bill['receipt_ID']))
+				if($curriculum_bill['bill_amount']*$curriculum_bill['bill_discount_percent']>$curriculum_bill['bill_amount_received'])//應收大於已收
 				{
-					if($curriculum_bill['bill_amount']*$curriculum_bill['bill_discount_percent']>$curriculum_bill['bill_amount_received'])//應收大於已收
-					{
-						$display[] = form_checkbox("bill_ID[]",$curriculum_bill['reg_ID'],"","");
-					}
+					$display[] = form_checkbox("bill_ID[]",$curriculum_bill['reg_ID'],"","");
+				}
+				if(!empty($curriculum_bill['bill_amount_received']))
+				{
 					$display[] = $curriculum_bill['receipt_ID'];
 					$display[] = "($".$curriculum_bill['bill_amount_received'].")";
-				}else{
-					$display[] = form_checkbox("bill_ID[]",$curriculum_bill['reg_ID'],"","");
 				}
 				$row[] = implode(' ',$display);
 				
@@ -336,8 +345,18 @@ class Cash extends MY_Controller {
 				$row[] = $nanomark_bill['specimen_name'];
 				$row[] = $nanomark_bill['application_date'];
 				$row[] = $nanomark_bill['ID'];
-				$row[] = $nanomark_bill['total_fees'];
-				$row[] = form_checkbox("bill_ID[]",$nanomark_bill['serial_no'],"","");
+				$row[] = $nanomark_bill['total_fees']."*".$nanomark_bill['bill_discount_percent']."=".$nanomark_bill['total_fees']*$nanomark_bill['bill_discount_percent'];
+				$display = array();
+				if($nanomark_bill['total_fees']*$nanomark_bill['bill_discount_percent']>$nanomark_bill['bill_amount_received'])//應收大於已收
+				{
+					$display[] = form_checkbox("bill_ID[]",$nanomark_bill['serial_no'],"","");
+				}
+				if(!empty($nanomark_bill['bill_amount_received']))
+				{
+					$display[] = $nanomark_bill['receipt_ID'];
+					$display[] = "($".$nanomark_bill['bill_amount_received'].")";
+				}
+				$row[] = implode(' ',$display);
 				$row[] = "";
 				$row[] = "";
 				$output['aaData'][] = $row;

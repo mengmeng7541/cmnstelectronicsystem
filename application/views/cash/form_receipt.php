@@ -6,7 +6,8 @@
 		<div class='modal-body'>
 			<form id="form_cash_receipt" action="<?=site_url('cash/receipt/add');?>" method="POST" class="form form-horizontal">
 				<div class="row-fluid">
-					<table id="table_cash_bill_list" class="table table-striped table-bordered">
+					<table id="table_cash_bill_list" class="table table-striped table-bordered" data-bill-type="<?=isset($bill_type)?$bill_type:"";?>">
+					
 					</table>
 				</div>
 				<input type="hidden" name="account_boss" value=""/>
@@ -19,10 +20,10 @@
 						</div>
 					</div>
 					<div class="control-group span6">
-						<label class="control-label">編號</label>
+						<!--<label class="control-label">編號</label>
 						<div class="controls">
 							<input name="receipt_ID" type="text" value=""/>
-						</div>
+						</div>-->
 					</div>
 				</div>
 				<div class="row-fluid">
@@ -72,6 +73,12 @@
 						<div class="controls">
 							<input name="receipt_contact_tel" type="text" value=""/>
 						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">備註</label>
+					<div class="controls">
+						<input name="receipt_note" type="text" value="" class="span12"/>
 					</div>
 				</div>
 			</form>

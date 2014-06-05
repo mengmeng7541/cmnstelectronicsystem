@@ -1542,13 +1542,12 @@ class Facility extends MY_Controller {
 			
 			$this->form_validation->set_rules("facility_ID","儀器","required");
 			$this->form_validation->set_rules("subject","事由","required");
+			$this->form_validation->set_rules("booking_time","預約時段","required");
 			if(!empty($input_data['subject']) && $input_data['subject'] == "外部維修")
 			{
 				$this->form_validation->set_rules("content","描述","required");
-				$this->form_validation->set_rules("maintainer_name","廠商","required");
-				$this->form_validation->set_rules("fees","費用","required");
-			}else{
-				$this->form_validation->set_rules("booking_time","預約時段","required");
+//				$this->form_validation->set_rules("maintainer_name","廠商","required");
+//				$this->form_validation->set_rules("fees","費用","required");
 			}
 			if(!$this->form_validation->run())
 			{
@@ -1582,16 +1581,16 @@ class Facility extends MY_Controller {
 				"status_ID"=>"section_chief"
 			))->result_array();
 			
-			if($input_data['subject'] == "外部維修")
-			{
-				//寫入維修單
-				$data = array("applicant_ID"=>$this->session->userdata('ID'),
-						  "facility_ID"=>$input_data['facility_ID'],
-						  "subject"=>$input_data['subject'],
-						  "content"=>$input_data['content'],
-						  "maintainer_name"=>$input_data['maintainer_name'],
-						  "fees"=>$input_data['fees']);
-				$serial_no = $this->facility_model->add_maintenance($data);
+//			if($input_data['subject'] == "外部維修")
+//			{
+//				//寫入維修單
+//				$data = array("applicant_ID"=>$this->session->userdata('ID'),
+//						  "facility_ID"=>$input_data['facility_ID'],
+//						  "subject"=>$input_data['subject'],
+//						  "content"=>$input_data['content'],
+//						  "maintainer_name"=>$input_data['maintainer_name'],
+//						  "fees"=>$input_data['fees']);
+//				$serial_no = $this->facility_model->add_maintenance($data);
 				
 				//寄信通知組長審核
 //				foreach($managers as $manager){
@@ -1603,7 +1602,7 @@ class Facility extends MY_Controller {
 //					$this->email->send();
 //				}
 				
-			}else{
+//			}else{
 				
 				//確認選擇了連續時段
 				$this->booking_model->check_input_time($input_data['booking_time'],$facility['unit_sec']);
@@ -1635,7 +1634,7 @@ class Facility extends MY_Controller {
 					$this->email->send();
 				}
 				
-			}
+//			}
 			
 			echo $this->info_modal("新增成功","/facility/admin/booking/list/");	
 		}catch(Exception $e){

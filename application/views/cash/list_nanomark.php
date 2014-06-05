@@ -55,7 +55,7 @@
          <!-- END PAGE CONTAINER-->
       </div>
       <!-- END PAGE --> 
-<?=$this->load->view('cash/form_receipt',true);?>
+<?=$this->load->view('cash/form_receipt',array("bill_type"=>"nanomark"),true);?>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$("#table_cash_bill_nanomark_list").dataTable({

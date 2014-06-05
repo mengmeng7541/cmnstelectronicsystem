@@ -25,7 +25,7 @@ class Receipt_model extends MY_Model {
 		$data['receipt_account'] = $account_no;
 		$data['receipt_checkpoint'] = "initialized";
 		$receipt_no = $this->cash_model->add_receipt(elements(array(
-			"receipt_type","receipt_ID","receipt_title","receipt_initialized_by","receipt_initialization_time","receipt_contact_name","receipt_contact_email","receipt_contact_tel","receipt_contact_address","receipt_delivery_way","receipt_account","receipt_checkpoint"
+			"receipt_type","receipt_ID","receipt_title","receipt_initialized_by","receipt_initialization_time","receipt_contact_name","receipt_contact_email","receipt_contact_tel","receipt_contact_address","receipt_note","receipt_delivery_way","receipt_account","receipt_checkpoint"
 		),$data),NULL);
 		
 		return $account_no;

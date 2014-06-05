@@ -35,8 +35,8 @@
 								<div class="control-group">
 	                     			<label class="control-label">預約目的</label>
 	                     			<div class="controls">
-	                     				<label class="radio"><input type="radio" name="purpose" value="DIY" checked="checked">自行操作</label>
-	                     				<label class="radio"><input type="radio" name="purpose" value="OEM" >客戶代工</label>
+	                     				<label class="radio"><input type="radio" name="purpose" value="DIY" >自行操作</label>
+	                     				<label class="radio"><input type="radio" name="purpose" value="OEM" checked="checked">客戶代工</label>
 	                     				<?=anchor("/facility/admin/maintenance/form/{$ID}","維修調校","class='btn btn-warning'");?>
 	                     			</div>
 	                     		</div>
@@ -46,7 +46,7 @@
 	                     				<textarea name="note" rows="5" class="span12"></textarea>
 	                     			</div>
 	                     		</div>
-	                     		<div class="control-group hide" id="user_selector">
+	                     		<div class="control-group" id="user_selector">
 	                     			<label class="control-label">操作者(可不選)</label>
 	                     			<div class="controls">
 	                     				<?=form_dropdown("user_ID",isset($user_ID_select_options)?$user_ID_select_options:array(),in_array($this->session->userdata('ID'),$user_ID_select_options)?$this->session->userdata('ID'):"","class='chosen-with-diselect'")?>

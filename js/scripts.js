@@ -2457,11 +2457,7 @@ var App = function () {
 			var outsourcing_maintenance = $("#facility_maintenance_outsourcing").prop("checked");
 			if(outsourcing_maintenance)
 			{
-				$(".advanced_data").show();
-				$("#booking_time_table").hide();
-			}else{
-				$(".advanced_data").hide();
-				$("#booking_time_table").show();
+				alert("外部維修請務必於描述欄中填入維修廠商名稱與報價金額");
 			}
 		});
 	}
@@ -3568,6 +3564,7 @@ var App = function () {
                     "sNext": "Next"
                 }
             },
+            "aaSorting": [['4','desc']],
         });
         $("#table_access_card_temp_application_list").on("click","button[name='reject']",function(){
         	$.ajax({
@@ -3670,7 +3667,7 @@ var App = function () {
 //		    } ]
         });
         var table_cash_bill_list = $("#table_cash_bill_list").dataTable({
-        	"sAjaxSource": site_url+"cash/query_bill",
+        	"sAjaxSource": site_url+"cash/bill/query",
             "sDom": "t",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -3684,17 +3681,36 @@ var App = function () {
             	if(oSettings.aoData.length){
             		var first_row = oSettings.aoData[0]._aData;
             		$("#form_cash_receipt").find("input[name='account_boss']").val(first_row.user_boss_no);
-					$("#form_cash_receipt").find("input[name='receipt_title']").val(first_row.org_name);
-					$("#form_cash_receipt").find("input[name='receipt_contact_name']").val(first_row.user_name);
-					$("#form_cash_receipt").find("input[name='receipt_contact_tel']").val(first_row.user_mobile);
-					$("#form_cash_receipt").find("input[name='receipt_contact_email']").val(first_row.user_email);
-					$("#form_cash_receipt").find("input[name='receipt_contact_address']").val(first_row.user_address);
-					//SUM
-					var sum = 0;
-					for(var idx in oSettings.aoData)
+            		if(first_row.bill_type=='curriculum')
+			      	{
+						$("#form_cash_receipt").find("input[name='receipt_title']").val(first_row.org_name);
+						$("#form_cash_receipt").find("input[name='receipt_contact_name']").val(first_row.user_name);
+						$("#form_cash_receipt").find("input[name='receipt_contact_tel']").val(first_row.user_mobile);
+						$("#form_cash_receipt").find("input[name='receipt_contact_email']").val(first_row.user_email);
+						$("#form_cash_receipt").find("input[name='receipt_contact_address']").val(first_row.user_address);
+						
+						//SUM
+						var sum = 0;
+						for(var idx in oSettings.aoData)
+						{
+							sum = sum + (oSettings.aoData[idx]._aData.bill_amount*oSettings.aoData[idx]._aData.bill_discount_percent-oSettings.aoData[idx]._aData.bill_amount_received);
+						}
+					}else if(first_row.bill_type=='nanomark')
 					{
-						sum = sum + (oSettings.aoData[idx]._aData.bill_amount*oSettings.aoData[idx]._aData.bill_discount_percent-oSettings.aoData[idx]._aData.bill_amount_received);
+						$("#form_cash_receipt").find("input[name='receipt_title']").val(first_row.receipt_title);
+						$("#form_cash_receipt").find("input[name='receipt_contact_name']").val(first_row.contact_name);
+						$("#form_cash_receipt").find("input[name='receipt_contact_tel']").val(first_row.contact_mobile);
+						$("#form_cash_receipt").find("input[name='receipt_contact_email']").val(first_row.contact_email);
+						$("#form_cash_receipt").find("input[name='receipt_contact_address']").val(first_row.mail_address);
+						
+						//SUM
+						var sum = 0;
+						for(var idx in oSettings.aoData)
+						{
+							sum = sum + (oSettings.aoData[idx]._aData.total_fees*oSettings.aoData[idx]._aData.bill_discount_percent-oSettings.aoData[idx]._aData.bill_amount_received);
+						}
 					}
+					
 					$("#form_cash_receipt").find("input[name='account_amount']").val(sum);
 				}
 			},
@@ -3707,7 +3723,7 @@ var App = function () {
 					return '儀器訓練課程'+"<input name='bill_type[]' type='hidden' value='curriculum'/>";
 				}else if(source['bill_type']=='nanomark')
 				{
-					return '';
+					return '奈米標章'+"<input name='bill_type[]' type='hidden' value='nanomark'/>";
 				}
 		        return '';
 		      }
@@ -3716,14 +3732,28 @@ var App = function () {
 		      "aTargets": [ 1 ],
 		      "sTitle": "編號",
 		      "mData": function ( source, type, val ) {
-		        return "<input name='bill_ID[]' type='text' value='"+source['reg_ID']+"' class='input-mini' readonly='readonly'/>";
+		      	if(source['bill_type']=='curriculum')
+		      	{
+					return "<input name='bill_ID[]' type='text' value='"+source['reg_ID']+"' class='input-mini' readonly='readonly'/>"
+				}else if(source['bill_type']=='nanomark')
+				{
+					return "<input name='bill_ID[]' type='text' value='"+source['serial_no']+"' class='input-mini' readonly='readonly'/>"
+				}
+		        return '';
 		      }
 		    },
 		    {
 		      "aTargets": [ 2 ],
 		      "sTitle": "原價",
 		      "mData": function ( source, type, val ) {
-		        return source['bill_amount'];
+		      	if(source['bill_type']=='curriculum')
+		      	{
+					return source['bill_amount'];
+				}else if(source['bill_type']=='nanomark')
+				{
+					return source['total_fees'];
+				}
+		        return '';
 		      }
 		    },
 		    {
@@ -3737,19 +3767,34 @@ var App = function () {
 		      "aTargets": [ 4 ],
 		      "sTitle": "應收",
 		      "mData": function ( source, type, val ) {
-		        return source['bill_amount']*source['bill_discount_percent'];
+		      	if(source['bill_type']=='curriculum')
+		      	{
+					return source['bill_amount']*source['bill_discount_percent'];
+				}else if(source['bill_type']=='nanomark')
+				{
+					return source['total_fees']*source['bill_discount_percent'];
+				}
+		        return '';
 		      }
 		    },
 		    {
 		      "aTargets": [ 5 ],
 		      "sTitle": "實收",
 		      "mData": function ( source, type, val ) {
-		        return "<input name='bill_amount_received[]' type='text' value='"+(source['bill_amount']*source['bill_discount_percent']-source['bill_amount_received'])+"' class='input-mini'>";
+		      	if(source['bill_type']=='curriculum')
+		      	{
+					return "<input name='bill_amount_received[]' type='text' value='"+(source['bill_amount']*source['bill_discount_percent']-source['bill_amount_received'])+"' class='input-mini'>";
+				}else if(source['bill_type']=='nanomark')
+				{
+					return "<input name='bill_amount_received[]' type='text' value='"+(source['total_fees']*source['bill_discount_percent']-source['bill_amount_received'])+"' class='input-mini'>";
+				}
+		        return '';
+		        
 		      }
 		    } ],
             "fnServerParams": function ( aoData ) {
 		      aoData.push(
-		      	{"name": "bill_type", "value": "curriculum" }
+		      	{"name": "bill_type", "value": $(this).data('bill-type') }
 		      );
 		      $("input[name='bill_ID[]']:checked").each(function(idx){
 		      	aoData.push({"name":"bill_ID[]","value":$(this).val()});
@@ -3893,10 +3938,6 @@ var App = function () {
             "fnDrawCallback": function (oSettings) {
 			},
             "fnServerParams": function ( aoData ) {
-//		      aoData.push(
-//		      	{"name": "class_code", "value": $("#query_cash_curriculum_month").map(function(){return this.value}).get().join('-') }
-//		      	
-//		      );
 		    },
         });
         //收據開立

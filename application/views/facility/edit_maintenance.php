@@ -47,7 +47,7 @@ $manager = $this->facility_model->get_admin_privilege_list(
 									<label class="radio "><input type="radio" name="subject" value="儀器復機" <?=empty($subject)?"":$subject=="儀器復機"?"checked='checked'":"";?>/>儀器復機</label>
 									<label class="radio "><input type="radio" name="subject" value="內部維修" <?=empty($subject)?"":$subject=="內部維修"?"checked='checked'":"";?>/>內部維修</label>
 									<label class="radio "><input type="radio" name="subject" value="外部維修" <?=empty($subject)?"":$subject=="外部維修"?"checked='checked'":"";?> id="facility_maintenance_outsourcing"/>外部維修</label>
-									<label class="radio "><input type="radio" name="subject" value="其他" />其他 <!--<input type="text" name="special_subject" value="" class="input-medium"/>--></label>
+									<label class="radio "><input type="radio" name="subject" value="其他" />其他 </label>
 								</div>
                      		</div>
                      		<div class="control-group">
@@ -74,7 +74,7 @@ $manager = $this->facility_model->get_admin_privilege_list(
 								</div>
                      		</div>
 	                     	
-                     		<div class="control-group advanced_data">
+                     		<!--<div class="control-group advanced_data">
                      			<label class="control-label">費用</label>
 					            <div class="controls">
 									<input type="text" name="fees" value="<?=empty($fees)?"":$fees;?>">
@@ -85,16 +85,16 @@ $manager = $this->facility_model->get_admin_privilege_list(
 					            <div class="controls">
 									<input type="text" name="maintainer_name" value="<?=empty($maintainer_name)?"":$maintainer_name;?>">
 								</div>
-                     		</div>
+                     		</div>-->
 	                     	
 	                     	<? if($manager){ ?>
-                     		<div class="control-group">
+                     		<!--<div class="control-group">
                      			<label class="control-label">審核</label>
 					            <div class="controls">
 									<label class="radio"><input type="radio" name="result" value="1"/>同意</label>
 									<label class="radio"><input type="radio" name="result" value="0"/>不同意</label>
 								</div>
-                     		</div>
+                     		</div>-->
                      		<? } ?>
                      		<div class="form-actions">
                      			<button type="submit" class="btn btn-primary">送出</button>

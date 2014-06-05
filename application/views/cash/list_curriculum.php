@@ -62,4 +62,4 @@
          <!-- END PAGE CONTAINER-->
       </div>
       <!-- END PAGE --> 
-<?=$this->load->view('cash/form_receipt',true);?>
+<?=$this->load->view('cash/form_receipt',array("bill_type"=>"curriculum"),true);?>

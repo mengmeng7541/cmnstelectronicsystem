@@ -60,6 +60,8 @@ class Cash_model extends MY_Model {
 			$this->cash_db->set("receipt_contact_email",$data['receipt_contact_email']);
 		if(isset($data['receipt_contact_address']))
 			$this->cash_db->set("receipt_contact_address",$data['receipt_contact_address']);
+		if(isset($data['receipt_note']))
+			$this->cash_db->set("receipt_note",$data['receipt_note']);
 		if(isset($data['receipt_delivery_way']))
 			$this->cash_db->set("receipt_delivery_way",$data['receipt_delivery_way']);
 		$this->cash_db->set("receipt_account",$data['receipt_account']);
@@ -183,6 +185,7 @@ class Cash_model extends MY_Model {
 			{$sJoinTable['org']}.name AS org_name,
 			{$sJoinTable['org']}.status_ID AS org_status_ID,
 			'curriculum' AS bill_type,
+			reg_table.reg_ID AS bill_ID,
 			IF({$sJoinTable['org']}.status_ID='academia',IF(reg_table.reg_confirmed_by IS NULL,price_table.Price_Count*0.5,price_table.Price_Count),IF(reg_table.reg_confirmed_by IS NULL,price_table.Price_Count_Ent*0.5,price_table.Price_Count_Ent)) AS bill_amount,
 			IFNULL({$sJoinTable['aliance']}.discount_percent/10,1) AS bill_discount_percent,
 			SUM({$sJoinTable['ab_map']}.amount_transacted) AS bill_amount_received,
@@ -246,12 +249,37 @@ class Cash_model extends MY_Model {
 		
 		$this->cash_db->select("
 			$sTable.*,
-			GROUP_CONCAT({$sJoinTable['specimen']}.name) AS specimen_name
+			specimen_table.name AS specimen_name,
+			{$sJoinTable['user']}.name AS user_name,
+			{$sJoinTable['user']}.email AS user_email,
+			{$sJoinTable['user']}.mobile AS user_mobile,
+			{$sJoinTable['user']}.address AS user_address,
+			{$sJoinTable['user']}.boss_no AS user_boss_no,
+			{$sJoinTable['user']}.organization AS user_org_no,
+			{$sJoinTable['org']}.name AS org_name,
+			{$sJoinTable['org']}.status_ID AS org_status_ID,
+			'nanomark' AS bill_type,
+			IFNULL({$sJoinTable['aliance']}.discount_percent/10,1) AS bill_discount_percent,
+			SUM({$sJoinTable['ab_map']}.amount_transacted) AS bill_amount_received,
+			GROUP_CONCAT({$sJoinTable['receipt']}.receipt_ID) AS receipt_ID,
+			{$sJoinTable['receipt']}.receipt_delivery_way AS receipt_delivery_way,
+			{$sJoinTable['receipt']}.receipt_checkpoint AS receipt_checkpoint
 		",FALSE);
 		$this->cash_db->from($sTable);
-		$this->cash_db->join($sJoinTable['specimen'],"{$sJoinTable['specimen']}.application_SN = $sTable.serial_no","LEFT");
+		$this->cash_db->join("(SELECT application_SN,GROUP_CONCAT(name) AS name FROM {$sJoinTable['specimen']} GROUP BY application_SN) specimen_table","specimen_table.application_SN = $sTable.serial_no","LEFT");
 		$this->cash_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.applicant_ID","LEFT");
-		$this->cash_db->group_by("{$sJoinTable['specimen']}.application_SN");
+		$this->cash_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = {$sJoinTable['user']}.organization","LEFT");
+		$this->cash_db->join($sJoinTable['bill'],"{$sJoinTable['bill']}.bill_ID = $sTable.serial_no AND {$sJoinTable['bill']}.bill_type = 'nanomark'","LEFT");
+		$this->cash_db->join($sJoinTable['ab_map'],"{$sJoinTable['ab_map']}.bill_no = {$sJoinTable['bill']}.bill_no","LEFT");
+		$this->cash_db->join($sJoinTable['receipt'],"{$sJoinTable['receipt']}.receipt_account = {$sJoinTable['ab_map']}.account_no","LEFT");
+		
+		$this->cash_db->join($sJoinTable['aliance'],"{$sJoinTable['aliance']}.aliance_type = {$sJoinTable['org']}.aliance_no AND {$sJoinTable['aliance']}.discount_type = 4 AND DATE($sTable.application_date) BETWEEN DATE({$sJoinTable['aliance']}.discount_start) AND DATE({$sJoinTable['aliance']}.discount_end)","LEFT");//標章discount_type=4
+		$this->cash_db->group_by("$sTable.serial_no");
+		
+		if(isset($options['application_SN']))
+		{
+			$this->cash_db->where_in("$sTable.serial_no",$options['application_SN']);
+		}
 		
 		return $this->cash_db->get();
 	}

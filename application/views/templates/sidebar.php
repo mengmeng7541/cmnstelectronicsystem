@@ -95,6 +95,7 @@
 					</a>
 					<ul class="sub">
 						<li><a class="" href="<?=site_url();?>/cash/curriculum/list">訓練課程繳費</a></li>
+						<li><a class="" href="<?=site_url();?>/cash/nanomark/list">奈米標章繳費</a></li>
 						<li><a class="" href="<?=site_url();?>/cash/receipt/list">收據列表</a></li>
 					</ul>
 				</li>
