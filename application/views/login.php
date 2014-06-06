@@ -1,4 +1,4 @@
-
+<?php header('X-UA-Compatible: IE=edge'); ?>
 <!DOCTYPE html>
 
 <!--
@@ -14,6 +14,7 @@ Website: http://thevectorlab.net/
 <!-- BEGIN HEAD -->
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Login page</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <meta content="" name="description" />

@@ -3,15 +3,16 @@
 <!--[if IE 8]> <html lang="zh-tw" class="ie8"> <![endif]-->
 <!--[if IE 9]> <html lang="zh-tw" class="ie9"> <![endif]-->
 <!--[if !IE]><!--> <html lang="zh-tw"> <!--<![endif]-->
+<?php header('X-UA-Compatible: IE=edge'); ?>
 <!-- BEGIN HEAD -->
 <head>
 	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<!--<meta http-equiv="content-type" content="text/html; charset=UTF-8">-->
 	<title>CMNST Electric System</title>
 	<meta content="width=device-width, initial-scale=1" name="viewport">
 	<meta content="" name="Description">
 	<meta content="" name="author">
-	<meta http-equiv="x-ua-compatible" content="IE=edge">
 	<link href="<?=base_url();?>assets/bootstrap/css/bootstrap.css" rel="stylesheet">
 	<!--<link href="<?=base_url();?>assets/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">-->
 	<link href="<?=base_url();?>assets/bootstrap/css/bootstrap-fileupload.css" rel="stylesheet" />

@@ -50,7 +50,7 @@
 		                     	</table>
 	                     	</div>
 	                     	<div class="form-actions">
-	                     		<button name="open_receipt" type="button" class="btn btn-primary">開立收據</button>
+	                     		<button name="open_receipt" type="button" class="btn btn-primary">現金繳費</button>
 	                     	</div>
                      	</form>
                      </div>

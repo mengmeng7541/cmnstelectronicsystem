@@ -56,28 +56,3 @@
       </div>
       <!-- END PAGE --> 
 <?=$this->load->view('cash/form_receipt',array("bill_type"=>"nanomark"),true);?>
-<script type="text/javascript">
-	$(document).ready(function(){
-		$("#table_cash_bill_nanomark_list").dataTable({
-        	"sAjaxSource": site_url+"cash/nanomark/query",
-            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
-            "sPaginationType": "bootstrap",
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page",
-                "oPaginate": {
-                    "sPrevious": "Prev",
-                    "sNext": "Next"
-                }
-            },
-            "fnDrawCallback": function (oSettings) {
-//				handleUniform();	
-			},
-            "fnServerParams": function ( aoData ) {
-//		      aoData.push(
-//		      	{"name": "class_code", "value": $("#query_cash_bill_curriculum_month").map(function(){return this.value}).get().join('-') }
-//		      	
-//		      );
-		    },
-        });
-	});
-</script>

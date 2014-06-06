@@ -97,6 +97,7 @@
 						<li><a class="" href="<?=site_url();?>/cash/curriculum/list">訓練課程繳費</a></li>
 						<li><a class="" href="<?=site_url();?>/cash/nanomark/list">奈米標章繳費</a></li>
 						<li><a class="" href="<?=site_url();?>/cash/receipt/list">收據列表</a></li>
+						<li><a class="" href="<?=site_url();?>/cash/config/edit">系統設置</a></li>
 					</ul>
 				</li>
 				<li><a class="" href="<?=site_url();?>/logout"><span class="icon-box"><i class="icon-user"></i></span> 登出</a></li>
