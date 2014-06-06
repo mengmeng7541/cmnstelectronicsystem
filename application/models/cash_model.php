@@ -23,17 +23,35 @@ class Cash_model extends MY_Model {
 			$this->cash_db->where("privilege",$options['privilege']);
 		return $this->cash_db->get("cash_admin_privilege");
 	}
+	public function add_admin_privilege($data)
+	{
+		$this->cash_db->set("admin_ID",$data['admin_ID']);
+		$this->cash_db->set("privilege",$data['privilege']);
+		$this->cash_db->insert("cash_admin_privilege");
+	}
+	public function delete_admin_privilege($data)
+	{
+		$this->cash_db->where("serial_no",$data['serial_no']);
+		$this->cash_db->delete("cash_admin_privilege");
+	}
 	//--------------------RECEIPT-------------------------
 	public function get_receipt_list($options = array())
 	{
 		$sTable = "cash_receipt";
-		$sJoinTable = array("account"=>"cash_account");
+		$sJoinTable = array(
+			"account"=>"cash_account",
+			"org"=>"cmnst_common.organization",
+			"boss"=>"cmnst_common.boss_profile"
+		);
 		
 		$this->cash_db->select("
 			$sTable.*,
-			{$sJoinTable['account']}.account_amount AS receipt_amount
+			{$sJoinTable['account']}.account_amount AS receipt_amount,
+			{$sJoinTable['org']}.name AS org_name
 		");
 		$this->cash_db->join($sJoinTable['account'],"{$sJoinTable['account']}.account_no = $sTable.receipt_account","LEFT");
+		$this->cash_db->join($sJoinTable['boss'],"{$sJoinTable['boss']}.serial_no = {$sJoinTable['account']}.account_boss","LEFT");
+		$this->cash_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = {$sJoinTable['boss']}.organization","LEFT");
 		
 		if(isset($options['receipt_no']))
 		{

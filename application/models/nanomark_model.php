@@ -298,7 +298,9 @@ class Nanomark_model extends MY_Model {
 		$result = $this->nanomark_db->get()->row_array();
 		if($result){
 			$result = explode('-',$result['ID']);
-			$result[1] = sprintf("%03d",$result[1]+1);
+			$result[1] = str_split($result[1],2);
+			$result[1][1] += 1;
+			$result[1] = implode('',$result[1]);
 			$result = implode('-',$result);
 		}else{
 			$this->nanomark_db->select("ID")

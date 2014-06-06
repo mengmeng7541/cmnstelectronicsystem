@@ -19,6 +19,62 @@ class Cash extends MY_Controller {
 		$this->load->view('templates/footer');
 
 	}
+	
+	//----------------------CONFIG------------------------
+	public function edit_config()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$this->load->model('admin_model');
+			$this->data['admin_ID_select_options'] = $this->admin_model->get_admin_ID_select_options();
+			$admin_privileges = $this->cash_model->get_admin_privilege_list(array("privilege"=>"cash_super_admin"))->result_array();
+			$this->data['admin_ID'] = sql_column_to_key_value_array($admin_privileges,"admin_ID");
+			
+			$this->load->view('templates/header');
+			$this->load->view('templates/sidebar');
+			$this->load->view('cash/edit_config',$this->data);
+			$this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
+	}
+	public function update_config()
+	{
+		try{
+			$this->is_admin_login();
+			
+			if(!$this->cash_model->is_super_admin())
+			{
+				throw new Exception("權限不足",ERROR_CODE);
+			}
+			
+			$this->form_validation->set_rules("admin_ID[]","超級管理員","required");
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			//先刪
+			$admin_privileges = $this->cash_model->get_admin_privilege_list(array("privilege"=>"cash_super_admin"))->result_array();
+			foreach($admin_privileges as $admin_privilege)
+			{
+				$this->cash_model->delete_admin_privilege(array("serial_no"=>$admin_privilege['serial_no']));
+			}
+			//新增
+			foreach($input_data['admin_ID'] as $admin_ID)
+			{
+				$this->cash_model->add_admin_privilege(array("admin_ID"=>$admin_ID,"privilege"=>"cash_super_admin"));
+			}
+			
+			echo $this->info_modal("更新成功");
+			
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+	}
 	//---------------------RECEIPT-------------------
 	public function list_receipt()
 	{

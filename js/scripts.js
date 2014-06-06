@@ -3666,6 +3666,25 @@ var App = function () {
 //		      }
 //		    } ]
         });
+        //---------------------CASH BILL NANOMARK------------------------
+        var table_cash_bill_nanomark_list = $("#table_cash_bill_nanomark_list").dataTable({
+        	"sAjaxSource": site_url+"cash/nanomark/query",
+            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+            "fnDrawCallback": function (oSettings) {
+				handleUniform();	
+			},
+            "fnServerParams": function ( aoData ) {
+		    },
+        });
+        //---------------------------CASH BILL IN ONE RECEIPT------------------------
         var table_cash_bill_list = $("#table_cash_bill_list").dataTable({
         	"sAjaxSource": site_url+"cash/bill/query",
             "sDom": "t",
@@ -3819,7 +3838,11 @@ var App = function () {
         	var form = $("#form_cash_receipt").submit();
         	var jqXHR = form.data('jqxhr');
         	jqXHR.done(function(){
-        		table_cash_bill_curriculum_list.fnReloadAjax(null,null,true);
+        		if(table_cash_bill_curriculum_list.length){
+					table_cash_bill_curriculum_list.fnReloadAjax(null,null,true);
+				}else if(table_cash_bill_nanomark_list.length){
+					table_cash_bill_nanomark_list.fnReloadAjax(null,null,true);
+				}
         	});
         });
 		//DELIVERY Button
@@ -3871,20 +3894,34 @@ var App = function () {
 		    },
 		    {
 		      "aTargets": [ 2 ],
+		      "sTitle": "抬頭",
+		      "mData": function ( source, type, val ) {
+		        return source['receipt_title'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 3 ],
 		      "sTitle": "金額",
 		      "mData": function ( source, type, val ) {
 		        return source['receipt_amount'];
 		      }
 		    },
 		    {
-		      "aTargets": [ 3 ],
+		      "aTargets": [ 4 ],
+		      "sTitle": "組織",
+		      "mData": function ( source, type, val ) {
+		        return source['org_name'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 5 ],
 		      "sTitle": "連絡人",
 		      "mData": function ( source, type, val ) {
 		        return source['receipt_contact_name'];
 		      }
 		    },
 		    {
-		      "aTargets": [ 4 ],
+		      "aTargets": [ 6 ],
 		      "sTitle": "遞送方式",
 		      "mData": function ( source, type, val ) {
 		      	var display_str = "";
@@ -3908,14 +3945,21 @@ var App = function () {
 		      }
 		    },
 		    {
-		      "aTargets": [ 5 ],
-		      "sTitle": "備註",
+		      "aTargets": [ 7 ],
+		      "sTitle": "掛號函件執據號",
 		      "mData": function ( source, type, val ) {
 		        return source['receipt_remark'];
 		      }
 		    },
 		    {
-		      "aTargets": [ 6 ],
+		      "aTargets": [ 8 ],
+		      "sTitle": "備註",
+		      "mData": function ( source, type, val ) {
+		        return source['receipt_note'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 9 ],
 		      "sTitle": "動作",
 		      "mData": function ( source, type, val ) {
 	      		if(source['receipt_checkpoint']=='initialized')

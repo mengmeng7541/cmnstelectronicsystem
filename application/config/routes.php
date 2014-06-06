@@ -269,8 +269,9 @@ $route['curriculum/reg/update'] = 'curriculum/update_reg';
 $route['curriculum/reg/del/(:num)'] = 'curriculum/del_reg/$1';
 
 //Cash
-$route['cash/curriculum/list'] = 'cash/list_curriculum';
-$route['cash/curriculum/query'] = 'cash/query_curriculum';
+$route['cash/config/edit'] = 'cash/edit_config';
+$route['cash/config/update'] = 'cash/update_config';
+
 $route['cash/receipt/list'] = 'cash/list_receipt';
 $route['cash/receipt/query'] = 'cash/query_receipt';
 //$route['cash/receipt/form'] = 'cash/form_receipt';
@@ -280,6 +281,9 @@ $route['cash/receipt/del'] = 'cash/del_receipt';
 
 $route['cash/bill/list'] = 'cash/list_bill';
 $route['cash/bill/query'] = 'cash/query_bill';
+
+$route['cash/curriculum/list'] = 'cash/list_curriculum';
+$route['cash/curriculum/query'] = 'cash/query_curriculum';
 
 $route['cash/nanomark/list'] = 'cash/list_nanomark';
 $route['cash/nanomark/query'] = 'cash/query_nanomark';

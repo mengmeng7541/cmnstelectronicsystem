@@ -47,7 +47,11 @@ class Receipt_model extends MY_Model {
 		$receipt = $this->cash_model->get_receipt_list(array("receipt_no"=>$receipt_no))->row_array();
 		if($receipt['receipt_delivery_way']=='pickup')
 		{
+			//取得處理人員profile
+			$this->load->model('admin_model');
+			$admin_profile = $this->admin_model->get_admin_profile_list(array("admin_ID"=>$this->session->userdata('ID')))->row_array();
 			$this->email->to($receipt['receipt_contact_email']);
+			$this->email->cc($admin_profile['email']);
 			$this->email->subject("成大微奈米科技研究中心 -收據開立通知-");
 			$this->email->message("
 				{$receipt['receipt_contact_name']} 您好：<br>
@@ -80,7 +84,7 @@ class Receipt_model extends MY_Model {
 		$this->email->subject("成大微奈米科技研究中心 -收據開立通知-");
 		$this->email->message("
 			{$receipt['receipt_contact_name']} 您好：<br>
-			您於本中心繳費金額 {$receipt['receipt_amount']} 之收據編號 {$receipt['receipt_ID']} 已開立完畢並已掛號郵寄至 {$receipt['receipt_contact_address']}，信件追蹤號碼為 $post_no ，謝謝。
+			您於本中心繳費金額 {$receipt['receipt_amount']} 之收據編號 {$receipt['receipt_ID']} 已開立完畢並已掛號郵寄至 {$receipt['receipt_contact_address']}，掛號函件執據號為 $post_no ，謝謝。
 		");
 		$this->email->send();
 	}
