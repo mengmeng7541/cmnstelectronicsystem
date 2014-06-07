@@ -30,12 +30,15 @@ class Unittest extends MY_Controller {
 		
 		//先刪除舊的
 		$curriculum_db->where("class_code <=","2014-04-E");
+		$curriculum_db->where("class_code >=","2014-04-A");
 		$curriculum_db->delete("class_list");
 //		$curriculum_db->where("lesson_start_time <=","2014-04-30 00:00:00");
 //		$curriculum_db->delete("lesson_list");
 //		return;
 		
 		$curriculum_db->select("SN,user_ID,class_code,class_name,course_ID,MIN(reg_time) AS reg_time,MAX(join_check) AS join_check,su,MAX(cashornot) AS cashornot,class_date");
+		$curriculum_db->where("class_code <=","2014-04-E");
+		$curriculum_db->where("class_code >=","2014-04-A");
 		$curriculum_db->group_by("course_ID,class_code,user_ID");
 		$results = $curriculum_db->get("old_curriculum")->result_array();
 		foreach($results as $result){
@@ -96,7 +99,7 @@ class Unittest extends MY_Controller {
 		}
 		
 		$this->load->model('curriculum/reg_model');
-		$this->reg_model->refresh_rank();
+		$this->reg_model->refresh_rank(array("class_code"=>"2014-04-A"));
 	}
   
 //  public function form()

@@ -3871,6 +3871,7 @@ var App = function () {
                 }
             },
             "aoColumnDefs": [ {
+              "sWidth": '30px',
 		      "aTargets": [ 0 ],
 		      "sTitle": "類別",
 		      "mData": function ( source, type, val ) {
@@ -3922,7 +3923,7 @@ var App = function () {
 		    },
 		    {
 		      "aTargets": [ 6 ],
-		      "sTitle": "遞送方式",
+		      "sTitle": "遞送",
 		      "mData": function ( source, type, val ) {
 		      	var display_str = "";
 				if(source['receipt_delivery_way']=='pickup')
@@ -3945,6 +3946,7 @@ var App = function () {
 		      }
 		    },
 		    {
+		      "sWidth": '60px',
 		      "aTargets": [ 7 ],
 		      "sTitle": "掛號函件執據號",
 		      "mData": function ( source, type, val ) {
@@ -3960,6 +3962,7 @@ var App = function () {
 		    },
 		    {
 		      "aTargets": [ 9 ],
+		      "sWidth": '50px',
 		      "sTitle": "動作",
 		      "mData": function ( source, type, val ) {
 	      		if(source['receipt_checkpoint']=='initialized')

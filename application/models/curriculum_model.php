@@ -252,7 +252,7 @@ class Curriculum_model extends MY_Model {
 		$this->curriculum_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.lesson_prof_ID","LEFT")
 							->join($sJoinTable['class'],"{$sJoinTable['class']}.class_ID = $sTable.class_ID","LEFT")
 							->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = {$sJoinTable['class']}.course_ID","LEFT")
-							->join($sJoinTable['location'],"{$sJoinTable['location']}.location_ID = {$sJoinTable['class']}.class_location");
+							->join($sJoinTable['location'],"{$sJoinTable['location']}.location_ID = {$sJoinTable['class']}.class_location","LEFT");
 		if(isset($options['course_ID']))
 		{
 			$this->curriculum_db->where("{$sJoinTable['class']}.course_ID",$options['course_ID']);

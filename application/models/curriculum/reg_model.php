@@ -437,8 +437,8 @@ class Reg_model extends MY_Model {
 	}
 	
 	//重整排名
-	public function refresh_rank(){
-		$classes = $this->curriculum_model->get_class_list()->result_array();
+	public function refresh_rank($options = array()){
+		$classes = $this->curriculum_model->get_class_list($options)->result_array();
 		foreach($classes as $class){
 			$regs = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID']))->result_array();
 			foreach($regs as $key=>$reg){
