@@ -89,6 +89,23 @@ class Cash_model extends MY_Model {
 	}
 	public function update_receipt($data)
 	{
+		if(isset($data['receipt_type']))
+			$this->cash_db->set("receipt_type",$data['receipt_type']);
+		if(isset($data['receipt_title']))
+			$this->cash_db->set("receipt_title",$data['receipt_title']);
+		if(isset($data['receipt_contact_name']))
+			$this->cash_db->set("receipt_contact_name",$data['receipt_contact_name']);
+		if(isset($data['receipt_contact_tel']))
+			$this->cash_db->set("receipt_contact_tel",$data['receipt_contact_tel']);
+		if(isset($data['receipt_contact_email']))
+			$this->cash_db->set("receipt_contact_email",$data['receipt_contact_email']);
+		if(isset($data['receipt_contact_address']))
+			$this->cash_db->set("receipt_contact_address",$data['receipt_contact_address']);
+		if(isset($data['receipt_note']))
+			$this->cash_db->set("receipt_note",$data['receipt_note']);
+		if(isset($data['receipt_delivery_way']))
+			$this->cash_db->set("receipt_delivery_way",$data['receipt_delivery_way']);
+			
 		if(isset($data['receipt_ID']))
 		{
 			$this->cash_db->set("receipt_ID",$data['receipt_ID']);

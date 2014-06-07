@@ -277,6 +277,7 @@ $route['cash/receipt/query'] = 'cash/query_receipt';
 //$route['cash/receipt/form'] = 'cash/form_receipt';
 $route['cash/receipt/add'] = 'cash/add_receipt';
 $route['cash/receipt/update'] = 'cash/update_receipt';
+$route['cash/receipt/update/(:any)'] = 'cash/update_receipt/$1';
 $route['cash/receipt/del'] = 'cash/del_receipt';
 
 $route['cash/bill/list'] = 'cash/list_bill';

@@ -94,7 +94,9 @@ class Cash extends MY_Controller {
 		try{
 			$this->is_admin_login();
 			
-			$receipts = $this->cash_model->get_receipt_list()->result_array();
+			$input_data = $this->input->get(NULL,TRUE);
+			
+			$receipts = $this->cash_model->get_receipt_list($input_data)->result_array();
 			
 			$output['aaData'] = $receipts;
 			
@@ -192,7 +194,7 @@ class Cash extends MY_Controller {
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
 	}
-	public function update_receipt()
+	public function update_receipt($action = "")
 	{
 		try{
 			$this->is_admin_login();
@@ -216,33 +218,61 @@ class Cash extends MY_Controller {
 			}
 			
 			$this->load->model('cash/receipt_model');
-			if($receipt['receipt_checkpoint']=='initialized')
+			if($action == "open")
 			{
-				$this->form_validation->set_rules("receipt_ID","收據編號","required");
+				if($receipt['receipt_checkpoint']=='initialized')
+				{
+					$this->form_validation->set_rules("receipt_ID","收據編號","required");
+					if(!$this->form_validation->run())
+					{
+						throw new Exception(validation_errors(),WARNING_CODE);
+					}
+					
+					//寄信通知已開立
+					$this->receipt_model->open($input_data['receipt_no'],$input_data['receipt_ID']);
+				}else{
+					throw new Exception("此單非在可開立狀態",ERROR_CODE);
+				}
+			}else if($action == "delivery")
+			{
+				if($receipt['receipt_checkpoint']=='opened')
+				{
+					if($receipt['receipt_delivery_way']=='pickup')
+					{
+						//紀錄已領時間
+						$this->receipt_model->delivery_by_collection($input_data['receipt_no']);
+					}else if($receipt['receipt_delivery_way']=='post' && $receipt['receipt_type']=='receipt')//開收據才會由我們寄出
+					{
+						//通知已郵寄，並填入郵寄代碼
+						$this->form_validation->set_rules("receipt_remark","郵寄代碼","required");
+						if(!$this->form_validation->run())
+						{
+							throw new Exception(validation_errors(),WARNING_CODE);
+						}
+						$this->receipt_model->delivery_by_post($input_data['receipt_no'],$input_data['receipt_remark']);
+					}
+				}else{
+					throw new Exception("此單非在可遞送狀態",ERROR_CODE);
+				}
+			}else{
+				$this->form_validation->set_rules("receipt_type","收據類別","required");
+				$this->form_validation->set_rules("receipt_title","收據抬頭","required");
+				$this->form_validation->set_rules("receipt_delivery_way","收據作業","required");
+				if(isset($input_data['receipt_delivery_way'])&&$input_data['receipt_delivery_way']=='pickup')
+				{
+					$this->form_validation->set_rules("receipt_contact_email","電子郵件","required");
+				}else{
+					$this->form_validation->set_rules("receipt_contact_address","郵寄地址","required");
+				}
+				$this->form_validation->set_rules("receipt_contact_name","連絡人姓名","required");
+				$this->form_validation->set_rules("receipt_contact_tel","連絡電話","required");
+
 				if(!$this->form_validation->run())
 				{
 					throw new Exception(validation_errors(),WARNING_CODE);
 				}
 				
-				//寄信通知已開立
-				$this->receipt_model->open($input_data['receipt_no'],$input_data['receipt_ID']);
-			}
-			else if($receipt['receipt_checkpoint']=='opened')
-			{
-				if($receipt['receipt_delivery_way']=='pickup')
-				{
-					//紀錄已領時間
-					$this->receipt_model->delivery_by_collection($input_data['receipt_no']);
-				}else if($receipt['receipt_delivery_way']=='post' && $receipt['receipt_type']=='receipt')//開收據才會由我們寄出
-				{
-					//通知已郵寄，並填入郵寄代碼
-					$this->form_validation->set_rules("receipt_remark","郵寄代碼","required");
-					if(!$this->form_validation->run())
-					{
-						throw new Exception(validation_errors(),WARNING_CODE);
-					}
-					$this->receipt_model->delivery_by_post($input_data['receipt_no'],$input_data['receipt_remark']);
-				}
+				$this->receipt_model->update($input_data);
 			}
 			
 			echo $this->info_modal("更新成功");

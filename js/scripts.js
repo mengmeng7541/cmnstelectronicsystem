@@ -3962,21 +3962,21 @@ var App = function () {
 		    },
 		    {
 		      "aTargets": [ 9 ],
-		      "sWidth": '50px',
+		      "sWidth": '100px',
 		      "sTitle": "動作",
 		      "mData": function ( source, type, val ) {
 	      		if(source['receipt_checkpoint']=='initialized')
 	      		{
-					return "<button name='opening' type='button' class='btn btn-small btn-warning' value='"+source['receipt_no']+"' >開立通知</button>";
+					return "<button name='update' type='button' class='btn btn-small btn-warning' value='"+source['receipt_no']+"'>編輯</button>"+" <button name='opening' type='button' class='btn btn-small btn-primary' value='"+source['receipt_no']+"' >開立</button>";
 				}
 				else if(source['receipt_checkpoint']=='opened')
 				{
 					if(source['receipt_delivery_way']=='pickup')
 					{
-						return "<button name='collect' type='button' class='btn btn-small btn-warning' value='"+source['receipt_no']+"' >客戶自取</button>";
+						return "<button name='update' type='button' class='btn btn-small btn-warning' value='"+source['receipt_no']+"'>編輯</button>"+" <button name='collect' type='button' class='btn btn-small btn-primary' value='"+source['receipt_no']+"' >自取</button>";
 					}else if(source['receipt_delivery_way']=='post' && source['receipt_type']=='receipt')
 					{
-						return "<button name='delivery' type='button' class='btn btn-small btn-warning' value='"+source['receipt_no']+"' >郵件寄出</button>";
+						return "<button name='update' type='button' class='btn btn-small btn-warning' value='"+source['receipt_no']+"'>編輯</button>"+" <button name='delivery' type='button' class='btn btn-small btn-primary' value='"+source['receipt_no']+"' >寄出</button>";
 					}
 				}
 		        return '';
@@ -3987,11 +3987,48 @@ var App = function () {
             "fnServerParams": function ( aoData ) {
 		    },
         });
+        //收據變更
+        $("#table_cash_receipt_list").on("click","button[name='update']",function(){
+        	//SHOW出來
+        	$("#modal_cash_receipt_edit").modal('show');
+        	//取得收據資訊
+        	$.ajax({
+        		url: site_url+'cash/receipt/query',
+        		dataType: "json",
+        		data: {receipt_no:$(this).val()}
+        	}).done(function(jdata){
+        		if(jdata.aaData.length)
+        		{
+					var result = jdata.aaData[0];
+					$("#form_cash_receipt input[name='receipt_no']").val(result.receipt_no);
+					$("#form_cash_receipt input[name='receipt_type'][value='"+result.receipt_type+"']").prop('checked',true);
+					$("#form_cash_receipt input[name='receipt_type'][value='"+result.receipt_type+"']").trigger('click');//trigger also trigged uniform update function
+					$("#form_cash_receipt input[name='receipt_title']").val(result.receipt_title);
+					$("#form_cash_receipt input[name='receipt_delivery_way'][value='"+result.receipt_delivery_way+"']").prop('checked',true);
+					$("#form_cash_receipt input[name='receipt_delivery_way'][value='"+result.receipt_delivery_way+"']").trigger('click');
+					$("#form_cash_receipt input[name='receipt_contact_email']").val(result.receipt_contact_email);
+					$("#form_cash_receipt input[name='receipt_contact_address']").val(result.receipt_contact_address);
+					$("#form_cash_receipt input[name='receipt_contact_name']").val(result.receipt_contact_name);
+					$("#form_cash_receipt input[name='receipt_contact_tel']").val(result.receipt_contact_tel);
+					$("#form_cash_receipt input[name='receipt_contact_note']").val(result.receipt_contact_note);
+				}
+        	});
+        });
+        //收據變更確認
+        $("#modal_cash_receipt_edit").on("click","button[name='update']",function(){
+        	var form = $("#form_cash_receipt").submit();
+        	var jqXHR = form.data('jqxhr');
+        	jqXHR.done(function(){
+        		table_cash_receipt_list.fnReloadAjax(null,null,true);
+        	});
+        });
         //收據開立
         $("#table_cash_receipt_list").on("click","button[name='opening']",function(){
         	$("#form_cash_receipt_opening input[name='receipt_no']").val($(this).val());
+        	//SHOW出來
         	$("#modal_cash_receipt_opening_form").modal('show');
         });
+        //收據開立確認
         $("#modal_cash_receipt_opening_form").on("click","button[name='confirm_opening']",function(){
         	var form = $("#form_cash_receipt_opening").submit();
         	var jqXHR = form.data('jqxhr');
@@ -4002,7 +4039,7 @@ var App = function () {
         //客戶前來自取
          $("#table_cash_receipt_list").on("click","button[name='collect']",function(){
         	$.ajax({
-        		url: site_url+'cash/receipt/update',
+        		url: site_url+'cash/receipt/update/delivery',
         		data: {receipt_no:$(this).val()},
         		type: "post",
         		beforeSend: function(){

@@ -18,7 +18,7 @@ class Receipt_model extends MY_Model {
 		$data['account_start_time'] = date("Y-m-d H:i:s");
 		$account_no = $this->cash_model->add_account(elements(array(
 			"account_boss","account_type","account_amount","account_opened_by","account_opening_time","account_start_time",
-		),$data),NULL);
+		),$data,NULL));
 		
 		$data['receipt_initialized_by'] = $this->session->userdata('ID');
 		$data['receipt_initialization_time'] = date("Y-m-d H:i:s");
@@ -26,14 +26,16 @@ class Receipt_model extends MY_Model {
 		$data['receipt_checkpoint'] = "initialized";
 		$receipt_no = $this->cash_model->add_receipt(elements(array(
 			"receipt_type","receipt_ID","receipt_title","receipt_initialized_by","receipt_initialization_time","receipt_contact_name","receipt_contact_email","receipt_contact_tel","receipt_contact_address","receipt_note","receipt_delivery_way","receipt_account","receipt_checkpoint"
-		),$data),NULL);
+		),$data,NULL));
 		
 		return $account_no;
 	}
-//	public function update($data)
-//	{
-//		
-//	}
+	public function update($data)
+	{
+		$this->cash_model->update_receipt(elements(array(
+			"receipt_type","receipt_ID","receipt_title","receipt_contact_name","receipt_contact_email","receipt_contact_tel","receipt_contact_address","receipt_note","receipt_delivery_way","receipt_no"
+		),$data,NULL));
+	}
 	public function open($receipt_no,$receipt_ID){
 		$this->cash_model->update_receipt(array(
 			"receipt_no"=>$receipt_no,
