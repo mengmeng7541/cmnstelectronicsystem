@@ -210,6 +210,7 @@ class Curriculum extends MY_Controller {
 				if(!empty($input_data['pre_course_ID'])){
 					$data = array();
 					foreach($input_data['pre_course_ID'] as $pre_course_ID){
+						if(empty($pre_course_ID)) continue;
 						$data[] = array("course_ID"=>$insert_ID,
 										"pre_course_ID"=>$pre_course_ID);
 					}
