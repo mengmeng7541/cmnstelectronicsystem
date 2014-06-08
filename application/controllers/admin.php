@@ -401,7 +401,6 @@ class Admin extends MY_Controller {
 	}
   //-----------------------------------------------------------------------------
   public function clock(){
-  	
 	$this->load->view('admin/clock',$this->data);
   }
 }
