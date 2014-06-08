@@ -27,7 +27,7 @@
 	                                    <input id="start_date" type="text" class="input-small date-picker" value="<?=date("Y-m-d",strtotime("-1 day"));?>"/>
 										<input id="start_time" type="text" class="input-small timepicker-24" value="<?=date("H:i:s");?>"/>
 										~
-										<input id="end_date" type="text" class="input-small date-picker" value="<?=date("Y-m-d",strtotime("+2 day"));?>"/>
+										<input id="end_date" type="text" class="input-small date-picker" value="<?=date("Y-m-d");?>"/>
 										<input id="end_time" type="text" class="input-small timepicker-24" value="<?=date("H:i:s");?>"/>
 	                                </div>
 	                            </div>
