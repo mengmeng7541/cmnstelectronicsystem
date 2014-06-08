@@ -1546,8 +1546,6 @@ class Facility extends MY_Controller {
 			if(!empty($input_data['subject']) && $input_data['subject'] == "外部維修")
 			{
 				$this->form_validation->set_rules("content","描述","required");
-//				$this->form_validation->set_rules("maintainer_name","廠商","required");
-//				$this->form_validation->set_rules("fees","費用","required");
 			}
 			if(!$this->form_validation->run())
 			{
@@ -1580,61 +1578,36 @@ class Facility extends MY_Controller {
 				"team_ID"=>"common_lab",
 				"status_ID"=>"section_chief"
 			))->result_array();
+				
+			//確認選擇了連續時段
+			$this->booking_model->check_input_time($input_data['booking_time'],$facility['unit_sec']);
 			
-//			if($input_data['subject'] == "外部維修")
-//			{
-//				//寫入維修單
-//				$data = array("applicant_ID"=>$this->session->userdata('ID'),
-//						  "facility_ID"=>$input_data['facility_ID'],
-//						  "subject"=>$input_data['subject'],
-//						  "content"=>$input_data['content'],
-//						  "maintainer_name"=>$input_data['maintainer_name'],
-//						  "fees"=>$input_data['fees']);
-//				$serial_no = $this->facility_model->add_maintenance($data);
-				
-				//寄信通知組長審核
-//				foreach($managers as $manager){
-//					$this->email->to($manager['admin_email']);
-//					$this->email->subject("成大微奈米科技研究中心 -儀器維修調教通知-");
-//					$this->email->message("{$manager['admin_name']} 您好：<br>
-//											中心儀器：{$facility['cht_name']}<br>
-//											被該管理員 {$user_profile['name']} 申請外部維修，請<a href=''>點此</a>審查，謝謝");
-//					$this->email->send();
-//				}
-				
-//			}else{
-				
-				//確認選擇了連續時段
-				$this->booking_model->check_input_time($input_data['booking_time'],$facility['unit_sec']);
-				
-				//寫入預約紀錄
-				$min_time = min($input_data['booking_time']);
-				$max_time = max($input_data['booking_time'])+$facility['unit_sec'];
-				$booking_ID = $this->booking_model->add($facility['ID'],$this->session->userdata('ID'),$min_time,$max_time,"maintenance");
-				
-				//寫入維修單並取得維修調教單號
-				$data = array("applicant_ID"=>$this->session->userdata('ID'),
-						  "facility_ID"=>$input_data['facility_ID'],
-						  "subject"=>$input_data['subject'],
-						  "content"=>$input_data['content'],
-						  "booking_ID"=>$booking_ID,
-						  "result"=>"1");
-				$serial_no = $this->facility_model->add_maintenance($data);
-				
-				//寄信通知組長
-				foreach($managers as $manager){
-					$this->email->to($manager['admin_email']);
-					$this->email->subject("成大微奈米科技研究中心 -儀器維修調教通知-");
-					$this->email->message("{$manager['team_name']} {$manager['status_name']} {$manager['admin_name']} 您好：<br>
-											中心儀器：{$facility['cht_name']}<br>
-											被該儀器管理員 {$user_profile['name']} 申請 {$input_data['subject']}<br>
-											申請原因： {$input_data['content']}<br>
-											使用時段為：".date("Y-m-d H:i",$min_time)."~".date("Y-m-d H:i",$max_time)."<br>
-											系統特此通知，謝謝");
-					$this->email->send();
-				}
-				
-//			}
+			//寫入預約紀錄
+			$min_time = min($input_data['booking_time']);
+			$max_time = max($input_data['booking_time'])+$facility['unit_sec'];
+			$booking_ID = $this->booking_model->add($facility['ID'],$this->session->userdata('ID'),$min_time,$max_time,"maintenance");
+			
+			//寫入維修單並取得維修調教單號
+			$data = array("applicant_ID"=>$this->session->userdata('ID'),
+					  "facility_ID"=>$input_data['facility_ID'],
+					  "subject"=>$input_data['subject'],
+					  "content"=>$input_data['content'],
+					  "booking_ID"=>$booking_ID,
+					  "result"=>"1");
+			$serial_no = $this->facility_model->add_maintenance($data);
+			
+			//寄信通知組長
+			foreach($managers as $manager){
+				$this->email->to($manager['admin_email']);
+				$this->email->subject("成大微奈米科技研究中心 -儀器維修調教通知-");
+				$this->email->message("{$manager['team_name']} {$manager['status_name']} {$manager['admin_name']} 您好：<br>
+										中心儀器：{$facility['cht_name']}<br>
+										被該儀器管理員 {$user_profile['name']} 申請 {$input_data['subject']}<br>
+										申請原因： {$input_data['content']}<br>
+										使用時段為：".date("Y-m-d H:i",$min_time)."~".date("Y-m-d H:i",$max_time)."<br>
+										系統特此通知，謝謝");
+				$this->email->send();
+			}
 			
 			echo $this->info_modal("新增成功","/facility/admin/booking/list/");	
 		}catch(Exception $e){

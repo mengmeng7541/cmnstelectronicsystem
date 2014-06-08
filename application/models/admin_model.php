@@ -146,6 +146,10 @@ class Admin_model extends MY_Model {
 			{$sJoinTable['user']}.name AS clock_user_name
 		");
 		$this->clock_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.clock_user_ID","LEFT");
+		if(isset($option['clock_ID']))
+		{
+			$this->clock_db->where("clock_ID",$option['clock_ID']);
+		}
 		if(isset($option['clock_user_ID']))
 			$this->clock_db->where("clock_user_ID",$option['clock_user_ID']);
 		if(isset($option['clock_start_time']))
