@@ -3503,6 +3503,6 @@ ul.amounts li {
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
-
-/*.datepicker
-{z-index:1151;}*/
+/*fix datepicker display under bootstrap modal*/
+.datepicker
+{z-index:1151;}

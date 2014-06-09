@@ -7,7 +7,7 @@ class Facility_model extends MY_Model {
 	{
 		parent::__construct();
 		$this->facility_db = $this->load->database('facility',TRUE);
-		$this->mssql_old_db = $this->load->database('order_machine',TRUE);
+//		$this->mssql_old_db = $this->load->database('order_machine',TRUE);
 	}
 	//-----------------------------儀器-------------------------------------
 	/**
