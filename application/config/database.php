@@ -51,7 +51,7 @@ $active_record = TRUE;
 
 
 $db['order_machine']['hostname'] = 'dblib:host=140.116.176.21;dbname=order_machine';
-#$db['default']['port'] = 1433;
+$db['default']['port'] = 1433;
 $db['order_machine']['username'] = 'sa';
 $db['order_machine']['password'] = '601877';
 $db['order_machine']['database'] = 'order_machine';
@@ -66,9 +66,9 @@ $db['order_machine']['dbcollat'] = 'utf8_general_ci';
 $db['order_machine']['swap_pre'] = '';
 $db['order_machine']['autoinit'] = TRUE;
 $db['order_machine']['stricton'] = FALSE;
-
+//
 $db['order_class']['hostname'] = 'dblib:host=140.116.176.21;dbname=order_class';
-#$db['default']['port'] = 1433;
+$db['default']['port'] = 1433;
 $db['order_class']['username'] = 'sa';
 $db['order_class']['password'] = '601877';
 $db['order_class']['database'] = 'order_class';
@@ -83,23 +83,23 @@ $db['order_class']['dbcollat'] = 'utf8_general_ci';
 $db['order_class']['swap_pre'] = '';
 $db['order_class']['autoinit'] = TRUE;
 $db['order_class']['stricton'] = FALSE;
-
-$db['work']['hostname'] = 'dblib:host=140.116.176.21;dbname=work';
-#$db['default']['port'] = 1433;
-$db['work']['username'] = 'sa';
-$db['work']['password'] = '601877';
-$db['work']['database'] = 'work';
-$db['work']['dbdriver'] = 'pdo';
-$db['work']['dbprefix'] = '';
-$db['work']['pconnect'] = FALSE;
-$db['work']['db_debug'] = TRUE;
-$db['work']['cache_on'] = FALSE;
-$db['work']['cachedir'] = '';
-$db['work']['char_set'] = 'utf8';
-$db['work']['dbcollat'] = 'utf8_general_ci';
-$db['work']['swap_pre'] = '';
-$db['work']['autoinit'] = TRUE;
-$db['work']['stricton'] = FALSE;
+//
+//$db['work']['hostname'] = 'dblib:host=140.116.176.21;dbname=work';
+//#$db['default']['port'] = 1433;
+//$db['work']['username'] = 'sa';
+//$db['work']['password'] = '601877';
+//$db['work']['database'] = 'work';
+//$db['work']['dbdriver'] = 'pdo';
+//$db['work']['dbprefix'] = '';
+//$db['work']['pconnect'] = FALSE;
+//$db['work']['db_debug'] = TRUE;
+//$db['work']['cache_on'] = FALSE;
+//$db['work']['cachedir'] = '';
+//$db['work']['char_set'] = 'utf8';
+//$db['work']['dbcollat'] = 'utf8_general_ci';
+//$db['work']['swap_pre'] = '';
+//$db['work']['autoinit'] = TRUE;
+//$db['work']['stricton'] = FALSE;
 
 
 

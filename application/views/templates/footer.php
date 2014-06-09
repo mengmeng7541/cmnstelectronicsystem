@@ -39,6 +39,8 @@
    <!-- BEGIN JAVASCRIPTS -->    
    
    <!-- Load javascripts at bottom, this will reduce page load time -->
+   <script src="<?=base_url();?>js/angular.min.js"></script>
+   
    <script src="<?=base_url();?>js/jquery.validate.js"></script>
    <script src="<?=base_url();?>assets/jquery-slimscroll/jquery-ui-1.9.2.custom.min.js"></script>
    

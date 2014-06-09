@@ -1,8 +1,8 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?>
-<!DOCTYPE html>
+<!DOCTYPE html >
 <!--[if IE 8]> <html lang="zh-tw" class="ie8"> <![endif]-->
 <!--[if IE 9]> <html lang="zh-tw" class="ie9"> <![endif]-->
-<!--[if !IE]><!--> <html lang="zh-tw"> <!--<![endif]-->
+<!--[if !IE]><!--> <html lang="zh-tw" ng-app> <!--<![endif]-->
 <?php header('X-UA-Compatible: IE=edge'); ?>
 <!-- BEGIN HEAD -->
 <head>
