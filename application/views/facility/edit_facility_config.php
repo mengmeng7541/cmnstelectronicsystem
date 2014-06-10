@@ -10,7 +10,7 @@
                         <div class="widget-title">
                             <h4><i class="icon-reorder"></i>儀器設定</h4>
                         </div>
-                        <div class="widget-body form">
+                        <div class="widget-body form" ng-controller="facility_config_edit">
 							<form action="<?=$action;?>" id="form_facility_config" class="form-horizontal" method="POST">
 								<div class="accordion" id="accordion1">
 									<div class="accordion-group">
@@ -145,18 +145,12 @@
 												<div class="control-group">
 										           <label class="control-label">停機時間</label>
 										           <div class="controls">
-										              
-												      <input name="pause_start_date" type="text" value="<?=empty($pause_start_date)?"":$pause_start_date;?>" class="date-picker input-small" ng-model="outage_start_date" />
-													  <input name="pause_start_time" type="text" value="<?=empty($pause_start_time)?"":$pause_start_time;?>" class="timepicker-24-30m input-mini" />
-													  ~
-													  <input name="pause_end_date" type="text" value="<?=empty($pause_end_date)?"":$pause_end_date;?>" class="date-picker input-small" />
-													  <input name="pause_end_time" type="text" value="<?=empty($pause_end_time)?"":$pause_end_time;?>" class="timepicker-24-30m input-mini" />
 													  <button type="button" id="open_facility_outage_modal" value="" class="btn btn-primary" data-toggle="modal" data-target="#modal_facility_outage">新增</button>
 										           </div>
 										           
 												</div>
 												<div class="control-group row-fluid">
-												   <table class="table table-striped table-bordered">
+												   <table id="table_facility_outage_list" class="table table-striped table-bordered">
 										              <thead>
 										                 <tr>
 										                 	<th>停機起始時間</th>
@@ -249,6 +243,42 @@
 									<a href="<?=site_url();?>/facility/admin/facility/list" class="btn btn-primary">取消</a>
 								</div>
 							</form>
+							<div id="modal_facility_outage" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							    <div class="modal-header">
+							        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+							        <h3 id="myModalLabel">儀器停機</h3>
+							    </div>
+							    <div class="modal-body">
+							        <form id="form_facility_outage" action="<?=site_url('facility/admin/outage/update');?>" method="POST" class="form-horizontal">
+							        	<input type="hidden" name="outage_no" value=""/>
+							        	<input type="hidden" name="facility_SN" value="<?=empty($ID)?"":$ID;?>"/>
+							        	<div class="control-group ">
+								           <label class="control-label">停機起始時間</label>
+								           <div class="controls ">
+										      <input name="outage_start_date" type="text" value="<?=empty($outage_start_time)?date("Y-m-d"):date("Y-m-d",$outage_start_time);?>" class="date-picker input-small" />
+											  <input name="outage_start_time" type="text" value="<?=empty($outage_start_time)?date("H:i"):date("H:i",$outage_start_time);?>" class="timepicker-24-30m input-mini" />
+								           </div>
+										</div>
+										<div class="control-group ">
+								           <label class="control-label">停機結束時間(選填)</label>
+								           <div class="controls ">
+											  <input name="outage_end_date" type="text" value="<?=empty($outage_end_time)?"":date("Y-m-d",$outage_end_time);?>" class="date-picker input-small" />
+											  <input name="outage_end_time" type="text" value="<?=empty($outage_end_time)?"":date("H:i",$outage_end_time);?>" class="timepicker-24-30m input-mini" />
+								           </div>
+										</div>
+										<div class="control-group ">
+								           <label class="control-label">停機原因</label>
+								           <div class="controls ">
+										      <input name="outage_remark" type="text" value="<?=isset($outage_remark)?$outage_remark:"";?>" class="span12" />
+								           </div>
+										</div>
+							        </form>
+							    </div>
+							    <div class="modal-footer">
+									<button type='button' name="confirm_outage" class='btn btn-warning' data-dismiss='modal'>確認</button>
+									<button type='button' class='btn btn-primary' data-dismiss='modal'>取消</button>
+							    </div>
+							</div>
                         </div>
                     </div>
                     <!-- END EXAMPLE TABLE widget-->
@@ -257,34 +287,11 @@
             <!-- END ADVANCED TABLE widget-->
     </div>
 </div>
-<div id="modal_facility_outage" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel">儀器停機</h3>
-    </div>
-    <div class="modal-body">
-        <form id="" action="" method="POST" class="form-horizontal">
-        	<div class="control-group ">
-	           <label class="control-label">停機起始時間</label>
-	           <div class="controls ">
-			      <input name="pause_start_date" type="text" value="{{outage_start_date}}" class="date-picker input-small" />
-				  <input name="pause_start_time" type="text" value="<?=empty($pause_start_time)?"":$pause_start_time;?>" class="timepicker-24-30m input-mini" />
-	           </div>
-			</div>
-			<div class="control-group ">
-	           <label class="control-label">停機結束時間</label>
-	           <div class="controls ">
-				  <input name="pause_end_date" type="text" value="<?=empty($pause_end_date)?"":$pause_end_date;?>" class="date-picker input-small" />
-				  <input name="pause_end_time" type="text" value="<?=empty($pause_end_time)?"":$pause_end_time;?>" class="timepicker-24-30m input-mini" />
-	           </div>
-			</div>
-        </form>
-    </div>
-    <div class="modal-footer">
-		<button type='button' id="" name="" class='btn btn-warning' data-dismiss='modal'>確認</button>
-		<button type='button' class='btn btn-primary' data-dismiss='modal'>取消</button>
-    </div>
-</div>		
-
-
+<script type="text/javascript">
+	$(document).ready(function(){
+		cmnstApp.controller("facility_config_edit",['$scope',function($scope){
+			
+		}]);
+	});
+</script>
 

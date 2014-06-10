@@ -145,6 +145,10 @@ $route['facility/admin/maintenance/add'] = 'facility/add_maintenance';
 $route['facility/admin/maintenance/update'] = 'facility/update_maintenance';
 $route['facility/admin/maintenance/del'] = 'facility/del_maintenance';
 
+$route['facility/admin/outage/query'] = 'facility/query_outage';
+$route['facility/admin/outage/update'] = 'facility/update_outage';
+$route['facility/admin/outage/del/(:num)'] = 'facility/del_outage/$1';
+
 $route['facility/admin/card/list'] = 'facility/list_card_application';
 $route['facility/admin/card/query'] = 'facility/query_card_application';
 $route['facility/user/card/form'] = 'facility/edit_card_application';
