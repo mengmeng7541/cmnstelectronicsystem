@@ -473,6 +473,66 @@ class Facility_model extends MY_Model {
 		$this->facility_db->where("serial_no",$input_data['serial_no']);
 		$this->facility_db->update("facility_maintenance");
 	}
+	//-----------------------------儀器停機紀錄-------------------------
+	public function get_outage_list($options = array())
+	{
+		$sTable = "facility_outage";
+		if(isset($options['outage_SN']))
+		{
+			$this->facility_db->where("outage_SN",$options['outage_SN']);
+		}
+		if(isset($options['facility_SN']))
+		{
+			$this->facility_db->where("facility_SN",$options['facility_SN']);
+		}
+		if(isset($options['outage_start_time']))
+		{
+			$this->facility_db->where("(outage_end_time IS NULL OR outage_end_time >= '{$options['outage_start_time']}')",NULL,FALSE);
+		}
+		if(isset($options['outage_end_time']))
+		{
+			$this->facility_db->where("outage_start_time <=",$options['outage_end_time']);
+		}
+		return $this->facility_db->get($sTable);
+	}
+	public function add_outage($data)
+	{
+		return $this->update_outage($data);
+	}
+	public function update_outage($data)
+	{
+		if(isset($data['facility_SN']))
+		{
+			$this->facility_db->set("facility_SN",$data['facility_SN']);
+		}
+		if(isset($data['outage_start_time']))
+		{
+			$this->facility_db->set("outage_start_time",$data['outage_start_time'])
+			->set("outage_started_by",$this->session->userdata('ID'))
+			->set("outage_start_timestamp",date("Y-m-d H:i:s"));
+		}
+		if(isset($data['outage_end_time']))
+		{
+			$this->facility_db->set("outage_end_time",$data['outage_end_time'])
+			->set("outage_ended_by",$this->session->userdata('ID'))
+			->set("outage_end_timestamp",date("Y-m-d H:i:s"));
+		}
+		$this->facility_db->set("outage_remark",$data['outage_remark']);
+		if(empty($data['outage_SN']))
+		{
+			$this->facility_db->insert("facility_outage");
+			return $this->facility_db->insert_id();
+		}else{
+			$this->facility_db->where("outage_SN",$data['outage_SN']);
+			$this->facility_db->update("facility_outage");
+		}
+		
+	}
+	public function del_outage($data = array())
+	{
+		$this->facility_db->where("outage_SN",$data['outage_SN']);
+		$this->facility_db->delete("facility_outage");
+	}
 	//----------------------------------儀器預約不計費查詢-------------------------------------
 	public function get_booking_nocharge_list($input_data = array())
 	{

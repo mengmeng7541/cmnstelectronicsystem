@@ -1694,6 +1694,90 @@ class Facility extends MY_Controller {
 	}
 	//END----------------------------儀器調教維修------------------------------
 	
+	//--------------------------儀器停機------------------------------
+//	public function list_outage()
+//	{
+//		
+//	}
+	public function query_outage($SN = NULL)
+	{
+		try{
+			$this->is_admin_login();
+			
+			$input_data = $this->input->get(NULL,TRUE);
+			
+			$outages = $this->facility_model->get_outage_list($input_data)->result_array();
+			
+			$output['aaData'] = array();
+			foreach($outages as $outage)
+			{
+				$row = array();
+				$row[] = $outage['outage_start_time'];
+				$row[] = $outage['outage_end_time'];
+				$row[] = $outage['outage_remark'];
+				$display = array();
+				$display[] = form_button("edit","編輯","class='btn btn-small btn-warning' value='{$outage['outage_SN']}'");
+				$display[] = form_button("del","刪除","class='btn btn-small btn-danger' value='{$outage['outage_SN']}'");
+				$row[] = implode(' ',$display);
+				$output['aaData'][] = $row;
+			}
+			
+			echo json_encode($output);
+		}catch(Exception $e){
+			
+		}
+	}
+	public function update_outage()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			$this->form_validation->set_rules("facility_SN","儀器編號","required");
+			$this->form_validation->set_rules("outage_start_date","停機起始日期","required");
+			$this->form_validation->set_rules("outage_start_time","停機起始時間","required");
+			$this->form_validation->set_rules("outage_remark","停機原因","required");
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			$this->load->model('facility/outage_model');
+			if(empty($input_data['outage_SN']))
+			{
+				$this->outage_model->add_outage(
+					$input_data['facility_SN'],
+					$input_data['outage_remark'],
+					"{$input_data['outage_start_date']} {$input_data['outage_start_time']}",
+					!empty($input_data['outage_end_date'])&&!empty($input_data['outage_end_time'])?"{$input_data['outage_end_date']} {$input_data['outage_end_time']}":NULL);
+					
+				echo $this->info_modal("新增成功");
+			}else{
+//				$this->outage_model->update_outage($input_data['facility_SN']);
+
+				echo $this->info_modal("更新成功");
+			}
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+	}
+	public function del_outage($SN = "")
+	{
+		try{
+			$this->is_admin_login();
+			
+			$SN = $this->security->xss_clean($SN);
+			
+			$this->load->model('facility/outage_model');
+			$this->outage_model->del_outage($SN);
+			
+			echo $this->info_modal("刪除成功");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+	}
+	
   	//---------------------------------------門禁卡機控制------------------------------------------
   	public function list_access_card()
 	{
