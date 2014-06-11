@@ -1699,28 +1699,27 @@ class Facility extends MY_Controller {
 //	{
 //		
 //	}
-	public function query_outage($SN = NULL)
+	public function query_outage()
 	{
 		try{
 			$this->is_admin_login();
 			
 			$input_data = $this->input->get(NULL,TRUE);
-			
 			$outages = $this->facility_model->get_outage_list($input_data)->result_array();
 			
-			$output['aaData'] = array();
-			foreach($outages as $outage)
-			{
-				$row = array();
-				$row[] = $outage['outage_start_time'];
-				$row[] = $outage['outage_end_time'];
-				$row[] = $outage['outage_remark'];
-				$display = array();
-				$display[] = form_button("edit","編輯","class='btn btn-small btn-warning' value='{$outage['outage_SN']}'");
-				$display[] = form_button("del","刪除","class='btn btn-small btn-danger' value='{$outage['outage_SN']}'");
-				$row[] = implode(' ',$display);
-				$output['aaData'][] = $row;
-			}
+			$output['aaData'] = $outages;
+//			foreach($outages as $outage)
+//			{
+//				$row = array();
+//				$row[] = $outage['outage_start_time'];
+//				$row[] = $outage['outage_end_time'];
+//				$row[] = $outage['outage_remark'];
+//				$display = array();
+//				$display[] = form_button("edit","編輯","class='btn btn-small btn-warning' value='{$outage['outage_SN']}' ng-click='get_facility_outage()'");
+//				$display[] = form_button("del","刪除","class='btn btn-small btn-danger' value='{$outage['outage_SN']}'");
+//				$row[] = implode(' ',$display);
+//				$output['aaData'][] = $row;
+//			}
 			
 			echo json_encode($output);
 		}catch(Exception $e){

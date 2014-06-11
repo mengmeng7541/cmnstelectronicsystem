@@ -145,7 +145,7 @@
 												<div class="control-group">
 										           <label class="control-label">停機時間</label>
 										           <div class="controls">
-													  <button type="button" id="open_facility_outage_modal" value="" class="btn btn-primary" data-toggle="modal" data-target="#modal_facility_outage">新增</button>
+													  <button type="button" id="open_facility_outage_modal" value="" class="btn btn-primary" data-toggle="modal" data-target="#modal_facility_outage" ng-click="outage = null">新增</button>
 										           </div>
 										           
 												</div>
@@ -159,6 +159,16 @@
 										                 	<th>動作</th>
 										                 </tr>
 										              </thead>
+										              <tbody>
+										                 <tr ng-repeat="outage in outages">
+										                 	<td>{{outage.outage_start_time}}</td>
+										                 	<td>{{outage.outage_end_time}}</td>
+										                 	<td>{{outage.outage_remark}}</td>
+										                 	<td>
+										                 		<button type="button" class="btn btn-small btn-warning" ng-click="get_facility_outage(outage.outage_SN)" data-toggle="modal" data-target="#modal_facility_outage">編輯</button>
+										                 	</td>
+										                 </tr>
+										              </tbody>
 										           </table>
 												</div>
 												<div class="row-fluid">
@@ -250,26 +260,26 @@
 							    </div>
 							    <div class="modal-body">
 							        <form id="form_facility_outage" action="<?=site_url('facility/admin/outage/update');?>" method="POST" class="form-horizontal">
-							        	<input type="hidden" name="outage_no" value=""/>
+							        	<input type="hidden" name="outage_no" value="{{outage.outage_SN}}"/>
 							        	<input type="hidden" name="facility_SN" value="<?=empty($ID)?"":$ID;?>"/>
 							        	<div class="control-group ">
 								           <label class="control-label">停機起始時間</label>
 								           <div class="controls ">
-										      <input name="outage_start_date" type="text" value="<?=empty($outage_start_time)?date("Y-m-d"):date("Y-m-d",$outage_start_time);?>" class="date-picker input-small" />
-											  <input name="outage_start_time" type="text" value="<?=empty($outage_start_time)?date("H:i"):date("H:i",$outage_start_time);?>" class="timepicker-24-30m input-mini" />
+										      <input name="outage_start_date" type="text" value="{{outage.outage_start_time|date:'yyyy-MM-dd'}}" class="date-picker input-small" />
+											  <input name="outage_start_time" type="text" value="{{outage.outage_start_time|date:'HH:mm'}}" class="timepicker-24-30m input-mini" />
 								           </div>
 										</div>
 										<div class="control-group ">
 								           <label class="control-label">停機結束時間(選填)</label>
 								           <div class="controls ">
-											  <input name="outage_end_date" type="text" value="<?=empty($outage_end_time)?"":date("Y-m-d",$outage_end_time);?>" class="date-picker input-small" />
-											  <input name="outage_end_time" type="text" value="<?=empty($outage_end_time)?"":date("H:i",$outage_end_time);?>" class="timepicker-24-30m input-mini" />
+											  <input name="outage_end_date" type="text" value="{{outage.outage_end_time|date:'yyyy-MM-dd'}}" class="date-picker input-small" />
+											  <input name="outage_end_time" type="text" value="{{outage.outage_end_time|date:'HH:mm'}}" class="timepicker-24-30m input-mini" />
 								           </div>
 										</div>
 										<div class="control-group ">
 								           <label class="control-label">停機原因</label>
 								           <div class="controls ">
-										      <input name="outage_remark" type="text" value="<?=isset($outage_remark)?$outage_remark:"";?>" class="span12" />
+										      <input name="outage_remark" type="text" value="{{outage.outage_remark}}" class="span12" />
 								           </div>
 										</div>
 							        </form>
@@ -289,9 +299,23 @@
 </div>
 <script type="text/javascript">
 	$(document).ready(function(){
-		cmnstApp.controller("facility_config_edit",['$scope',function($scope){
-			
-		}]);
+		cmnstApp.controller("facility_config_edit",function($scope,$http){
+			$http.get('/index.php/facility/admin/outage/query').success(function(data){
+				$scope.outages = data.aaData;
+			});
+			$scope.get_facility_outage = function(SN)
+			{
+				$http.get('/index.php/facility/admin/outage/query',{params:{outage_SN:SN}}).success(function(data){
+					if(data.aaData.length)
+					{
+						data.aaData[0].outage_start_time = Date.parse(data.aaData[0].outage_start_time);
+						data.aaData[0].outage_end_time = Date.parse(data.aaData[0].outage_end_time);
+						$scope.outage = data.aaData[0];
+					}
+					
+				});
+			}
+		});
 	});
 </script>
 
