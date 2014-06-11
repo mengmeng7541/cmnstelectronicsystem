@@ -2467,37 +2467,37 @@ var App = function () {
 			}
 		});
 		//------------------------儀器停機表單--------------------------
-		var table_facility_outage_list = $("#table_facility_outage_list").dataTable({
-			"sAjaxSource": site_url+"facility/admin/outage/query/",
-            "sDom": "t",
-            "sPaginationType": "bootstrap",
-            "oLanguage": {
-                "sLengthMenu": "_MENU_ records per page",
-                "oPaginate": {
-                    "sPrevious": "Prev",
-                    "sNext": "Next"
-                }
-            },
+//		var table_facility_outage_list = $("#table_facility_outage_list").dataTable({
+//			"sAjaxSource": site_url+"facility/admin/outage/query/",
+//            "sDom": "t",
+//            "sPaginationType": "bootstrap",
+//            "oLanguage": {
+//                "sLengthMenu": "_MENU_ records per page",
+//                "oPaginate": {
+//                    "sPrevious": "Prev",
+//                    "sNext": "Next"
+//                }
+//            },
 //			"aaSorting": [[4,'desc']],
-			"fnServerParams": function ( aoData ) {
-				aoData.push(
-					{"name":"facility_SN","value":$("#form_facility_config input[name='ID']").val()}
-				);
-	        },
-		});
-		$("#modal_facility_outage").on("click","button[name='confirm_outage']",function(){
-			$("#form_facility_outage").submit().data('jqxhr').done(function(data){
-				showResponse(data);
-				table_facility_outage_list.fnReloadAjax(null,null,true);
-			});
-		});
-		$("#table_facility_outage_list").on("click","button[name='edit']",function(){
-			$.ajax({
-				url: site_url+'facility/admin/outage/query/'+$(this).val(),
-			}).done(function(data){
-				$("#modal_facility_outage").modal('show');
-			});
-		});
+//			"fnServerParams": function ( aoData ) {
+//				aoData.push(
+//					{"name":"facility_SN","value":$("#form_facility_config input[name='ID']").val()}
+//				);
+//	        },
+//		});
+//		$("#modal_facility_outage").on("click","button[name='confirm_outage']",function(){
+//			$("#form_facility_outage").submit().data('jqxhr').done(function(data){
+//				showResponse(data);
+//				table_facility_outage_list.fnReloadAjax(null,null,true);
+//			});
+//		});
+//		$("#table_facility_outage_list").on("click","button[name='edit']",function(){
+//			$.ajax({
+//				url: site_url+'facility/admin/outage/query/'+$(this).val(),
+//			}).done(function(data){
+//				$("#modal_facility_outage").modal('show');
+//			});
+//		});
 		$("#table_facility_outage_list").on("click","button[name='del']",function(){
 			$.ajax({
 				url: site_url+'facility/admin/outage/del/'+$(this).val(),
