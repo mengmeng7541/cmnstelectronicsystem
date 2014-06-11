@@ -32,6 +32,7 @@
 									<th>所屬單位</th>
 									<th>電話</th>
 									<th>EMAIL</th>
+									<th>新進到期</th>
 									<th width="100"></th>
 								</tr>
 							</thead>

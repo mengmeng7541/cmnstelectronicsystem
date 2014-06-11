@@ -277,6 +277,12 @@ class User_model extends MY_Model {
 		{
 			$this->common_db->set("tel",$data['tel']);
 		}
+		if(empty($data['new_expiration_time']))
+		{
+			$this->common_db->set("new_expiration_time",NULL);
+		}else{
+			$this->common_db->set("new_expiration_time",$data['new_expiration_time']);
+		}
 		if(!isset($data['serial_no']))
 		{
 			$this->common_db->insert("boss_profile");

@@ -67,7 +67,14 @@
 	                              <span class="help-inline"></span>
 	                           </div>
 	                        </div>
-	                        
+	                        <h4>進階資料</h4>
+	                        <div class="control-group">
+	                           <label class="control-label">新進到期日</label>
+	                           <div class="controls">
+	                              <input type="text" class="span6 date-picker" name="new_expiration_time" value="<?=isset($new_expiration_time)?$new_expiration_time:"";?>" />
+	                              <span class="help-inline"></span>
+	                           </div>
+	                        </div>
 						   <div class="form-actions">
 							  <input type="submit" class="btn btn-primary" value="送出" />
 						   </div>

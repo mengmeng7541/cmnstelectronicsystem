@@ -460,6 +460,7 @@ class User extends MY_Controller {
 				$row[] = $boss['department'];
 				$row[] = $boss['tel'];
 				$row[] = $boss['email'];
+				$row[] = $boss['new_expiration_time'];
 				$display = array();
 				$display[] = anchor('boss/edit/'.$boss['serial_no'],"編輯","class='btn btn-small btn-warning'");
 				$display[] = form_button("del","刪除","class='btn btn-small btn-danger' value='{$boss['serial_no']}'");
