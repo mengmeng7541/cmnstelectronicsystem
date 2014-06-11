@@ -89,7 +89,7 @@
 							<div class="control-group">
 					            <label class="control-label">開課狀況</label>
 					            <div class="controls">
-						            <?=form_dropdown("class_state",array("normal"=>"正常","canceled"=>"停開","special"=>"加開"),isset($class_state)?$class_state:"");?>
+						            <?=form_dropdown("class_state",isset($class_state_ID_select_options)?$class_state_ID_select_options:array(),isset($class_state)?$class_state:"");?>
 								</div>
 							</div>
 							<div class="control-group">

@@ -119,4 +119,14 @@ class Class_model extends MY_Model {
 		);
 		return $output;
 	}
+	
+	public function get_class_state_ID_select_options()
+	{
+		$states = $this->curriculum_db->get("enum_class_state")->result_array();
+		$output = array(''=>'');
+		foreach($states as $state){
+			$output[$state['state_ID']] = $state['state_name'];
+		}
+		return $output;
+	}
 }

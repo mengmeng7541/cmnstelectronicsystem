@@ -2,7 +2,6 @@
 class Curriculum extends MY_Controller {
 	private $data = array();
 	
-	private static $class_state = array(""=>"","normal"=>"正常","canceled"=>"停開","special"=>"加開");
 	private static $booking_state = array(""=>"","normal"=>"正常","additional"=>"額外");
 	public function __construct()
 	{
@@ -333,7 +332,7 @@ class Curriculum extends MY_Controller {
 					$row[] = $class['prof_name'];
 					$reg_participants = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID']))->num_rows();
 					$row[] = "$reg_participants/{$class['class_max_participants']}";
-					$row[] = self::$class_state[$class['class_state']];
+					$row[] = $class['class_state_name'];
 					$row[] = $class['class_remark'];
 					
 					if(!$this->curriculum_model->is_super_admin())
@@ -382,7 +381,7 @@ class Curriculum extends MY_Controller {
 					$row[] = $class['class_start_time'];
 					$reg_participants = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID']))->num_rows();
 					$row[] = "$reg_participants/{$class['class_max_participants']}";
-					$row[] = self::$class_state[$class['class_state']];
+					$row[] = $class['class_state_name'];
 					$row[] = $class['class_remark'];
 					
 					$display = array();
@@ -479,6 +478,9 @@ class Curriculum extends MY_Controller {
 			}
 			
 			$this->data['course_ID_select_options'] = $this->course_model->get_course_ID_select_options();				
+			//取得課程狀態
+			$this->data['class_state_ID_select_options'] = $this->class_model->get_class_state_ID_select_options();
+			
 			//取得地點資訊
 			$this->load->model('common_model');
 			$this->data['location_name_select_options'] = $this->common_model->get_location_ID_select_options();

@@ -102,7 +102,7 @@ class Curriculum_model extends MY_Model {
 	public function get_class_list($options = array())
 	{
 		$sTable = "class_list";
-		$sJoinTable = array("course"=>"course_list","lesson"=>"lesson_list","user"=>"cmnst_common.user_profile","reg"=>"class_registration","location"=>"cmnst_common.location");
+		$sJoinTable = array("course"=>"course_list","lesson"=>"lesson_list","user"=>"cmnst_common.user_profile","reg"=>"class_registration","location"=>"cmnst_common.location","state"=>"cmnst_curriculum.enum_class_state");
 		if(isset($options['group_class_suite'])&&$options['group_class_suite']==TRUE)
 		{
 			$sSelect = "
@@ -117,6 +117,7 @@ class Curriculum_model extends MY_Model {
 				$sTable.class_reg_end_time,
 				$sTable.class_reg_end_time_auto,
 				$sTable.class_state,
+				{$sJoinTable['state']}.state_name AS class_state_name,
 				$sTable.class_remark,
 				{$sJoinTable['course']}.course_cht_name,
 				{$sJoinTable['course']}.course_eng_name,
@@ -129,6 +130,7 @@ class Curriculum_model extends MY_Model {
 		}else{
 			$sSelect = "
 				$sTable.*,
+				{$sJoinTable['state']}.state_name AS class_state_name,
 				{$sJoinTable['course']}.course_cht_name,
 				{$sJoinTable['course']}.course_eng_name,
 				MIN({$sJoinTable['lesson']}.lesson_start_time) AS class_start_time,
@@ -143,7 +145,8 @@ class Curriculum_model extends MY_Model {
 							->join($sJoinTable['lesson'],"{$sJoinTable['lesson']}.class_ID = $sTable.class_ID","LEFT")
 							
 							->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = {$sJoinTable['lesson']}.lesson_prof_ID","LEFT")
-							->join($sJoinTable['location'],"{$sJoinTable['location']}.location_ID = $sTable.class_location","LEFT");
+							->join($sJoinTable['location'],"{$sJoinTable['location']}.location_ID = $sTable.class_location","LEFT")
+							->join($sJoinTable['state'],"{$sJoinTable['state']}.state_ID = $sTable.class_state","LEFT");
 		if(isset($options['course_ID']))
 			$this->curriculum_db->where("$sTable.course_ID",$options['course_ID']);
 		if(isset($options['class_ID']))
@@ -276,7 +279,7 @@ class Curriculum_model extends MY_Model {
 		}
 		if(isset($options['class_state']))
 		{
-			$this->curriculum_db->where("{$sJoinTable['class']}.class_state",$options['class_state']);
+			$this->curriculum_db->where_in("{$sJoinTable['class']}.class_state",$options['class_state']);
 		}
 		if(isset($options['lesson_start_time']))
 		{

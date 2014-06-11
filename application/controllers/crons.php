@@ -165,7 +165,7 @@ class Crons extends MY_Controller {
 			"class_reg_start_time"=>date("Y-m-d 00:00:01",strtotime("-1day")),
 			"class_reg_end_time"=>date("Y-m-d 00:00:00"),
 			"class_state"=>"normal"
-		))->result_array();
+		))->result_array();//加開的不用判斷
 		
 		
 		
@@ -309,7 +309,7 @@ class Crons extends MY_Controller {
 		$lessons = $this->curriculum_model->get_lesson_list(array(
 			"lesson_start_time"=>date("Y-m-d 00:00:00",strtotime("+1day")),
 			"lesson_end_time"=>date("Y-m-d 00:00:00",strtotime("+2day")),
-			"class_state"=>"normal"
+			"class_state"=>array("normal","additional")
 		))->result_array();
 		
 		foreach($lessons as $lesson)
