@@ -98,7 +98,6 @@ blueimp.Gallery.prototype.textFactory = function (obj, callback) {
 			data: $("#form_user_clock").serialize()
 		}).done(function(data){
 			data = data.aaData;
-			console.log(data);
 			
 			//參數設定
 			var columns_per_row = Math.max(Math.ceil(Math.sqrt(data.length)),5);
