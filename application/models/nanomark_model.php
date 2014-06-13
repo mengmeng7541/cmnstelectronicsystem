@@ -250,17 +250,16 @@ class Nanomark_model extends MY_Model {
 		$this->nanomark_db->insert("Nanomark_outsourcing");
 		
 	}
-	public function add_report_revision($input_data)
+	public function add_report_revision($data)
 	{
-		$sql = "INSERT INTO Nanomark_revision 
-				SET report_ID = '{$input_data['report_ID']}',
-					application_date = CURDATE(),
-					mistake_outline = '{$input_data['mistake_outline']}',
-					mistake_description = '{$input_data['mistake_description']}',
-					mistake_analysis = '{$input_data['mistake_analysis']}',
-					disposal_revision = '{$input_data['disposal_revision']}'";
-		$query = $this->nanomark_db->query($sql);
-		return TRUE;
+		$this->nanomark_db->set("specimen_SN",$data['specimen_SN']);
+		$this->nanomark_db->set("application_time",date("Y-m-d H:i:s"));
+		$this->nanomark_db->set("mistake_outline",$data['mistake_outline']);
+		$this->nanomark_db->set("mistake_description",$data['mistake_description']);
+		$this->nanomark_db->set("mistake_analysis",$data['mistake_analysis']);
+		$this->nanomark_db->set("disposal_revision",$data['disposal_revision']);
+		$this->nanomark_db->insert("Nanomark_revision");
+		return $this->nanomark_db->insert_id();
 	}
 	public function get_new_quotation_ID()
 	{
@@ -523,6 +522,7 @@ class Nanomark_model extends MY_Model {
 									$sTable.checkpoint AS checkpoint,
 									{$sJoinTable['application']}.ID AS application_ID,
 									{$sJoinTable['application']}.report_title AS report_title,
+									{$sJoinTable['application']}.applicant_ID AS applicant_ID,
 									{$sJoinTable['outsourcing']}.specimen_SN AS outsourcing_SN,
 									{$sJoinTable['outsourcing']}.client_signature AS client_signature,
 									{$sJoinTable['test_item']}.facility_ID AS facility_ID,
@@ -609,23 +609,30 @@ class Nanomark_model extends MY_Model {
 	public function get_report_revision_list($options = array())
 	{
 		$sTable = "Nanomark_revision";
-		$sJoinTable = array("specimen"=>"Nanomark_specimen","application"=>"Nanomark_application");
+		$sJoinTable = array("specimen"=>"Nanomark_specimen","application"=>"Nanomark_application","admin"=>"cmnst_common.admin_profile","user"=>"cmnst_common.user_profile","checkpoint"=>"Nanomark_revision_checkpoint");
 		$this->nanomark_db->select("
 			$sTable.*,
 			{$sJoinTable['application']}.serial_no AS application_SN,
 			{$sJoinTable['application']}.ID AS application_ID,
 			{$sJoinTable['application']}.report_title AS report_title,
+			{$sJoinTable['application']}.test_outline AS test_outline,
+			{$sJoinTable['specimen']}.ID AS report_ID,
+			{$sJoinTable['user']}.name AS applicant_name
 		")
 						  ->from($sTable)
 						  ->join($sJoinTable['specimen'],"{$sJoinTable['specimen']}.serial_no = $sTable.specimen_SN","LEFT")
-						  ->join($sJoinTable['application'],"{$sJoinTable['application']}.serial_no = {$sJoinTable['specimen']}.application_SN","LEFT");
+						  ->join($sJoinTable['application'],"{$sJoinTable['application']}.serial_no = {$sJoinTable['specimen']}.application_SN","LEFT")
+						  ->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = {$sJoinTable['application']}.applicant_ID","LEFT")
+						  ->join("(SELECT * FROM {$sJoinTable['checkpoint']} ORDER BY checkpoint_time) checkpoint","checkpoint.revision_SN = $sTable.serial_no","LEFT");
+		$this->nanomark_db->group_by("$sTable.serial_no");
+						  
 		if(isset($options['applicant_ID']))
 		{
 			$this->nanomark_db->where("{$sJoinTable['application']}.applicant_ID",$options['applicant_ID']);
 		}
 		if(isset($options['specimen_SN']))
 		{
-			$this->nanomark_db->where("{$sJoinTable['specimen']}.serial_no",$options['specimen_SN']);
+			$this->nanomark_db->where("$sTable.specimen_SN",$options['specimen_SN']);
 		}
 		if(isset($options['revision_SN']))
 		{
@@ -650,16 +657,17 @@ class Nanomark_model extends MY_Model {
 		$result = $query->row_array();
 		return $result;
 	}
-	public function update_report_revision($SN,$privilege,$comment,$admin_ID = "")
+	public function update_report_revision($data)
 	{
-		if(empty($admin_ID)) $admin_ID=$this->session->userdata('ID');
+		$sTable = "Nanomark_revision";
 		
-		$sql = "UPDATE Nanomark_revision 
-				SET {$privilege}_comment = '{$comment}',
-					{$privilege}_ID = CONCAT_WS(',',{$privilege}_ID,'{$admin_ID}') 
-				WHERE serial_no = '{$SN}'";
-		$query = $this->nanomark_db->query($sql);
-		return $this->nanomark_db->affected_rows();
+		if(isset($data['checkpoint']))
+		{
+			$this->nanomark_db->set("checkpoint",$data['checkpoint']);
+		}
+		
+		$this->nanomark_db->where("serial_no",$data['revision_SN']);
+		$this->nanomark_db->update($sTable);
 	}
 	public function update_report_revision_checkpoint($SN,$checkpoint)
 	{
@@ -669,6 +677,43 @@ class Nanomark_model extends MY_Model {
 		$query = $this->nanomark_db->query($sql);
 		return $this->nanomark_db->affected_rows();
 	}
+	//-------------REVISION CHECKPOINT-----------------
+	public function get_revision_checkpoint_list($options = array())
+	{
+		$sTable = "cmnst_nanomark.Nanomark_revision_checkpoint";
+		$sJoinTable = array("revision"=>"cmnst_nanomark.Nanomark_revision","admin"=>"cmnst_common.admin_profile");
+		
+		$this->nanomark_db->select("
+			$sTable.*,
+			{$sJoinTable['revision']}.specimen_SN AS specimen_SN,
+			{$sJoinTable['admin']}.stamp AS admin_stamp
+		",FALSE);
+		$this->nanomark_db->from($sTable);
+		$this->nanomark_db->join($sJoinTable['revision'],"{$sJoinTable['revision']}.serial_no = $sTable.revision_SN","LEFT")
+						  ->join($sJoinTable['admin'],"{$sJoinTable['admin']}.ID = $sTable.admin_ID","LEFT");
+		
+		if(isset($options['revision_SN']))
+		{
+			$this->nanomark_db->where("revision_SN",$options['revision_SN']);
+		}
+		if(isset($options['checkpoint_ID']))
+		{
+			$this->nanomark_db->where("checkpoint_ID",$options['checkpoint_ID']);
+		}
+		
+		return $this->nanomark_db->get();
+	}
+	public function add_revision_checkpoint($data)
+	{
+		$this->nanomark_db->set("revision_SN",$data['revision_SN']);
+		$this->nanomark_db->set("checkpoint_ID",$data['checkpoint_ID']);
+		$this->nanomark_db->set("admin_ID",$data['admin_ID']);
+		$this->nanomark_db->set("admin_comment",$data['admin_comment']);
+		$this->nanomark_db->insert("Nanomark_revision_checkpoint");
+		return $this->nanomark_db->insert_id();
+	}
+	
+	//--------------------------------------------------------------
 	public function update_test_item_by_serial_no($SN,$input_data)
 	{
 		$sql = "UPDATE Nanomark_test_item SET 
@@ -834,7 +879,7 @@ class Nanomark_model extends MY_Model {
 	{
 	  	$sTable = "Nanomark_admin_privilege";
 	  	$sJoinTable = array("user"=>"cmnst_common.user_profile");
-	  	$this->nanomark_db->select("*,
+	  	$this->nanomark_db->select("$sTable.*,
 	  								{$sJoinTable['user']}.name AS admin_name,
 	  								{$sJoinTable['user']}.email AS admin_email")
 	  					  ->from($sTable)
@@ -957,39 +1002,87 @@ class Nanomark_model extends MY_Model {
 		$signed_admin_ID = array_diff($signed_admin_ID,$unsigned_admin_ID);
 		return $signed_admin_ID;
 	}
-	public function get_report_revision_unsigned_admin_by_checkpoint($revision_SN,$checkpoint)
+	public function get_revision_unsigned_admin($revision_SN)
 	{
 		$report_revision = $this->get_report_revision_list(array("revision_SN"=>$revision_SN))->row_array();
-		$application = $this->get_application_list(array("serial_no"=>$report_revision['application_SN']))->row_array();
+		if(!$report_revision)
+		{
+			throw new Exception("無此報告修改單",ERROR_CODE);
+		}
+		
+		$report_revision['test_outline'] = explode(',',$report_revision['test_outline']);
+		
 		$unsigned_admin_ID = array();
 		
-		$checkpoint = str_replace(" ","_",strtolower($checkpoint));
-		if($checkpoint == "technical_manager" || $checkpoint == "report_signatory")
+		//取的在該關已簽名的名單
+		$signed_admins = $this->get_revision_checkpoint_list(array(
+			"revision_SN"=>$report_revision['serial_no'],
+			"checkpoint_ID"=>$report_revision['checkpoint']
+		))->result_array();
+		$signed_admins = sql_column_to_key_value_array($signed_admins,"admin_ID");
+		
+		if($report_revision['checkpoint'] == "technical_manager" || $report_revision['checkpoint'] == "report_signatory")
 		{
-			foreach($this->test_outline as $row)
+			foreach($report_revision['test_outline'] as $test_outline)
 			{
-				if(!in_array($row,explode(",",$application->test_outline))) continue;
-				
-				$admin_privilege = $this->get_admin_privilege_by_privilege("revision_{$checkpoint}_{$row}");
-				$admin_privilege = $this->rotate_2D_array($admin_privilege);
-				if(!$this->array_in_array($admin_privilege['admin_ID'],explode(",",$report_revision["{$checkpoint}_ID"])))
+				$signable_admins = $this->get_admin_privilege_list(array("privilege"=>"revision_{$report_revision['checkpoint']}_{$test_outline}"))->result_array();
+				$signable_admins = sql_column_to_key_value_array($signable_admins,"admin_ID");
+				if(!array_in_array($signed_admins,$signable_admins))
 				{
-					$unsigned_admin_ID = array_merge($admin_privilege['admin_ID'],$unsigned_admin_ID);
+					//都還沒簽
+					$unsigned_admin_ID = array_merge($unsigned_admin_ID,$signable_admins);
 				}
 			}
 		}else{
-			$admin_privilege = $this->get_admin_privilege_by_privilege("revision_{$checkpoint}");
-			foreach($admin_privilege as $row)
+			$signable_admins = $this->get_admin_privilege_list(array(
+				"privilege"=>"revision_{$report_revision['checkpoint']}"
+			))->result_array();
+			$signable_admins = sql_column_to_key_value_array($signable_admins,"admin_ID");
+			if(!array_in_array($signed_admins,$signable_admins))
 			{
-				if(!in_array($row['admin_ID'],explode(",",$report_revision["{$checkpoint}_ID"])))
-				{
-					array_push($unsigned_admin_ID,$row['admin_ID']);
-				}
+				//還沒簽
+				$unsigned_admin_ID = array_merge($unsigned_admin_ID,$signable_admins);
 			}
 		}
+		
 		$unsigned_admin_ID = array_unique($unsigned_admin_ID);
 		return $unsigned_admin_ID;
 	}
+//	public function get_report_revision_unsigned_admin_by_checkpoint($revision_SN,$checkpoint)
+//	{
+//		$report_revision = $this->get_report_revision_list(array("revision_SN"=>$revision_SN))->row_array();
+//		$application = $this->get_application_list(array("serial_no"=>$report_revision['application_SN']))->row_array();
+//		$application['test_outline'] = explode(',',$application['test_outline']);
+//		
+//		$unsigned_admin_ID = array();
+//		
+//		$checkpoint = str_replace(" ","_",strtolower($checkpoint));
+//		if($checkpoint == "technical_manager" || $checkpoint == "report_signatory")
+//		{
+//			foreach($application['test_outline'] as $row)
+//			{
+////				if(!in_array($row,explode(",",$application['test_outline']))) continue;
+//				
+//				$admin_privilege = $this->get_admin_privilege_by_privilege("revision_{$checkpoint}_{$row}");
+//				$admin_privilege = $this->rotate_2D_array($admin_privilege);
+//				if(!$this->array_in_array($admin_privilege['admin_ID'],explode(",",$report_revision["{$checkpoint}_ID"])))
+//				{
+//					$unsigned_admin_ID = array_merge($admin_privilege['admin_ID'],$unsigned_admin_ID);
+//				}
+//			}
+//		}else{
+//			$admin_privilege = $this->get_admin_privilege_by_privilege("revision_{$checkpoint}");
+//			foreach($admin_privilege as $row)
+//			{
+//				if(!in_array($row['admin_ID'],explode(",",$report_revision["{$checkpoint}_ID"])))
+//				{
+//					array_push($unsigned_admin_ID,$row['admin_ID']);
+//				}
+//			}
+//		}
+//		$unsigned_admin_ID = array_unique($unsigned_admin_ID);
+//		return $unsigned_admin_ID;
+//	}
 	//---------------------權限確認------------------------
 	public function is_super_admin($admin_ID = NULL)
 	{
@@ -1146,6 +1239,6 @@ class Nanomark_model extends MY_Model {
 			);
 			$this->email->send();
 		}
-		
 	}
+	//-------------------REVISION--------------------
 }

@@ -1523,11 +1523,13 @@ class Nanomark extends MY_Controller {
 		$report_revision = $this->nanomark_model->get_report_revision_list($options)->result_array();
 		foreach($report_revision as $row)
 		{
-			if($row['checkpoint']=="Accepted")
+			if($row['checkpoint']=="accepted")
 			{
-				$this->table->add_row($row['serial_no'],$row['application_ID'],$row['application_date'],anchor("nanomark/view_report_revision/{$row['serial_no']}","已完成","class='btn btn-success'"));
+				$this->table->add_row($row['serial_no'],$row['application_ID'],$row['application_time'],anchor("nanomark/view_report_revision/{$row['serial_no']}","已完成","class='btn btn-success'"));
+			}else if($row['checkpoint']=="rejected"){
+				$this->table->add_row($row['serial_no'],$row['application_ID'],$row['application_time'],anchor("nanomark/view_report_revision/{$row['serial_no']}","已退件","class='btn btn-inverse'"));
 			}else{
-				$this->table->add_row($row['serial_no'],$row['application_ID'],$row['application_date'],anchor("nanomark/view_report_revision/{$row['serial_no']}","進行中","class='btn btn-info'"));
+				$this->table->add_row($row['serial_no'],$row['application_ID'],$row['application_time'],anchor("nanomark/view_report_revision/{$row['serial_no']}","進行中","class='btn btn-info'"));
 			}
 		}
 		$this->data['table_list_report_revision'] = $this->table->generate();
@@ -1890,22 +1892,22 @@ class Nanomark extends MY_Controller {
 			{
 				$row = array();
 				
-				$row[] = $revision['application_date'];
+				$row[] = $revision['application_time'];
 				$row[] = $revision['application_ID'];
 				$row[] = $revision['report_title'];
 				$row[] = $revision['report_ID'];
 				$row[] = $revision['mistake_description'];
 				
 				
-				if(in_array($this->session->userdata('ID'),$this->nanomark_model->get_report_revision_unsigned_admin_by_checkpoint($revision['serial_no'],$revision['checkpoint'])))
+				if(in_array($this->session->userdata('ID'),$this->nanomark_model->get_revision_unsigned_admin($revision['serial_no'])))
 				{
 					$row[] = anchor("/nanomark/edit_report_revision/{$revision['serial_no']}","請點我","class='btn btn-warning'");
 				}
-				else if($revision['checkpoint'] == "Accepted")
+				else if($revision['checkpoint'] == "accepted")
 				{
 					$row[] = anchor("/nanomark/view_report_revision/{$revision['serial_no']}","已完成","class='btn btn-success'");
 				}
-				else if($revision['checkpoint'] == "Rejected")
+				else if($revision['checkpoint'] == "rejected")
 				{
 					$row[] = anchor("/nanomark/view_report_revision/{$revision['serial_no']}","未通過","class='btn btn-error'");
 				}	
@@ -1940,12 +1942,10 @@ class Nanomark extends MY_Controller {
 			{
 				if($row['checkpoint'] == "Completed"){
 					$this->data['report_ID_options'][$row['specimen_SN']] = $row['ID'];
-					$this->data['org_name_options'][$row['ID']] = $row['report_title'];
 				}
 			}
-			
-			$applicant_profile = $this->user_model->get_user_profile_by_ID($this->session->userdata('ID'));
-			$this->data['applicant_name'] = $applicant_profile['name'];
+//			$applicant_profile = $this->user_model->get_user_profile_by_ID($this->session->userdata('ID'));
+//			$this->data['applicant_name'] = $applicant_profile['name'];
 			
 			$this->data['action_btn'] = form_submit("","送出","class='btn btn-warning'");
 
@@ -1960,164 +1960,70 @@ class Nanomark extends MY_Controller {
 	}
 	public function edit_report_revision($revision_SN)
 	{
-		$this->is_admin_login();
+		try{
+			$this->is_admin_login();
 		
-		$revision_SN = $this->security->xss_clean($revision_SN);
-		
-		$report_revision = $this->nanomark_model->get_report_revision_list(array("revision_SN"=>$revision_SN))->row_array();
-		$application = $this->nanomark_model->get_application_list(array("serial_no"=>$report_revision['application_SN']))->row_array();
-		$applicant_profile = $this->user_model->get_user_profile_by_ID($application['applicant_ID']);
-		
-		$checkpoints = array("Quality Manager","Technical Manager","Report Signatory","Lab Manager");
-		foreach($checkpoints as $row)
-		{
-			$cp = str_replace(" ","_",strtolower($row));
-			//文字
-			if($report_revision['checkpoint']==$row)
-			{
-				$this->data["{$cp}_comment"] = form_textarea(array(
-	              'name'        => "{$cp}_comment",
-				  'rows'		=> '5',
-	              'value'       => $report_revision["{$cp}_comment"],
-				  'class'		=> 'span12',
-	            ));
-			}else{
-				$this->data["{$cp}_comment"] = $report_revision["{$cp}_comment"];
-			}
-			//印章
-			if(!empty($report_revision["{$cp}_ID"]))
-			{
-				$report_revision["{$cp}_ID"] = explode(",",$report_revision["{$cp}_ID"]);
-				$this->data["{$cp}_signature"] = "";
-				foreach($report_revision["{$cp}_ID"] as $row2)
-				{
-					$admin_profile = $this->admin_model->get_admin_profile_by_ID($row2);
-					$this->data["{$cp}_signature"] .= img($admin_profile['stamp']);
-				}
-			}
-		}
-		
-		
-		$this->data['serial_no'] = $revision_SN;
-		$this->data['organization_name'] = $application->report_title;
-		$this->data['applicant_name'] = $applicant_profile['name'];
-		$this->data['report_ID'] = $report_revision['report_ID'];
-		$this->data['application_date'] = $report_revision['application_date'];
-		
-		$report_revision['mistake_outline'] = explode(",",$report_revision['mistake_outline']);
-		$mistake_outline = array("Report Incomplete","Typewritten Error","Data Error","Result Incorrect","Report Incomplete","Others");
-		foreach($mistake_outline as $row)
-		{
-			$this->data[str_replace(" ","_",strtolower($row))] = in_array($row,$report_revision['mistake_outline'])?"■":"□";
-		}
-		
-		$this->data['mistake_description'] = $report_revision['mistake_description'];
-		$this->data['mistake_analysis'] = $report_revision['mistake_analysis'];
-		$this->data['disposal_revision'] = $report_revision['disposal_revision'];
+			$revision_SN = $this->security->xss_clean($revision_SN);
 			
-		$this->data['action_btn'] = form_button("update","簽名","value='accept' class='btn btn-warning'")." ".form_button("update","駁回","value='reject' class='btn btn-inverse'");
+			$report_revision = $this->nanomark_model->get_report_revision_list(array("revision_SN"=>$revision_SN))->row_array();
+			$report_revision['mistake_outline'] = explode(',',$report_revision['mistake_outline']);
+			$this->data = $report_revision;
+			
+			//CHECKPOINT
+			$checkpoints = $this->nanomark_model->get_revision_checkpoint_list(array(
+				"revision_SN"=>$report_revision['serial_no']
+			))->result_array();
+			$this->data['checkpoints'] = $checkpoints;
+			
+			
+			$this->data['action_btn'][] = form_button("update","簽名","value='accept' class='btn btn-warning'");
+			$this->data['action_btn'][] = form_button("update","駁回","value='reject' class='btn btn-inverse'");
+			
+			$this->load->view('templates/header');
+			$this->load->view('templates/sidebar');
+			$this->load->view('nanomark/form_report_revision',$this->data);
+			$this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
 		
-		$this->load->view('templates/header');
-		$this->load->view('templates/sidebar');
-		$this->load->view('nanomark/form_report_revision',$this->data);
-		$this->load->view('templates/footer');
 	}
 	public function view_report_revision($revision_SN)
 	{
-		$this->is_user_login();
+		try{
+			$this->is_user_login();
 		
-		$report_revision = $this->nanomark_model->get_report_revision_list(array("revision_SN"=>$revision_SN))->row_array();
-		$application = $this->nanomark_model->get_application_list(array("serial_no"=>$report_revision['application_SN']))->row_array();
-		if($application['applicant_ID'] != $this->session->userdata('ID') && !$this->is_admin_login(FALSE))
-		{
-			echo $this->show_error_page();
-			return;
-		}
-		$applicant_profile = $this->user_model->get_user_profile_by_ID($application->applicant_ID);
-		
-		$checkpoints = array("Quality Manager","Technical Manager","Report Signatory","Lab Manager");
-		foreach($checkpoints as $row)
-		{
-			$cp = str_replace(" ","_",strtolower($row));
-			//文字
-			$this->data["{$cp}_comment"] = $report_revision["{$cp}_comment"];
-			//印章
-			if(!empty($report_revision["{$cp}_ID"]))
-			{
-				$report_revision["{$cp}_ID"] = explode(",",$report_revision["{$cp}_ID"]);
-				$this->data["{$cp}_signature"] = "";
-				foreach($report_revision["{$cp}_ID"] as $row2)
-				{
-					$admin_profile = $this->admin_model->get_admin_profile_by_ID($row2);
-					$this->data["{$cp}_signature"] .= img($admin_profile['stamp']);
-				}
-			}
+			$revision_SN = $this->security->xss_clean($revision_SN);
 			
+			$report_revision = $this->nanomark_model->get_report_revision_list(array("revision_SN"=>$revision_SN))->row_array();
+			$report_revision['mistake_outline'] = explode(',',$report_revision['mistake_outline']);
+			$this->data = $report_revision;
 			
+			//CHECKPOINT
+			$checkpoints = $this->nanomark_model->get_revision_checkpoint_list(array(
+				"revision_SN"=>$report_revision['serial_no']
+			))->result_array();
+			$this->data['checkpoints'] = $checkpoints;
+				
+			$this->data['action_btn'] = form_button("print_btn","列印","class='btn' ");
+			
+			$this->load->view('templates/header');
+			$this->load->view('templates/sidebar');
+			$this->load->view('nanomark/form_report_revision',$this->data);
+			$this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
 		}
 		
-		
-		$this->data['organization_name'] = $application->report_title;
-		$this->data['applicant_name'] = $applicant_profile['name'];
-		$this->data['report_ID'] = $report_revision['report_ID'];
-		$this->data['application_date'] = $report_revision['application_date'];
-		
-		$report_revision['mistake_outline'] = explode(",",$report_revision['mistake_outline']);
-		$mistake_outline = array("Report Incomplete","Typewritten Error","Data Error","Result Incorrect","Report Incomplete","Others");
-		foreach($mistake_outline as $row)
-		{
-			$this->data[str_replace(" ","_",strtolower($row))] = in_array($row,$report_revision['mistake_outline'])?"■":"□";
-		}
-		
-		$this->data['mistake_description'] = $report_revision['mistake_description'];
-		$this->data['mistake_analysis'] = $report_revision['mistake_analysis'];
-		$this->data['disposal_revision'] = $report_revision['disposal_revision'];
-			
-		$this->data['action_btn'] = form_button("print_btn","列印","class='btn' ");
-		
-		$this->load->view('templates/header');
-		$this->load->view('templates/sidebar');
-		$this->load->view('nanomark/form_report_revision',$this->data);
-		$this->load->view('templates/footer');
 	}
-	public function update_report_revision()
-	{
-		$this->is_admin_login();
-		
-		$input_data = $this->input->post(NULL,TRUE);
-		$report_revision = $this->nanomark_model->get_report_revision_list(array("revision_SN"=>$input_data['serial_no']))->row_array();
-		$application = $this->nanomark_model->get_application_list(array("serial_no"=>$report_revision['application_SN']))->row_array();
-		
-		if(in_array($this->session->userdata('ID'),$this->nanomark_model->get_report_revision_unsigned_admin_by_checkpoint($report_revision['serial_no'],$report_revision['checkpoint'])))
-		{
-			$cp = str_replace(" ","_",strtolower($report_revision['checkpoint']));
-			$this->nanomark_model->update_report_revision($report_revision['serial_no'],$cp,$input_data["{$cp}_comment"]);
-			if($input_data['result']=="reject")
-			{
-				$this->nanomark_model->update_report_revision_checkpoint($report_revision['serial_no'],"Rejected");
-			}else if(!count($this->nanomark_model->get_report_revision_unsigned_admin_by_checkpoint($report_revision['serial_no'],$report_revision['checkpoint'])))
-			{
-				$next_cp = array("Quality Manager"=>"Technical Manager",
-								 "Technical Manager"=>"Report Signatory",
-								 "Report Signatory"=>"Lab Manager",
-								 "Lab Manager"=>"Accepted");
-				$this->nanomark_model->update_report_revision_checkpoint($report_revision['serial_no'],$next_cp[$report_revision['checkpoint']]);
-			}
-		}
-		else
-		{
-			echo $this->info_modal("沒有權限","","error");
-			return;
-		}
-		echo $this->info_modal("審核成功","/nanomark/edit_report_revision/{$report_revision['serial_no']}");
-	}
+	
 	public function add_report_revision()
 	{
 		try{
 			$this->is_user_login();
 			
 			$this->form_validation->set_rules("report_ID","報告編號","required");
-			$this->form_validation->set_rules("mistake_outline[]","報告編號","required");
+			$this->form_validation->set_rules("mistake_outline[]","錯誤大鋼","required");
 			$this->form_validation->set_rules("mistake_description","錯誤說明","required");
 			$this->form_validation->set_rules("mistake_analysis","錯誤原因分析","required");
 			$this->form_validation->set_rules("disposal_revision","處置/修改","required");
@@ -2126,20 +2032,53 @@ class Nanomark extends MY_Controller {
 				throw new Exception(validation_errors(),WARNING_CODE);
 			}
 			$input_data = $this->input->post(NULL,TRUE);
-			$specimen = $this->nanomark_model->get_specimen_by_ID($input_data['report_ID']);
-			//檢查對應的委託單檢測項目是否為自己的
-			if($specimen['applicant_ID'] != $this->session->userdata('ID'))
-			{
-				echo $this->info_modal("沒有權限","","error");
-				return;
-			}
-			$input_data['application_ID'] = $specimen['application_ID'];
-			$input_data['mistake_outline'] = implode(",",$input_data['mistake_outline']);
-			$this->nanomark_model->add_report_revision($input_data);
+			
+			$this->load->model('nanomark/revision_model');
+			$revision_ID = $this->revision_model->add($input_data['report_ID'],$input_data['mistake_outline'],$input_data['mistake_description'],$input_data['mistake_analysis'],$input_data['disposal_revision']);
 			
 			echo $this->info_modal("申請成功","/nanomark/list_progress");
 		}catch(Exception $e){
-			$this->info_modal($e->getMessage(),"",$e->getCode());
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+		
+	}
+	public function update_report_revision()
+	{
+		try{
+			$this->is_admin_login();
+		
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			$this->form_validation->set_rules("revision_SN","報告修改單號","required");
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),ERROR_CODE);
+			}
+			$report_revision = $this->nanomark_model->get_report_revision_list(array("revision_SN"=>$input_data['revision_SN']))->row_array();
+			if(!$report_revision)
+			{
+				throw new Exception("無此報告修改單",ERROR_CODE);
+			}
+			
+			
+			
+			$this->load->model('nanomark/revision_model');
+			$this->revision_model->update(
+				$report_revision['serial_no'],
+				$input_data['result'],
+				isset($input_data["{$report_revision['checkpoint']}_comment"])?$input_data["{$report_revision['checkpoint']}_comment"]:""
+			);
+			
+			//判斷導向到哪裡
+			$unsigned_admins = $this->nanomark_model->get_revision_unsigned_admin($report_revision['serial_no']);
+			if(in_array($this->session->userdata('ID'),$unsigned_admins))
+			{
+				echo $this->info_modal("審核成功","/nanomark/edit_report_revision/{$report_revision['serial_no']}");
+			}else{
+				echo $this->info_modal("審核成功","/nanomark/list_report_revision");
+			}
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
 		
 	}

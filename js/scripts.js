@@ -3421,26 +3421,10 @@ var App = function () {
 			$("#form_nanomark_report_revision").submit();
 		});
 		
-		$('#form_nanomark_report_revision').validate
-		(
-			{
-				rules:{
-					report_ID:{required:true},
-					"mistake_outline[]":{required:true,minlength:1},
-					mistake_description:{required:true},
-					mistake_analysis:{required:true},
-					disposal_revision:{required:true},
-				},
-				messages:{
-
-				},
-			}
-		);
-		
 		//根據選擇的報告編號，自動跳公司名稱
-		$("#form_nanomark_report_revision select[name='report_ID']").change(function(){
-			$("#form_nanomark_report_revision select[name='org_name']").find("option[value='"+$(this).val()+"']").prop("selected","selected");
-		});
+//		$("#form_nanomark_report_revision select[name='report_ID']").change(function(){
+//			$("#form_nanomark_report_revision select[name='org_name']").find("option[value='"+$(this).val()+"']").prop("selected","selected");
+//		});
 	}
 	
 	var handleRewardListTable = function(){

@@ -216,7 +216,8 @@
 														  $extension_sec_options = array(
 														  						   "0"=>"不設限",
 														  						   "7776000"=>"3個月",
-														  						   "31536000"=>"1年");
+														  						   "15768000"=>"6個月",
+														  						   "31536000"=>"一年");
 														  echo form_dropdown("extension_sec",$extension_sec_options,isset($extension_sec)?$extension_sec:"7776000");
 														  ?>
 											           </div>

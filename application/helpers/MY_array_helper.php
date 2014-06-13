@@ -16,9 +16,26 @@
 		}else{
 			foreach($sql_results as $result){
 				$output[] = $result[$value];
+				
 			}
 		}
 		return $output;
+	}
+	/**
+	* 
+	* @param undefined $arr
+	* @param undefined $in_arr
+	* 
+	* @return The num of array elements matched the other array
+	*/
+	function array_in_array($arr,$in_arr)
+	{
+		$num_matched = 0;
+		foreach($arr as $row)
+		{
+			if(in_array($row,$in_arr)) $num_matched++;
+		}
+		return $num_matched;
 	}
 
 ?>

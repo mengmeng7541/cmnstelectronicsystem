@@ -12,9 +12,10 @@ class Unittest extends MY_Controller {
 	{
 		$this->output->enable_profiler(TRUE);
   		
-  		$this->load->model('cash/receipt_model');
+  		$this->load->model('nanomark_model');
 		$this->benchmark->mark('code_start');
-		$this->receipt_model->delivery_by_post(7,"123222-1123");
+		$a = $this->nanomark_model->get_revision_unsigned_admin(1);
+		var_dump($a);
 		$this->benchmark->mark('code_end');
 		
 		

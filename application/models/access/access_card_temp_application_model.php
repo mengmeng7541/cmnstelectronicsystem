@@ -133,6 +133,8 @@ class Access_card_temp_application_model extends MY_Model {
 	
 	public function issue($SN,$card_num = NULL,$issued_by = NULL)
 	{
+		//取得CP編號
+		$cp = $this->access_model->get_enum_access_card_temp_application_checkpoint_list(array("checkpoint_ID"=>"issued"))->row_array();
 		//自動ASSIGN卡號
 		if(!isset($card_num))
 		{
@@ -141,10 +143,15 @@ class Access_card_temp_application_model extends MY_Model {
 				throw new Exception("已無空卡可用",ERROR_CODE);
 			}
 			$card_num = $card['access_card_num'];
+		}else{
+			//先檢查是否被occupied
+			$card = $this->access_model->get_access_card_pool_list(array("access_card_num"=>$card_num))->row_array();
+			if($card['occupied'])
+			{
+				throw new Exception("此卡尚未歸還",ERROR_CODE);
+			}
 		}
 		
-		//取得CP編號
-		$cp = $this->access_model->get_enum_access_card_temp_application_checkpoint_list(array("checkpoint_ID"=>"issued"))->row_array();
 		//寫入單子
 		$this->access_model->update_access_card_temp_application(array(
 			"guest_access_card_num"=>$card_num,
