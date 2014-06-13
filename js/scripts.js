@@ -2714,14 +2714,26 @@ var App = function () {
 			"aaSorting": [[0,'desc']],
 		});
 		
-		$("#table_list_card_application").delegate("button[name='notify']","click",function(){
+		$("#table_list_card_application").on("click","button[name='notify']",function(){
 			$("#form_facility_card_application_modal").modal({backdrop:'static',keyboard:true,show:true});
 			var url = $("#form_facility_card_application_modal form").attr("action");
 			$("#form_facility_card_application_modal form").attr("action",url+$(this).val());
 		});
-		$("#table_list_card_application").delegate("button[name='issue']","click",function(){
+		$("#table_list_card_application").on("click","button[name='issue']",function(){
 			$.ajax(site_url+"facility/admin/card/update/"+$(this).val())
 			.done(function(){
+				facility_card_application.fnReloadAjax(null,null,true);
+			});
+		});
+		$("#table_list_card_application").on("click","button[name='verify']",function(){
+			$.ajax({
+				url: site_url+"user/verify/"+$(this).val(),
+				beforeSend: function(){
+					showRequest();
+				}
+			})
+			.done(function(data){
+				showResponse(data);
 				facility_card_application.fnReloadAjax(null,null,true);
 			});
 		});

@@ -81,6 +81,7 @@ $route['user/list/query'] = 'user/list_account_query';
 $route['user/edit/(:any)'] = 'user/edit_account/$1';
 $route['user/add'] = 'user/add_account';
 $route['user/update'] = 'user/update_account';
+$route['user/verify/(:any)'] = 'user/verify_account/$1';
 $route['user/clock/list'] = 'user/list_clock';
 $route['user/clock/list/(:num)'] = 'user/list_clock/$1';
 $route['user/clock/query'] = 'user/query_clock';

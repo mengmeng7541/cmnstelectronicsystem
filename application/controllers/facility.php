@@ -1908,21 +1908,27 @@ class Facility extends MY_Controller {
 			$row[] = $aRow['issuance_date'];
 			$row[] = $aRow['admin_name'];
 			//
+			$display = array();
+			if(empty($aRow['AB_form_verified_by']))
+			{
+				$display[] = form_button("verify","AB表確認","class='btn btn-primary btn-small' value='{$aRow['user_ID']}'");
+			}
 			if($aRow['checkpoint'] == "Officer")
 			{
 				if($aRow['type'] == "apply" || $aRow['type'] == "reissue")
-					$row[] = form_button("notify","通知領卡","class='btn btn-primary btn-small' value='{$aRow['serial_no']}'");
+					$display[] = form_button("notify","通知領卡","class='btn btn-primary btn-small' value='{$aRow['serial_no']}'");
 				else if($aRow['type'] == "refund")
-					$row[] = form_button("issue","退卡確認","class='btn btn-warning btn-small' value='{$aRow['serial_no']}'");
+					$display[] = form_button("issue","退卡確認","class='btn btn-warning btn-small' value='{$aRow['serial_no']}'");
 			}
 			else if($aRow['checkpoint'] == "Notified")
 			{
-				$row[] = form_button("issue","押金確認","class='btn btn-warning btn-small' value='{$aRow['serial_no']}'");
+				$display[] = form_button("issue","押金確認","class='btn btn-warning btn-small' value='{$aRow['serial_no']}'");
 			}
 			else if($aRow['checkpoint'] == "Completed")
 			{
-				$row[] = form_label("已結案","",array("class"=>'label label-success'));
+				$display[] = form_label("已結案","",array("class"=>'label label-success'));
 			}
+			$row[] = implode(' ',$display);
 			
 			$output['aaData'][] = $row;
 		}
@@ -2057,7 +2063,7 @@ class Facility extends MY_Controller {
 					//寄MAIL通知領卡
 					$this->email->to($card_app['email']);
 					$this->email->subject("微奈米科技研究中心－通知領取磁卡");
-					$this->email->message("您好，您的磁卡已經申請成功，請攜帶大頭照、500元押金至微奈米中心領卡，謝謝您。"); 
+					$this->email->message("您好，您的磁卡已經申請成功，請攜帶大頭照、500元押金至微奈米中心領卡，第一次申請者必須連同攜帶AB量表於領卡時繳交，謝謝您。"); 
 					$this->email->send();
 				}else if($card_app['type'] == "refund")
 				{

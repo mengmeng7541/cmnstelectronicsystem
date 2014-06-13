@@ -715,6 +715,7 @@ class Facility_model extends MY_Model {
 									$sJoinTable[0].name AS user_name,
 									$sJoinTable[0].email,
 									$sJoinTable[0].mobile,
+									$sJoinTable[0].AB_form_verified_by,
 									admin.name AS admin_name")
 						  ->from($sTable)
 						  ->join($sJoinTable[0],"$sJoinTable[0].ID = $sTable.user_ID","LEFT")

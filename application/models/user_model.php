@@ -187,20 +187,57 @@ class User_model extends MY_Model {
   }
 	public function update_user_profile($input_data)
 	{
-		$this->common_db->set("name",$input_data['name']);
-		$this->common_db->set("tel",$input_data['tel']);
-		$this->common_db->set("mobile",$input_data['mobile']);
-		$this->common_db->set("address",$input_data['address']);
-		$this->common_db->set("email",$input_data['email']);
-		$this->common_db->set("sex",$input_data['sex']);
-		$this->common_db->set("status",$input_data['status']);
+		if(isset($input_data['name']))
+		{
+			$this->common_db->set("name",$input_data['name']);
+		}
+		if(isset($input_data['tel']))
+		{
+			$this->common_db->set("tel",$input_data['tel']);
+		}
+		if(isset($input_data['mobile']))
+		{
+			$this->common_db->set("mobile",$input_data['mobile']);
+		}
+		if(isset($input_data['address']))
+		{
+			$this->common_db->set("address",$input_data['address']);
+		}
+		if(isset($input_data['email']))
+		{
+			$this->common_db->set("email",$input_data['email']);
+		}
+		if(isset($input_data['sex']))
+		{
+			$this->common_db->set("sex",$input_data['sex']);
+		}
+		if(isset($input_data['status']))
+		{
+			$this->common_db->set("status",$input_data['status']);
+		}
 		if(isset($input_data['card_num']))
 		{
 			$this->common_db->set("card_num",$input_data['card_num']);
 		}
-		$this->common_db->set("boss_no",$input_data['boss_no']);
-		$this->common_db->set("organization",$input_data['organization']);
-		$this->common_db->set("department",$input_data['department']);
+		if(isset($input_data['boss_no']))
+		{
+			$this->common_db->set("boss_no",$input_data['boss_no']);
+		}
+		if(isset($input_data['organization']))
+		{
+			$this->common_db->set("organization",$input_data['organization']);
+		}
+		if(isset($input_data['department']))
+		{
+			$this->common_db->set("department",$input_data['department']);
+		}
+		
+		if(isset($input_data['AB_form_verified_by']))
+		{
+			$this->common_db->set("AB_form_verified_by",$input_data['AB_form_verified_by']);
+			$this->common_db->set("AB_form_verification_time",date("Y-m-d H:i:s"));
+		}
+		
 		$this->common_db->where("ID",$input_data['ID']);
 		$this->common_db->update("user_profile");
 		return $this->common_db->affected_rows();
@@ -460,5 +497,30 @@ class User_model extends MY_Model {
 //		echo $this->clock_db->last_query();
 		return $query;
 		//$this->clock_db->get("clock_user_manual");
+	}
+	//-------------------USER ACCOUNT----------------------
+	public function verify_account($ID)
+	{
+		$this->load->model('access_model');
+		if(!$this->access_model->is_super_admin())
+		{
+			throw new Exception("沒有權限",ERROR_CODE);
+		}
+		
+		$user_profile = $this->get_user_profile_list(array("user_ID"=>$ID))->row_array();
+		if(!$user_profile)
+		{
+			throw new Exception("無此使用者",ERROR_CODE);
+		}
+		
+		if(!empty($user_profile['AB_form_verified_by']))
+		{
+			throw new Exception("此使用者已確認過AB表繳交",ERROR_CODE);
+		}
+		
+		$this->update_user_profile(array(
+			"AB_form_verified_by"=>$this->session->userdata('ID'),
+			"ID"=>$user_profile['ID']
+		));
 	}
 }
