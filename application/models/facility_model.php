@@ -721,6 +721,7 @@ class Facility_model extends MY_Model {
 						  ->join($sJoinTable[0],"$sJoinTable[0].ID = $sTable.user_ID","LEFT")
 						  ->join("{$sJoinTable[1]} AS admin","admin.ID = $sTable.officer_ID","LEFT")
 						  ->order_by("$sTable.serial_no","desc");
+		$this->facility_db->where("$sTable.canceled_by",NULL);
 		
 		if(!empty($input_data['type']))
 			$this->facility_db->where("$sTable.type",$input_data['type']);
@@ -738,6 +739,10 @@ class Facility_model extends MY_Model {
 		$this->facility_db->set("type",$input_data['type']);
 		if(isset($input_data['comment']))
 			$this->facility_db->set("comment",$input_data['comment']);
+		if(isset($input_data['card_num']))
+		{
+			$this->facility_db->set("card_num",$input_data['card_num']);
+		}
 		$this->facility_db->insert("facility_card_application");
 		return $this->facility_db->affected_rows();
 	}
@@ -747,7 +752,7 @@ class Facility_model extends MY_Model {
 			$this->facility_db->set("card_num",$input_data['card_num']);
 		if(!empty($input_data['officer_ID']))
 		{
-			$this->facility_db->set("issuance_date","NOW()",FALSE);
+			$this->facility_db->set("issuance_date",date("Y-m-d H:i:s"));
 			$this->facility_db->set("officer_ID",$input_data['officer_ID']);
 		}
 		if(isset($input_data['canceled_by']))

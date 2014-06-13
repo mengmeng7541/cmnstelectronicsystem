@@ -1937,24 +1937,28 @@ class Facility extends MY_Controller {
 	}
 	public function edit_card_application()
 	{
-		$this->is_user_login();
+		try{
+			$this->is_user_login();
 		
-		if($this->is_admin_login(FALSE))
-		{
-			
-		}
-		else if($this->is_user_login())
-		{
 			$user_profile = $this->user_model->get_user_profile_by_ID($this->session->userdata('ID'));
+			if(!$user_profile)
+			{
+				throw new Exception();
+			}
 			$this->data = $user_profile;
-			$this->data['action'] = site_url()."/facility/user/card/add";
-			//如果沒申請過，顯示申請頁面
+			
+			//偵測可退還的卡號
+			$this->load->model('facility/card_application_model');
+			$this->data['refundable_card_nums'] = $this->card_application_model->get_refundable_card_num($user_profile['ID']);
+			
 			$this->load->view('templates/header');
 			$this->load->view('templates/sidebar');
 			$this->load->view('facility/edit_card_application',$this->data);
 			$this->load->view('templates/footer');
-			//已經有卡片，顯示已申請，不能重複
+		}catch(Exception $e){
+			$this->show_error_page();
 		}
+		
 	}
 	public function add_card_application()
 	{
@@ -1974,12 +1978,8 @@ class Facility extends MY_Controller {
 					return;
 				}
 			}else if($input_data['type'] == "refund"){
-				if(empty($user_profile['card_num']))
-				{
-					echo $this->info_modal("您尚未有磁卡，無法退卡。","","error");
-					return;
-				}
-				//確認有填寫退卡原因
+				//確認有填寫卡號與退卡原因
+				$this->form_validation->set_rules("card_num","磁卡卡號","required");
 				$this->form_validation->set_rules("comment","退卡原因","required");
 				if(!$this->form_validation->run())
 				{
@@ -2015,12 +2015,11 @@ class Facility extends MY_Controller {
 			
 			if($result)
 			{
-				if($input_data['type'] == "apply")
+				if($input_data['type'] == "apply" || $input_data['type'] == "reissue")
 					echo $this->info_modal("申請已送出，五個工作天後本中心會通知前來領卡，請留意您的E-mail，謝謝。");
 				else if($input_data['type'] == "refund")
 					echo $this->info_modal("申請已送出，請直接前往中心領回押金，謝謝。");
-				else if($input_data['type'] == "reissue")
-					echo $this->info_modal("申請已送出，五個工作天後本中心會通知前來領卡，請留意您的E-mail，謝謝。");
+				
 			}	
 			else
 				echo $this->info_modal("內部錯誤","","error");
@@ -2067,11 +2066,13 @@ class Facility extends MY_Controller {
 					$this->email->send();
 				}else if($card_app['type'] == "refund")
 				{
-					//取得退卡的卡號
+					//取得退卡的卡號，若與現在卡號相同，則解除綁定
 					$user_profile = $this->user_model->get_user_profile_by_ID($card_app['user_ID']);
-					$input_data['card_num'] = $user_profile['card_num'];//記錄退卡卡號
-					//把卡號從帳號綁定移除
-					$this->user_model->update_user_card_num($card_app['user_ID']);
+					if($card_app['card_num'] == $user_profile['card_num'])
+					{
+						//把卡號從帳號綁定移除
+						$this->user_model->update_user_card_num($card_app['user_ID']);
+					}
 					$input_data['officer_ID'] = $this->session->userdata('ID');
 					$input_data['checkpoint'] = "Completed";
 				}

@@ -2698,6 +2698,16 @@ var App = function () {
 			"aaSorting": [[0,'desc']],
 		});
 		//------------------------磁卡申請列表-----------------------
+			//------USER-------------
+		$("#form_card_application :input[name='type']").change(function(){
+			if($(this).val()=='refund')
+			{
+				$("#form_card_application :input[name='card_num']").parents(".control-group").show();
+			}else{
+				$("#form_card_application :input[name='card_num']").parents(".control-group").hide();
+			}
+		});
+			//------ADMIN------------
 		var facility_card_application = $("#table_list_card_application").dataTable({
 			"bAutoWidth": false,
 			"bProcessing": true,

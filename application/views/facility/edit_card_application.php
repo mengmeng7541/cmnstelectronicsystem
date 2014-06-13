@@ -13,7 +13,7 @@
                         <h4><i class="icon-reorder"></i>磁卡申請表單</h4>
                     </div>
                     <div class="widget-body form">
-						<form action="<?=$action;?>" id="form_card_application" class="form-horizontal" method="POST">
+						<form action="<?=site_url("/facility/user/card/add");?>" id="form_card_application" class="form-horizontal" method="POST">
 							<div class="alert alert-info">
 								<h4 class="alert-heading">辦理門禁磁卡注意事項</h4>
 								<br />1. 請確實填寫完整資料
@@ -26,8 +26,14 @@
 							      <select name="type">
 							         <option value="apply">申請磁卡</option>
 							         <option value="refund">退還磁卡</option>
-							         <option value="reissue">補發磁卡</option>
+							         <option value="reissue">申請補發</option>
 							      </select>
+					           </div>
+							</div>
+							<div class="control-group hide">
+							   <label class="control-label">退還卡號</label>
+					           <div class="controls">
+							      <?=form_dropdown("card_num",isset($refundable_card_nums)?$refundable_card_nums:array(),"");?>
 					           </div>
 							</div>
 							<div class="control-group ">
