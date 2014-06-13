@@ -39,7 +39,7 @@ class Revision_model extends MY_Model {
 			"disposal_revision"=>$disposal_revision
 		));
 		
-		$this->send_quality_manager_notification($revision_SN);
+		$this->send_notification($revision_SN);
 		
 		return $revision_SN;
 	}
@@ -70,6 +70,7 @@ class Revision_model extends MY_Model {
 					"checkpoint"=>"rejected",
 					"revision_SN"=>$report_revision['serial_no']
 				));
+			$this->send_notification($report_revision['serial_no']);
 		}else{
 			//檢查審核完後是不是該關都審過了
 			$unsigned_admins = $this->nanomark_model->get_revision_unsigned_admin($report_revision['serial_no']);
@@ -84,26 +85,64 @@ class Revision_model extends MY_Model {
 					"checkpoint"=>$next_cp[$report_revision['checkpoint']],
 					"revision_SN"=>$report_revision['serial_no']
 				));
+				
+				//寄信通知下一關的人
+				$this->send_notification($report_revision['serial_no']);
 			}
 		}
 	}
 	
-	public function send_quality_manager_notification($revision_SN)
+	public function send_notification($revision_SN)
 	{
 		$revision = $this->nanomark_model->get_report_revision_list(array("revision_SN"=>$revision_SN))->row_array();
-		
-		//取得有QM權限的人
-		$admins = $this->nanomark_model->get_admin_privilege_list(array("privilege"=>"revision_quality_manager"))->result_array();
-		foreach($admins as $admin)
+		if(!$revision)
 		{
-			$this->email->to($admin['admin_email']);
+			return;
+		}
+		
+		//取得有權限的人
+		if($revision['checkpoint']=='technical_manager'||$revision['checkpoint']=='report_signatory')
+		{
+			$revision['text_outline'] = explode(',',$revision['text_outline']);
+			foreach($revision['text_outline'] as $text_outline)
+			{
+				$admins = $this->nanomark_model->get_admin_privilege_list(array("privilege"=>"revision_{$revision['checkpoint']}_{$text_outline}"))->result_array();
+				foreach($admins as $admin)
+				{
+					$this->email->to($admin['admin_email']);
+					$this->email->subject("微奈米科技研究中心 -奈米標章報告修改申請通知-");
+					$this->email->message("
+						主管 {$admin['admin_name']} 您好：<br>
+						{$revision['report_title']} 申請了報告修改，請上本中心系統審核，謝謝。
+					");
+					$this->email->send();
+				}
+			}
+			
+		}else if($revision['checkpoint']=='accepted'||$revision['checkpoint']=='rejected'){
+			//通知客戶
+			$this->email->to($revision['contact_email']);
 			$this->email->subject("微奈米科技研究中心 -奈米標章報告修改申請通知-");
 			$this->email->message("
-				品質主管 {$admin['admin_name']} 您好：<br>
-				{$revision['report_title']} 申請了報告修改，請上本中心系統審核，謝謝。
+				{$revision['contact_name']} 您好：<br>
+				貴客戶 {$revision['report_title']} 申請的報告修改，已審核完畢。<br>
+				審核結果為 ".strtoupper($revision['checkpoint'])."，有任何問題歡迎上本中心網站查詢或電洽，謝謝。
 			");
 			$this->email->send();
+		}else{
+			$admins = $this->nanomark_model->get_admin_privilege_list(array("privilege"=>"revision_{$revision['checkpoint']}"))->result_array();
+			foreach($admins as $admin)
+			{
+				$this->email->to($admin['admin_email']);
+				$this->email->subject("微奈米科技研究中心 -奈米標章報告修改申請通知-");
+				$this->email->message("
+					主管 {$admin['admin_name']} 您好：<br>
+					{$revision['report_title']} 申請了報告修改，請上本中心系統審核，謝謝。
+				");
+				$this->email->send();
+			}
 		}
+		
 		
 	}
 }

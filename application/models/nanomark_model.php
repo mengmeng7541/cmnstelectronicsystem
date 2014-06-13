@@ -616,6 +616,8 @@ class Nanomark_model extends MY_Model {
 			{$sJoinTable['application']}.ID AS application_ID,
 			{$sJoinTable['application']}.report_title AS report_title,
 			{$sJoinTable['application']}.test_outline AS test_outline,
+			{$sJoinTable['application']}.contact_name AS contact_name,
+			{$sJoinTable['application']}.contact_email AS contact_email,
 			{$sJoinTable['specimen']}.ID AS report_ID,
 			{$sJoinTable['user']}.name AS applicant_name
 		")

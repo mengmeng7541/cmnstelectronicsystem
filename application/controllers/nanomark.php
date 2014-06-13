@@ -1909,7 +1909,7 @@ class Nanomark extends MY_Controller {
 				}
 				else if($revision['checkpoint'] == "rejected")
 				{
-					$row[] = anchor("/nanomark/view_report_revision/{$revision['serial_no']}","未通過","class='btn btn-error'");
+					$row[] = anchor("/nanomark/view_report_revision/{$revision['serial_no']}","已退件","class='btn btn-inverse'");
 				}	
 				else
 				{
@@ -1944,10 +1944,9 @@ class Nanomark extends MY_Controller {
 					$this->data['report_ID_options'][$row['specimen_SN']] = $row['ID'];
 				}
 			}
-//			$applicant_profile = $this->user_model->get_user_profile_by_ID($this->session->userdata('ID'));
-//			$this->data['applicant_name'] = $applicant_profile['name'];
 			
 			$this->data['action_btn'] = form_submit("","送出","class='btn btn-warning'");
+			$this->data['mode'] = "form";
 
 			$this->load->view('templates/header');
 			$this->load->view('templates/sidebar');
@@ -1978,6 +1977,7 @@ class Nanomark extends MY_Controller {
 			
 			$this->data['action_btn'][] = form_button("update","簽名","value='accept' class='btn btn-warning'");
 			$this->data['action_btn'][] = form_button("update","駁回","value='reject' class='btn btn-inverse'");
+			$this->data['mode'] = "edit";
 			
 			$this->load->view('templates/header');
 			$this->load->view('templates/sidebar');
@@ -2006,6 +2006,7 @@ class Nanomark extends MY_Controller {
 			$this->data['checkpoints'] = $checkpoints;
 				
 			$this->data['action_btn'] = form_button("print_btn","列印","class='btn' ");
+			$this->data['mode'] = "view";
 			
 			$this->load->view('templates/header');
 			$this->load->view('templates/sidebar');

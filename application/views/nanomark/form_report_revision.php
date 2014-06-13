@@ -71,7 +71,7 @@ table td{
       <label class="checkbox inline"> <?=isset($mistake_outline)?(in_array("Data Error",$mistake_outline)?"■":"□"):form_checkbox("mistake_outline[]","Data Error","");?> 數據錯誤 </label><br />
       <label class="checkbox inline"> <?=isset($mistake_outline)?(in_array("Result Incorrect",$mistake_outline)?"■":"□"):form_checkbox("mistake_outline[]","Result Incorrect","");?> 確認數據結果不正確 </label><br />
       <label class="checkbox inline"> <?=isset($mistake_outline)?(in_array("Others",$mistake_outline)?"■":"□"):form_checkbox("mistake_outline[]","Others","");?> 其他 </label><br />
-    <td colspan="3" valign="top">錯誤說明：<br /><?=isset($mistake_description)?$mistake_description:form_textarea(array(
+    <td colspan="3" valign="top">錯誤說明：<br /><?=isset($mistake_description)?nl2br($mistake_description):form_textarea(array(
 	              'name'        => 'mistake_description',
 				  'rows'		=> '5',
 	              'value'       => "",
@@ -79,7 +79,7 @@ table td{
 	            ));?></td>
   </tr>
   <tr>
-    <td colspan="5">錯誤原因分析：<br /><?=isset($mistake_analysis)?$mistake_analysis:form_textarea(array(
+    <td colspan="5">錯誤原因分析：<br /><?=isset($mistake_analysis)?nl2br($mistake_analysis):form_textarea(array(
 	              'name'        => 'mistake_analysis',
 				  'rows'		=> '5',
 	              'value'       => "",
@@ -87,7 +87,7 @@ table td{
 	            ));?></td>
     </tr>
   <tr>
-    <td colspan="5">處置  /  修改：<br /><?=isset($disposal_revision)?$disposal_revision:form_textarea(array(
+    <td colspan="5">處置  /  修改：<br /><?=isset($disposal_revision)?nl2br($disposal_revision):form_textarea(array(
 	              'name'        => 'disposal_revision',
 				  'rows'		=> '5',
 	              'value'       => "",
@@ -129,10 +129,10 @@ table td{
     		if(isset($quality_manager)){
     			foreach($quality_manager as $qm)
     			{
-					echo $qm['admin_comment'].img($qm['admin_stamp']).$qm['checkpoint_time'];
+					echo nl2br($qm['admin_comment']).img($qm['admin_stamp']).$qm['checkpoint_time'];
 				}
     		}
-    		if(isset($checkpoint)&&$checkpoint=="quality_manager")
+    		if(isset($mode)&&$mode=='edit'&&isset($checkpoint)&&$checkpoint=="quality_manager")
     		{
     			echo form_textarea(array(
 	              'name'        => "quality_manager_comment",
@@ -151,10 +151,10 @@ table td{
     		if(isset($technical_manager)){
     			foreach($technical_manager as $qm)
     			{
-					echo $qm['admin_comment'].img($qm['admin_stamp']).$qm['checkpoint_time'];
+					echo nl2br($qm['admin_comment']).img($qm['admin_stamp']).$qm['checkpoint_time'];
 				}
     		}
-    		if(isset($checkpoint)&&$checkpoint=="technical_manager")
+    		if(isset($mode)&&$mode=='edit'&&isset($checkpoint)&&$checkpoint=="technical_manager")
     		{
     			echo form_textarea(array(
 	              'name'        => "technical_manager_comment",
@@ -173,10 +173,10 @@ table td{
     		if(isset($report_signatory)){
     			foreach($report_signatory as $qm)
     			{
-					echo $qm['admin_comment'].img($qm['admin_stamp']).$qm['checkpoint_time'];
+					echo nl2br($qm['admin_comment']).img($qm['admin_stamp']).$qm['checkpoint_time'];
 				}
     		}
-    		if(isset($checkpoint)&&$checkpoint=="report_signatory")
+    		if(isset($mode)&&$mode=='edit'&&isset($checkpoint)&&$checkpoint=="report_signatory")
     		{
     			echo form_textarea(array(
 	              'name'        => "report_signatory_comment",
@@ -195,10 +195,10 @@ table td{
     		if(isset($lab_manager)){
     			foreach($lab_manager as $qm)
     			{
-					echo $qm['admin_comment'].img($qm['admin_stamp']).$qm['checkpoint_time'];
+					echo nl2br($qm['admin_comment']).img($qm['admin_stamp']).$qm['checkpoint_time'];
 				}
     		}
-    		if(isset($checkpoint)&&$checkpoint=="lab_manager")
+    		if(isset($mode)&&$mode=='edit'&&isset($checkpoint)&&$checkpoint=="lab_manager")
     		{
     			echo form_textarea(array(
 	              'name'        => "lab_manager_comment",
