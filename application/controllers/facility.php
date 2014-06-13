@@ -1981,7 +1981,11 @@ class Facility extends MY_Controller {
 					return;
 				}
 			}else if($input_data['type'] == "reissue"){
-				//補發不用檢察任何東西
+				//檢查原先已有卡片才可申請
+				if(empty($user_profile['card_num']))
+				{
+					throw new Exception("您未有磁卡，不可申請補發",ERROR_CODE);
+				}
 			}else{
 				echo $this->info_modal("未知錯誤","","error");
 				return;
@@ -2037,7 +2041,7 @@ class Facility extends MY_Controller {
 
 			if($card_app['checkpoint'] == "Officer")
 			{
-				if($card_app['type'] == "apply")
+				if($card_app['type'] == "apply" || $card_app['type'] == "reissue")
 				{
 					//檢查輸入有無錯誤
 					$this->form_validation->set_rules('card_num', '卡號', 'required|min_length[8]|max_length[8]');
@@ -2064,24 +2068,6 @@ class Facility extends MY_Controller {
 					$this->user_model->update_user_card_num($card_app['user_ID']);
 					$input_data['officer_ID'] = $this->session->userdata('ID');
 					$input_data['checkpoint'] = "Completed";
-				}else if($card_app['type'] == "reissue")
-				{
-					//檢查輸入有無錯誤
-					$this->form_validation->set_rules('card_num', '卡號', 'required|min_length[8]|max_length[8]');
-					if(!$this->form_validation->run())
-					{
-						echo $this->info_modal(validation_errors(),"","warning");
-						return;
-					}
-					//把卡號綁定帳號
-					$this->user_model->update_user_card_num($card_app['user_ID'],$input_data['card_num']);
-					//更新關卡
-					$input_data['checkpoint'] = "Notified";
-					//寄MAIL通知領卡
-					$this->email->to($card_app['email']);
-					$this->email->subject("微奈米科技研究中心－通知領取磁卡");
-					$this->email->message("您好，您的磁卡已經申請成功，請攜帶大頭照、500元押金至微奈米中心領卡，謝謝您。"); 
-					$this->email->send();
 				}
 			}else if($card_app['checkpoint'] == "Notified")
 			{
