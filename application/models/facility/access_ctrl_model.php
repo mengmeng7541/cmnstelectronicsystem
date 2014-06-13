@@ -376,7 +376,7 @@ class Access_ctrl_model extends MY_Model {
   }
   
   //--------------------------換卡號-----------------------------------
-  public function exchange($user_ID,$new_card_num,$start_time,$end_time = NULL){
+  public function exchange($user_ID,$new_card_num,$start_time = NULL,$end_time = NULL){
   	$this->load->model('user_model');
   	$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$user_ID))->row_array();
   	if(!$user_profile){
@@ -385,7 +385,7 @@ class Access_ctrl_model extends MY_Model {
 	//把時間區間的預約紀錄抽出來
 	$bookings = $this->facility_model->get_facility_booking_list(array(
 		"user_ID"=>$user_profile['ID'],
-		"start_time"=>$start_time,
+		"start_time"=>isset($start_time)?$start_time:date("Y-m-d H:i:s"),
 		"end_time"=>$end_time
 	))->result_array();
 	//全部重開一次

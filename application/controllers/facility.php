@@ -3,7 +3,7 @@ class Facility extends MY_Controller {
 	private $data = array();
 	private static $facility_category = array("奈米微影製程","奈米表面與磊晶","奈米材料分析","非破壞性分析","100"=>"奈米標章");
 	private $booking_purpose = array("DIY"=>"自行操作","OEM"=>"代工","course"=>"課程","maintenance"=>"維護","nanomark"=>"奈米標章");
-	private $card_application_type = array("apply"=>"請卡","refund"=>"退卡");
+	private $card_application_type = array("apply"=>"請卡","refund"=>"退卡","reissue"=>"補發");
 	private static $privilege_level = array("novice"=>"初心者","normal"=>"一般使用者","super"=>"超級使用者","admin"=>"儀器管理者","super_admin"=>"超級管理員");
 	private static $facility_state = array("normal"=>"正常","fault"=>"故障","migrated"=>"已移轉");
 	private static $access_link_type = array("","門禁","儀器");
@@ -1910,7 +1910,7 @@ class Facility extends MY_Controller {
 			//
 			if($aRow['checkpoint'] == "Officer")
 			{
-				if($aRow['type'] == "apply")
+				if($aRow['type'] == "apply" || $aRow['type'] == "reissue")
 					$row[] = form_button("notify","通知領卡","class='btn btn-primary btn-small' value='{$aRow['serial_no']}'");
 				else if($aRow['type'] == "refund")
 					$row[] = form_button("issue","退卡確認","class='btn btn-warning btn-small' value='{$aRow['serial_no']}'");
@@ -1952,129 +1952,165 @@ class Facility extends MY_Controller {
 	}
 	public function add_card_application()
 	{
-		$this->is_user_login();
+		try{
+			$this->is_user_login();
 		
-		//for user only
-		$user_profile = $this->user_model->get_user_profile_by_ID($this->session->userdata('ID'));
-		
-		$input_data = $this->input->post(NULL,TRUE);
-		
-		//先確認目前有否卡片
-		if($input_data['type'] == "apply"){
-			if(!empty($user_profile['card_num']))
-			{
-				echo $this->info_modal("您已有磁卡，請勿重複申請。","","error");
-				return;
-			}
-		}else if($input_data['type'] == "refund"){
-			if(empty($user_profile['card_num']))
-			{
-				echo $this->info_modal("您尚未有磁卡，無法退卡。","","error");
-				return;
-			}
-			//確認有填寫退卡原因
-			$this->form_validation->set_rules("comment","退卡原因","required");
-			if(!$this->form_validation->run())
-			{
-				echo $this->info_modal(validation_errors(),"","warning");
-				return;
-			}
-		}else{
-			echo $this->info_modal("未知錯誤","","error");
-			return;
-		}
-		//再確認有無重複申請
-		$card_app_result = $this->facility_model->get_card_application_list(
-			array("user_ID"=>$this->session->userdata('ID'))
-		)->row_array();
-		if($card_app_result)
-		{
-			if($card_app_result['checkpoint'] != "Completed")
-			{
-				echo $this->info_modal("您的申請已經在處理中，請勿重複申請。","","error");
-				return;
-			}
-		}
-		
-		//傳資料
-		$input_data['user_ID'] = $user_profile['ID'];
-		$result = $this->facility_model->add_card_application($input_data);
-		
-		if($result)
-		{
-			if($input_data['type'] == "apply")
-				echo $this->info_modal("申請已送出，五個工作天後本中心會通知前來領卡，請留意您的E-mail，謝謝。");
-			else if($input_data['type'] == "refund")
-				echo $this->info_modal("申請已送出，請直接前往中心領回押金，謝謝。");
-		}	
-		else
-			echo $this->info_modal("內部錯誤","","error");
-	}
-	public function update_card_application($SN = "")
-	{
-		//for admin only
-		$this->is_admin_login();
-		
-		
-		
-		$input_data = $this->input->post(NULL,TRUE);
-		
-		$card_app = $this->facility_model->get_card_application_list(array("serial_no"=>$SN))->row_array();
-		
-		if(!$card_app)
-		{
-			echo $this->info_modal("無此申請單","","error");
-			return;
-		}
-
-		if($card_app['checkpoint'] == "Officer")
-		{
-			if($card_app['type'] == "apply")
-			{
-				//檢查輸入有無錯誤
-				$this->form_validation->set_rules('card_num', '卡號', 'required|min_length[8]|max_length[8]');
+			//for user only
+			$user_profile = $this->user_model->get_user_profile_by_ID($this->session->userdata('ID'));
+			
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			//先確認目前有否卡片
+			if($input_data['type'] == "apply"){
+				if(!empty($user_profile['card_num']))
+				{
+					echo $this->info_modal("您已有磁卡，請勿重複申請。","","error");
+					return;
+				}
+			}else if($input_data['type'] == "refund"){
+				if(empty($user_profile['card_num']))
+				{
+					echo $this->info_modal("您尚未有磁卡，無法退卡。","","error");
+					return;
+				}
+				//確認有填寫退卡原因
+				$this->form_validation->set_rules("comment","退卡原因","required");
 				if(!$this->form_validation->run())
 				{
 					echo $this->info_modal(validation_errors(),"","warning");
 					return;
 				}
-				//把卡號綁定帳號
-				$this->user_model->update_user_card_num($card_app['user_ID'],$input_data['card_num']);
-				//更新關卡
-				$input_data['checkpoint'] = "Notified";
-				//寄MAIL通知領卡
-				$this->email->to($card_app['email']);
-				$this->email->subject("微奈米科技研究中心－通知領取磁卡");
-				$this->email->message("您好，您的磁卡已經申請成功，請攜帶大頭照、500元押金至微奈米中心領卡，謝謝您。"); 
-				$this->email->send();
-			}else if($card_app['type'] == "refund")
-			{
-				//取得退卡的卡號
-				$user_profile = $this->user_model->get_user_profile_by_ID($card_app['user_ID']);
-				$input_data['card_num'] = $user_profile['card_num'];//記錄退卡卡號
-				//把卡號從帳號綁定移除
-				$this->user_model->update_user_card_num($card_app['user_ID']);
-				$input_data['officer_ID'] = $this->session->userdata('ID');
-				$input_data['checkpoint'] = "Completed";
+			}else if($input_data['type'] == "reissue"){
+				//補發不用檢察任何東西
+			}else{
+				echo $this->info_modal("未知錯誤","","error");
+				return;
 			}
-		}else if($card_app['checkpoint'] == "Notified")
-		{
+			//再確認有無重複申請
+			$card_app_result = $this->facility_model->get_card_application_list(
+				array("user_ID"=>$this->session->userdata('ID'))
+			)->row_array();
+			if($card_app_result)
+			{
+				if($card_app_result['checkpoint'] != "Completed" && $card_app_result['checkpoint'] != "Canceled")
+				{
+					echo $this->info_modal("您的申請已經在處理中，請勿重複申請。","","error");
+					return;
+				}
+			}
 			
-			$input_data['officer_ID'] = $this->session->userdata('ID');
-			$input_data['checkpoint'] = "Completed";
-		}else if($card_app['checkpoint'] == "Completed")
-		{
-			echo $this->info_modal("此案已結","","error");
-			return;
+			//傳資料
+			$input_data['user_ID'] = $user_profile['ID'];
+			$result = $this->facility_model->add_card_application($input_data);
+			
+			if($result)
+			{
+				if($input_data['type'] == "apply")
+					echo $this->info_modal("申請已送出，五個工作天後本中心會通知前來領卡，請留意您的E-mail，謝謝。");
+				else if($input_data['type'] == "refund")
+					echo $this->info_modal("申請已送出，請直接前往中心領回押金，謝謝。");
+				else if($input_data['type'] == "reissue")
+					echo $this->info_modal("申請已送出，五個工作天後本中心會通知前來領卡，請留意您的E-mail，謝謝。");
+			}	
+			else
+				echo $this->info_modal("內部錯誤","","error");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
 		
-		$input_data['serial_no'] = $SN;
-		$result = $this->facility_model->update_card_application($input_data);
+	}
+	public function update_card_application($SN = "")
+	{
+		try{
+			//for admin only
+			$this->is_admin_login();
+			
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			$card_app = $this->facility_model->get_card_application_list(array("serial_no"=>$SN))->row_array();
+			
+			if(!$card_app)
+			{
+				echo $this->info_modal("無此申請單","","error");
+				return;
+			}
+
+			if($card_app['checkpoint'] == "Officer")
+			{
+				if($card_app['type'] == "apply")
+				{
+					//檢查輸入有無錯誤
+					$this->form_validation->set_rules('card_num', '卡號', 'required|min_length[8]|max_length[8]');
+					if(!$this->form_validation->run())
+					{
+						echo $this->info_modal(validation_errors(),"","warning");
+						return;
+					}
+					//把卡號綁定帳號
+					$this->user_model->update_user_card_num($card_app['user_ID'],$input_data['card_num']);
+					//更新關卡
+					$input_data['checkpoint'] = "Notified";
+					//寄MAIL通知領卡
+					$this->email->to($card_app['email']);
+					$this->email->subject("微奈米科技研究中心－通知領取磁卡");
+					$this->email->message("您好，您的磁卡已經申請成功，請攜帶大頭照、500元押金至微奈米中心領卡，謝謝您。"); 
+					$this->email->send();
+				}else if($card_app['type'] == "refund")
+				{
+					//取得退卡的卡號
+					$user_profile = $this->user_model->get_user_profile_by_ID($card_app['user_ID']);
+					$input_data['card_num'] = $user_profile['card_num'];//記錄退卡卡號
+					//把卡號從帳號綁定移除
+					$this->user_model->update_user_card_num($card_app['user_ID']);
+					$input_data['officer_ID'] = $this->session->userdata('ID');
+					$input_data['checkpoint'] = "Completed";
+				}else if($card_app['type'] == "reissue")
+				{
+					//檢查輸入有無錯誤
+					$this->form_validation->set_rules('card_num', '卡號', 'required|min_length[8]|max_length[8]');
+					if(!$this->form_validation->run())
+					{
+						echo $this->info_modal(validation_errors(),"","warning");
+						return;
+					}
+					//把卡號綁定帳號
+					$this->user_model->update_user_card_num($card_app['user_ID'],$input_data['card_num']);
+					//更新關卡
+					$input_data['checkpoint'] = "Notified";
+					//寄MAIL通知領卡
+					$this->email->to($card_app['email']);
+					$this->email->subject("微奈米科技研究中心－通知領取磁卡");
+					$this->email->message("您好，您的磁卡已經申請成功，請攜帶大頭照、500元押金至微奈米中心領卡，謝謝您。"); 
+					$this->email->send();
+				}
+			}else if($card_app['checkpoint'] == "Notified")
+			{
+				$input_data['officer_ID'] = $this->session->userdata('ID');
+				$input_data['checkpoint'] = "Completed";
+				
+				if($card_app['type'] == "reissue")
+				{
+					//把所有的預約改成現在的卡號
+					$this->load->model('facility/access_ctrl_model');
+					$this->access_ctrl_model->exchange($card_app['user_ID'],$card_app['card_num']);
+				}
+			}else if($card_app['checkpoint'] == "Completed")
+			{
+				echo $this->info_modal("此案已結","","error");
+				return;
+			}
+			
+			$input_data['serial_no'] = $SN;
+			$result = $this->facility_model->update_card_application($input_data);
+			
+			if($result)
+				echo $this->info_modal("更新成功","/facility/admin/card/list");
+			else
+				echo $this->info_modal("內部錯誤","","error");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
 		
-		if($result)
-			echo $this->info_modal("更新成功","/facility/admin/card/list");
-		else
-			echo $this->info_modal("內部錯誤","","error");
 	}
 	public function del_card_application()
 	{

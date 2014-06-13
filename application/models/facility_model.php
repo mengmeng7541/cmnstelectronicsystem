@@ -735,7 +735,7 @@ class Facility_model extends MY_Model {
 	{
 		$this->facility_db->set("user_ID",$input_data['user_ID']);
 		$this->facility_db->set("type",$input_data['type']);
-		if(!empty($input_data['comment']))
+		if(isset($input_data['comment']))
 			$this->facility_db->set("comment",$input_data['comment']);
 		$this->facility_db->insert("facility_card_application");
 		return $this->facility_db->affected_rows();
@@ -748,6 +748,11 @@ class Facility_model extends MY_Model {
 		{
 			$this->facility_db->set("issuance_date","NOW()",FALSE);
 			$this->facility_db->set("officer_ID",$input_data['officer_ID']);
+		}
+		if(isset($input_data['canceled_by']))
+		{
+			$this->facility_db->set("canceled_by",$input_data['canceled_by']);
+			$this->facility_db->set("cancellation_date",date("Y-m-d H:i:s"));
 		}
 		
 		$this->facility_db->set("checkpoint",$input_data['checkpoint']);

@@ -26,6 +26,7 @@
 							      <select name="type">
 							         <option value="apply">申請磁卡</option>
 							         <option value="refund">退還磁卡</option>
+							         <option value="reissue">補發磁卡</option>
 							      </select>
 					           </div>
 							</div>
