@@ -1988,6 +1988,13 @@ class Facility extends MY_Controller {
 					echo $this->info_modal(validation_errors(),"","warning");
 					return;
 				}
+				//確認此卡可退
+				$this->load->model('facility/card_application_model');
+				$refundables = $this->card_application_model->get_refundable_card_num($this->session->userdata('ID'));
+				if(!in_array($input_data['card_num'],$refundables))
+				{
+					throw new Exception("此卡不可退",ERROR_CODE);
+				}
 			}else if($input_data['type'] == "reissue"){
 				//檢查原先已有卡片才可申請
 				if(empty($user_profile['card_num']))
