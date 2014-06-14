@@ -37,4 +37,33 @@ class Card_application_model extends Facility_model {
 		$refundable = array_unique($refundable);
 		return $refundable;
 	}
+	
+	public function cancel($SN)
+	{
+		$app = $this->get_card_application_list(array("serial_no"=>$SN))->row_array();
+		if(!$app){
+			throw new Exception("無此申請單",ERROR_CODE);
+		}
+		
+		$this->update_card_application(array(
+			"canceled_by"=>$this->session->userdata('ID'),
+			"checkpoint"=>"Canceled",
+			"serial_no"=>$app['serial_no']
+		));
+		
+		//取得管理員mail
+		$this->load->model('access_model');
+		$admins = $this->access_model->get_privilege_list(array("privilege"=>"access_super_admin"))->result_array();
+		$admin_emails = sql_column_to_key_value_array($admins,"admin_email");
+		
+		//發送通知
+		$this->email->to($app['user_email']);
+		$this->email->cc($admin_emails);
+		$this->email->subject("成大微奈米科技研究中心 -磁卡申請退件通知-");
+		$this->email->message("
+			{$app['user_name']} 您好：<br>
+			您的磁卡申請編號 {$app['serial_no']} 已退件，有任何問題歡迎電洽本中心，謝謝。
+		");
+		$this->email->send();
+	}
 }

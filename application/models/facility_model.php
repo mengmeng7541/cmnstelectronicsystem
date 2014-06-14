@@ -713,8 +713,8 @@ class Facility_model extends MY_Model {
 									$sTable.issuance_date,
 									$sTable.checkpoint,
 									$sJoinTable[0].name AS user_name,
-									$sJoinTable[0].email,
-									$sJoinTable[0].mobile,
+									$sJoinTable[0].email AS user_email,
+									$sJoinTable[0].mobile AS user_mobile,
 									$sJoinTable[0].AB_form_verified_by,
 									admin.name AS admin_name")
 						  ->from($sTable)
@@ -727,7 +727,7 @@ class Facility_model extends MY_Model {
 			$this->facility_db->where("$sTable.type",$input_data['type']);
 		if(!empty($input_data['user_ID']))
 			$this->facility_db->where("$sTable.user_ID",$input_data['user_ID']);
-		if(!empty($input_data['serial_no']))
+		if(isset($input_data['serial_no']))
 			$this->facility_db->where("$sTable.serial_no",$input_data['serial_no']);
 		
 		return $this->facility_db->get();
@@ -760,13 +760,15 @@ class Facility_model extends MY_Model {
 			$this->facility_db->set("canceled_by",$input_data['canceled_by']);
 			$this->facility_db->set("cancellation_date",date("Y-m-d H:i:s"));
 		}
-		
-		$this->facility_db->set("checkpoint",$input_data['checkpoint']);
+		if(isset($input_data['checkpoint']))
+		{
+			$this->facility_db->set("checkpoint",$input_data['checkpoint']);
+		}
 		$this->facility_db->where("serial_no",$input_data['serial_no']);
 		$this->facility_db->update("facility_card_application");
 		return $this->facility_db->affected_rows();
 	}
-
+	
 	//----------------------------通用-----------------------------
 	public function is_facility_super_admin()
 	{

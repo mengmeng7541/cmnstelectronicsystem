@@ -2747,7 +2747,18 @@ var App = function () {
 				facility_card_application.fnReloadAjax(null,null,true);
 			});
 		});
-		
+		$("#table_list_card_application").on("click","button[name='cancel']",function(){
+			$.ajax({
+				url: site_url+"facility/admin/card/del/"+$(this).val(),
+				beforeSend: function(){
+					showRequest();
+				}
+			})
+			.done(function(data){
+				showResponse(data);
+				facility_card_application.fnReloadAjax(null,null,true);
+			});
+		});
 		//-------------------門禁卡開關與進出----------------------------
 		var access_card_table = $("#table_list_access_card").dataTable({
             "bProcessing": true,

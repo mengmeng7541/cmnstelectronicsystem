@@ -1902,8 +1902,8 @@ class Facility extends MY_Controller {
 			$row[] = $aRow['application_date'];
 			$row[] = $aRow['user_ID'];
 			$row[] = $aRow['user_name'];
-			$row[] = $aRow['email'];
-			$row[] = $aRow['mobile'];
+			$row[] = $aRow['user_email'];
+			$row[] = $aRow['user_mobile'];
 			$row[] = $aRow['card_num'];
 			$row[] = $aRow['issuance_date'];
 			$row[] = $aRow['admin_name'];
@@ -1919,10 +1919,12 @@ class Facility extends MY_Controller {
 					$display[] = form_button("notify","通知領卡","class='btn btn-primary btn-small' value='{$aRow['serial_no']}'");
 				else if($aRow['type'] == "refund")
 					$display[] = form_button("issue","退卡確認","class='btn btn-warning btn-small' value='{$aRow['serial_no']}'");
+				$display[] = form_button("cancel","強制取消","class='btn btn-small btn-danger' value='{$aRow['serial_no']}'");
 			}
 			else if($aRow['checkpoint'] == "Notified")
 			{
 				$display[] = form_button("issue","押金確認","class='btn btn-warning btn-small' value='{$aRow['serial_no']}'");
+				$display[] = form_button("cancel","強制取消","class='btn btn-small btn-danger' value='{$aRow['serial_no']}'");
 			}
 			else if($aRow['checkpoint'] == "Completed")
 			{
@@ -2105,10 +2107,21 @@ class Facility extends MY_Controller {
 		}
 		
 	}
-	public function del_card_application()
+	public function del_card_application($SN = "")
 	{
-		//for admin
-		$this->is_admin_login();
+		try{
+			$this->is_admin_login();
+			
+			$SN = $this->security->xss_clean($SN);
+			
+			$this->load->model('facility/card_application_model');
+			$this->card_application_model->cancel($SN);
+			
+			echo $this->info_modal("退件成功");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+		
 	}
 	//-------------------------預約不計費----------------------------
 	public function form_nocharge($ID = NULL)

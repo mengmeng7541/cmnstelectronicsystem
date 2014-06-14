@@ -10,6 +10,14 @@ class Access_model extends MY_Model {
 	//--------------------SYSTEM PRIVILEGE-----------------------
 	public function get_privilege_list($options = array())
 	{
+		$sTable = "access_admin_privilege";
+		$sJoinTable = array("user"=>"cmnst_common.user_profile");
+		$this->access_db->select("
+			$sTable.*,
+			{$sJoinTable['user']}.email AS admin_name,
+			{$sJoinTable['user']}.email AS admin_email
+		");
+		$this->access_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.admin_ID","LEFT");
 		if(isset($options['admin_ID']))
 		{
 			$this->access_db->where("admin_ID",$options['admin_ID']);	
