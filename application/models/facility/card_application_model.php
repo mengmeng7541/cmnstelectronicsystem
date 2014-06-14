@@ -45,6 +45,18 @@ class Card_application_model extends Facility_model {
 			throw new Exception("無此申請單",ERROR_CODE);
 		}
 		
+		//在核發或補發狀態下並已指定卡號
+		if(!empty($app['card_num']) && ($app['type']=='apply' || $app['type']=='reissue'))
+		{
+			//取得退卡的卡號，若與現在卡號相同，則解除綁定
+			$user_profile = $this->user_model->get_user_profile_by_ID($app['user_ID']);
+			if($app['card_num'] == $user_profile['card_num'])
+			{
+				//把卡號從帳號綁定移除
+				$this->user_model->update_user_card_num($app['user_ID']);
+			}
+		}
+		
 		$this->update_card_application(array(
 			"canceled_by"=>$this->session->userdata('ID'),
 			"checkpoint"=>"Canceled",
