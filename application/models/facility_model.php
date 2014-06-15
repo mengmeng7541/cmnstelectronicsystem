@@ -124,16 +124,7 @@ class Facility_model extends MY_Model {
 		$this->facility_db->update("facility_list");
 		return $this->facility_db->affected_rows();
 	}
-	public function update_batch_facility($input_data = array())
-	{
-		foreach($input_data as $row)
-		{
-			$this->facility_db->set("pause_start_time",$row['pause_start_time']);
-			$this->facility_db->set("pause_end_time",$row['pause_end_time']);
-			$this->facility_db->where("ID",$row['ID']);
-			$this->facility_db->update("facility_list");
-		}
-	}
+	
 	//----------------------------門禁-----------------------------------------
 	public function get_door_list()
 	{
@@ -848,10 +839,7 @@ class Facility_model extends MY_Model {
 	}
 	public function is_facility_admin($f_ID)
 	{
-		if($this->session->userdata('status')=="admin")
-			return $this->get_user_privilege_list(array("user_ID"=>$this->session->userdata('ID'),"facility_ID"=>$f_ID,"privilege"=>"admin"))->row_array();
-		else
-			return FALSE;
+		return $this->get_user_privilege_list(array("user_ID"=>$this->session->userdata('ID'),"facility_ID"=>$f_ID,"privilege"=>"admin"))->row_array();
 	}
 	public function get_facility_select_options($type = NULL)
 	{
