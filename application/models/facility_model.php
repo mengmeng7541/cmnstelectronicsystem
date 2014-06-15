@@ -96,8 +96,6 @@ class Facility_model extends MY_Model {
 		$this->facility_db->set("enable_booking",$input_data['enable_booking']);
 		$this->facility_db->set("enable_privilege",$input_data['enable_privilege']);
 		$this->facility_db->set("enable_occupation",$input_data['enable_occupation']);
-		$this->facility_db->set("pause_start_time",$input_data['pause_start_time']);
-		$this->facility_db->set("pause_end_time",$input_data['pause_end_time']);
 		$this->facility_db->insert("facility_list");
 		return $this->facility_db->affected_rows();
 	}
@@ -122,8 +120,6 @@ class Facility_model extends MY_Model {
 		$this->facility_db->set("enable_booking",$input_data['enable_booking']);
 		$this->facility_db->set("enable_privilege",$input_data['enable_privilege']);
 		$this->facility_db->set("enable_occupation",$input_data['enable_occupation']);
-		$this->facility_db->set("pause_start_time",$input_data['pause_start_time']);
-		$this->facility_db->set("pause_end_time",$input_data['pause_end_time']);
 		$this->facility_db->where("ID",$input_data['ID']);
 		$this->facility_db->update("facility_list");
 		return $this->facility_db->affected_rows();

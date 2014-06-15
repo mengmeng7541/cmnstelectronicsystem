@@ -81,16 +81,6 @@ class Facility extends MY_Controller {
 				$privilege = $this->rotate_2D_array($privilege);
 				$this->data['admin_ID'] = $privilege['user_ID'];
 			}
-			if(!empty($facility['pause_start_time']))
-			{
-				$this->data['pause_start_date'] = date("Y-m-d",strtotime($facility['pause_start_time']));
-				$this->data['pause_start_time'] = date("H:i:s",strtotime($facility['pause_start_time']));
-			}
-			if(!empty($facility['pause_end_time']))
-			{
-				$this->data['pause_end_date'] = date("Y-m-d",strtotime($facility['pause_end_time']));
-				$this->data['pause_end_time'] = date("H:i:s",strtotime($facility['pause_end_time']));
-			}
 		}
 		
 		//取得類別列表
@@ -232,17 +222,6 @@ class Facility extends MY_Controller {
 			$input_data['facility_tech_ID'] = NULL;
 			$input_data['facility_class_ID'] = NULL;
 		}
-		//停機時間
-		if(!empty($input_data['pause_start_date']) && !empty($input_data['pause_end_date']))
-		{
-			if(empty($input_data['pause_start_time'])) $input_data['pause_start_time']="";
-			if(empty($input_data['pause_end_time'])) $input_data['pause_end_time']="";
-			$input_data['pause_start_time'] = date("Y-m-d H:i:s",strtotime($input_data['pause_start_date']." ".$input_data['pause_start_time']));
-			$input_data['pause_end_time'] = date("Y-m-d H:i:s",strtotime($input_data['pause_end_date']." ".$input_data['pause_end_time']));
-		}else{
-			$input_data['pause_start_time'] = NULL;
-			$input_data['pause_end_time'] = NULL;
-		}
 		
 		//寫入前對輸入的資料作變更
 		if(empty($input_data['ctrl_no'])) $input_data['ctrl_no'] = NULL;
@@ -256,8 +235,6 @@ class Facility extends MY_Controller {
 			$this->facility_model->add_facility($input_data);
 			
 		}else if($action=="update"){
-			$this->facility_model->update_facility_by_ID($input_data);
-			
 			//取得舊的資訊
 			$facility = $this->facility_model->get_facility_list(array("ID"=>$input_data['ID']))->row_array();
 			if(!$facility)
@@ -266,40 +243,14 @@ class Facility extends MY_Controller {
 				return;
 			}
 			
+			$this->facility_model->update_facility_by_ID($input_data);
+			
 			//更新使用權限
 			if($facility['extension_sec'] != $input_data['extension_sec'])
 			{
-				$user_privileges = $this->facility_model->get_user_privilege_list(
-				array("facility_ID"=>$facility['ID'],
-					  "privilege"=>"normal")
-				)->result_array();
-				foreach($user_privileges as $p)
-				{
-					if(!empty($input_data['extension_sec']))
-					{
-						$last_booking = $this->facility_model->get_facility_booking_list(
-						array("facility_ID"=>$p['facility_ID'],
-							  "user_ID"=>$p['user_ID'])
-						)->row_array();
-						if($last_booking)
-						{
-							$data = array("serial_no"=>$p['serial_no'],
-										  "expiration_date"=>date("Y-m-d H:i:s",strtotime($last_booking['end_time'])+$input_data['extension_sec']));
-						}else{
-							$data = array("serial_no"=>$p['serial_no'],
-										  "expiration_date"=>date("Y-m-d H:i:s",strtotime($p['verification_time'])+$input_data['extension_sec']));
-						}
-						$this->facility_model->update_user_privilege($data);
-					}else{
-						$data = array("serial_no"=>$p['serial_no'],
-									  "expiration_date"=>NULL);
-						$this->facility_model->update_user_privilege($data);
-					}
-				}
+				$this->load->model('facility/user_privilege_model');
+				$this->user_privilege_model->update(NULL,$facility['ID']);
 			}
-			
-			
-			
 			
 		}
 		
@@ -353,35 +304,34 @@ class Facility extends MY_Controller {
 	}
 	public function update_batch_facility()
 	{
-		$this->is_admin_login();
+		try{
+			$this->is_admin_login();
 		
-		$input_data = $this->input->post(NULL,TRUE);
-		
-		$this->form_validation->set_rules("ID[]","儀器","required");
-		$this->form_validation->set_rules("pause_start_date","停機起始時間","required");
-		$this->form_validation->set_rules("pause_end_date","停機結束時間","required");
-		
-		if(!$this->form_validation->run())
-		{
-			echo $this->info_modal(validation_errors(),"","warning");
-			return;
+			$input_data = $this->input->post(NULL,TRUE);
+			
+			$this->form_validation->set_rules("facility_SN[]","儀器","required");
+			$this->form_validation->set_rules("outage_start_date","停機起始日期","required");
+			$this->form_validation->set_rules("outage_start_time","停機起始時間","required");
+			$this->form_validation->set_rules("outage_remark","停機原因","required");
+			
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			$this->load->model('facility/outage_model');
+			$this->outage_model->add_outage(
+				$input_data['facility_SN'],
+				$input_data['outage_remark'],
+				"{$input_data['outage_start_date']} {$input_data['outage_start_time']}",
+				"{$input_data['outage_end_date']} {$input_data['outage_end_time']}"
+			);
+			
+			echo $this->info_modal("設定成功","/facility/admin/facility/list");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
 		
-		$data = array();
-		foreach($input_data['ID'] as $facility_ID)
-		{
-			$row = array();
-			
-			$row['ID'] = $facility_ID;
-			$row['pause_start_time'] = date("Y-m-d H:i:s",strtotime($input_data['pause_start_date']." ".$input_data['pause_start_time']));
-			$row['pause_end_time'] = date("Y-m-d H:i:s",strtotime($input_data['pause_end_date']." ".$input_data['pause_end_time']));
-			
-			$data[] = $row;
-		}
-		
-		$this->facility_model->update_batch_facility($data);
-		
-		echo $this->info_modal("設定成功","/facility/admin/facility/list");
 	}
 	//---------------------------門禁-----------------------------------
 	public function query_door()
