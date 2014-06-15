@@ -10,7 +10,7 @@
                         <div class="widget-title">
                             <h4><i class="icon-reorder"></i>儀器設定</h4>
                         </div>
-                        <div class="widget-body form" ng-controller="facility_config_edit">
+                        <div class="widget-body form" data-ng-controller="facility_config_edit">
 							<form action="<?=$action;?>" id="form_facility_config" class="form-horizontal" method="POST">
 								<div class="accordion" id="accordion1">
 									<div class="accordion-group">
@@ -150,7 +150,7 @@
 										           
 												</div>
 												<div class="control-group row-fluid">
-												   <table id="table_facility_outage_list" class="table table-striped table-bordered">
+												   <table my-datatable id="table_facility_outage_list" class="table table-striped table-bordered" >
 										              <thead>
 										                 <tr>
 										                 	<th>停機起始時間</th>
@@ -160,14 +160,14 @@
 										                 </tr>
 										              </thead>
 										              <tbody>
-										                 <tr ng-repeat="outage in outages">
+										                 <!--<tr ng-repeat="outage in outages">
 										                 	<td>{{outage.outage_start_time}}</td>
 										                 	<td>{{outage.outage_end_time}}</td>
 										                 	<td>{{outage.outage_remark}}</td>
 										                 	<td>
 										                 		<button type="button" class="btn btn-small btn-warning" ng-click="get_facility_outage(outage.outage_SN)" data-toggle="modal" data-target="#modal_facility_outage">編輯</button>
 										                 	</td>
-										                 </tr>
+										                 </tr>-->
 										              </tbody>
 										           </table>
 												</div>
@@ -260,7 +260,7 @@
 							    </div>
 							    <div class="modal-body">
 							        <form id="form_facility_outage" action="<?=site_url('facility/admin/outage/update');?>" method="POST" class="form-horizontal">
-							        	<input type="hidden" name="outage_no" value="{{outage.outage_SN}}"/>
+							        	<input type="hidden" name="outage_SN" value="{{outage.outage_SN}}"/>
 							        	<input type="hidden" name="facility_SN" value="<?=empty($ID)?"":$ID;?>"/>
 							        	<div class="control-group ">
 								           <label class="control-label">停機起始時間</label>
@@ -285,7 +285,7 @@
 							        </form>
 							    </div>
 							    <div class="modal-footer">
-									<button type='button' name="confirm_outage" class='btn btn-warning' data-dismiss='modal'>確認</button>
+									<button type='submit' name="confirm_outage" class='btn btn-warning' data-dismiss='modal'>確認</button>
 									<button type='button' class='btn btn-primary' data-dismiss='modal'>取消</button>
 							    </div>
 							</div>
@@ -298,24 +298,67 @@
     </div>
 </div>
 <script type="text/javascript">
+
 	$(document).ready(function(){
-		cmnstApp.controller("facility_config_edit",function($scope,$http){
-			$http.get('/index.php/facility/admin/outage/query').success(function(data){
-				$scope.outages = data.aaData;
-			});
+		
+	});
+	$(document).ready(function(){
+		cmnstApp
+		.controller("facility_config_edit",function($scope,$http){
 			$scope.get_facility_outage = function(SN)
 			{
-				$http.get('/index.php/facility/admin/outage/query',{params:{outage_SN:SN}}).success(function(data){
+				$http
+				.get('/index.php/facility/admin/outage/query',{params:{outage_SN:SN}})
+				.success(function(data){
 					if(data.aaData.length)
 					{
 						data.aaData[0].outage_start_time = Date.parse(data.aaData[0].outage_start_time);
 						data.aaData[0].outage_end_time = Date.parse(data.aaData[0].outage_end_time);
 						$scope.outage = data.aaData[0];
 					}
-					
+					console.log($scope.outage);
 				});
 			}
+		})
+		.directive('myDatatable',function(){
+		    return { 
+				restrict: 'A', 
+				link: function(scope,element,attrs){ 
+					//jquery
+					element.on('click', "button",function(){ 
+						scope.$apply($(this).attr("ng-click"));
+					}); 
+				} 
+		    }; 
 		});
+		
+		
+//		angular.module('compile', [], function($compileProvider) {
+//		    // configure new 'compile' directive by passing a directive
+//		    // factory function. The factory function injects the '$compile'
+//		    $compileProvider.directive('my-table', function($compile) {
+//			// directive factory creates a link function
+//				return function(scope, element, attrs) {
+//					scope.$watch(
+//						function(scope) {
+//							// watch the 'my-table' expression for changes
+//							return scope.$eval(attrs.my-table);
+//						},
+//						function(value) {
+//							// when the 'compile' expression changes
+//							// assign it into the current DOM
+////							element.html(value);
+//
+//							// compile the new DOM and link it to the current
+//							// scope.
+//							// NOTE: we only compile .childNodes so that
+//							// we don't get into infinite loop compiling ourselves
+//							$compile(value)(scope);
+//						}
+//					);
+//				};
+//			})
+//		});
 	});
 </script>
 

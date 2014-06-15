@@ -1753,7 +1753,12 @@ class Facility extends MY_Controller {
 					
 				echo $this->info_modal("新增成功");
 			}else{
-//				$this->outage_model->update_outage($input_data['facility_SN']);
+				$this->outage_model->update_outage(
+					$input_data['outage_SN'],
+					$input_data['outage_remark'],
+					"{$input_data['outage_start_date']} {$input_data['outage_start_time']}",
+					!empty($input_data['outage_end_date'])&&!empty($input_data['outage_end_time'])?"{$input_data['outage_end_date']} {$input_data['outage_end_time']}":NULL
+				);
 
 				echo $this->info_modal("更新成功");
 			}

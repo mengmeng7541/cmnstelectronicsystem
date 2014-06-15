@@ -72,39 +72,62 @@ class User_privilege_model extends MY_Model {
 	$facility_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("facility_only"=>TRUE,"no_child"=>TRUE));
 	//再尋找水平關係
 	$facility_IDs = array_merge($facility_IDs,$this->facility_model->get_horizontal_group_facilities($facility_ID));
-	foreach($facility_IDs as $facility_ID){
+	//UNIQUE
+	$facility_IDs = array_unique($facility_IDs);
+	foreach($facility_IDs as $facility_ID)
+	{
 		//取得此儀器權限
-		$privilege = $this->facility_model->get_user_privilege_list(array(
+		$privileges = $this->facility_model->get_user_privilege_list(array(
 			"user_ID"=>$user_ID,
 			"facility_ID"=>$facility_ID
-		))->row_array();
-		if(!$privilege)
+		))->result_array();
+		foreach($privileges as $privilege)
 		{
-			continue;
+			$temp_facility_IDs = $this->facility_model->get_vertical_group_facilities($privilege['facility_ID'],array("facility_only"=>TRUE));
+			$temp_facility_IDs = array_merge($temp_facility_IDs,$this->facility_model->get_horizontal_group_facilities($privilege['facility_ID']));
+			//(先取得過往的預約紀錄，找出最近一次的預約紀錄，加上延展時間)
+			$old_booking = $this->facility_model->get_facility_booking_list(
+			array("user_ID"=>$privilege['user_ID'],
+				  "facility_ID"=>$temp_facility_IDs)
+			)->row_array();
+			if(!$old_booking)
+			{
+				$old_booking['end_time'] = $privilege['verification_time'];
+			}
+				
+			//尋找停機記錄
+			$outage_total_time = 0;
+			do{
+				//漸進式尋找真正到期日
+				$old_expiration_date = date("Y-m-d H:i:s",strtotime($old_booking['end_time'])+$privilege['extension_sec']+$outage_total_time);
+				$outages = $this->facility_model->get_outage_list(array(
+					"facility_SN"=>$temp_facility_IDs,
+					"outage_start_time"=>$old_booking['end_time'],
+					"outage_end_time"=>$old_expiration_date
+				))->result_array();
+				$outage_times = array();
+				foreach($outages as $outage)
+				{
+					if(empty($outage['outage_end_time'])) continue;
+					$outage_times[] = array(strtotime($outage['outage_start_time']),strtotime($outage['outage_end_time']));
+				}
+				$outage_times = range_array_unique($outage_times);
+				$outage_total_time = 0;
+				foreach($outage_times as $o_time)
+				{
+					$outage_total_time += ($o_time[1]-$o_time[0]);
+				}
+				$expiration_date = date("Y-m-d H:i:s",strtotime($old_booking['end_time'])+$privilege['extension_sec']+$outage_total_time);
+			}while($old_expiration_date!=$expiration_date);
+				
+			//(最後更新資料)
+			$this->facility_model->update_user_privilege(
+			array("serial_no"=>$privilege['serial_no'],
+				  "expiration_date"=>(empty($privilege['expiration_date'])||empty($privilege['extension_sec']))?NULL:$expiration_date,
+				  "total_secs_used"=>$this->get_total_secs_used($privilege['user_ID'],$privilege['facility_ID']))
+			);
 		}
-		$temp_facility_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("facility_only"=>TRUE));
-		$temp_facility_IDs = array_merge($temp_facility_IDs,$this->facility_model->get_horizontal_group_facilities($facility_ID));
-		//(先取得過往的預約紀錄，找出最近一次的預約紀錄，加上延展時間)
-		$old_booking = $this->facility_model->get_facility_booking_list(
-		array("user_ID"=>$user_ID,
-			  "facility_ID"=>$temp_facility_IDs)
-		)->row_array();
-		if($old_booking)
-		{
-			$expiration_date = date("Y-m-d H:i:s",strtotime($old_booking['end_time'])+$privilege['extension_sec']);	
-		}else{
-			//(沒有過往紀錄則根據認證時間判斷)
-			$expiration_date = date("Y-m-d H:i:s",strtotime($privilege['verification_time'])+$privilege['extension_sec']);
-		}
-		//(最後更新資料)
-		$this->facility_model->update_user_privilege(
-		array("serial_no"=>$privilege['serial_no'],
-			  "expiration_date"=>(empty($privilege['expiration_date'])||empty($privilege['extension_sec']))?NULL:$expiration_date,
-			  "total_secs_used"=>$this->get_total_secs_used($user_ID,$facility_ID))
-		);
 	}
-	
-	
   }
   
   public function get_total_secs_used($user_ID,$facility_ID)
