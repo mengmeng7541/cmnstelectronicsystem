@@ -227,39 +227,6 @@ class Booking_model extends MY_Model {
 	}
   	
   }
-//	public function get_occupied_time_array($f_IDs,$start_time,$end_time){
-//		$occupied_time = array();
-//		
-//		$facilities_ID = $this->facility_model->get_vertical_group_facilities($f_IDs);
-//		
-//		//取得所有的可預約時間
-//		$data = array("start_time"=>date("Y-m-d H:i:s", $start_time)),
-//					  "end_time"=>date("Y-m-d H:i:s", $end_time)),
-//					  "facility_ID"=>$facilities_ID);
-//		$bookings = $this->facility_model->get_facility_booking_list($data)->result_array();
-//		
-//		//分析被佔領的時間
-//		$occupied_time = array();
-//		foreach($bookings as $booking)
-//		{
-//			$start_time = strtotime($booking['start_time']);
-//			$end_time = strtotime($booking['end_time']);
-//			for($i = $start_time;$i < $end_time;$i += $facility['unit_sec'])
-//			{
-//				$occupied_time[$i] = true;
-//			}
-//		}
-//		//儀器暫時停止預約時段亦要標註(超級管理員與儀器管理者不再此限)
-//		if(!$this->facility_model->is_facility_super_admin() && $privilege['privilege']!="admin")
-//		{
-//			$start_time = strtotime($facility['pause_start_time']);
-//			$end_time = strtotime($facility['pause_end_time']);
-//			for($i = $start_time;$i < $end_time;$i += $facility['unit_sec'])
-//			{
-//					$occupied_time[$i] = TRUE;
-//			}
-//		}
-//	}
   //-------------------common function-------------------
   public function check_input_time($booking_time = array(),$unit_sec)
   {

@@ -888,11 +888,17 @@ class Facility extends MY_Controller {
 				
 				//取得儀器資訊
 				$facility_IDs = array_unique(sql_result_to_column($booking,"facility_ID"));
-				$facilities = $this->facility_model->get_facility_list(array("ID"=>$facility_IDs))->result_array();
 				//取得所有關聯的儀器
-				$facilities_ID = $this->facility_model->get_vertical_group_facilities($facility_IDs);
-						
+				$facilities_ID = $this->facility_model->get_vertical_group_facilities($facility_IDs,array("facility_only"=>TRUE));
+				$facilities = $this->facility_model->get_facility_list(array("ID"=>$facilities_ID))->result_array();
 				//取得所有的可預約時間
+				foreach($facilities as $val)//把沒有受限的儀器排除
+				{
+					if(!$val['enable_occupation'])
+					{
+						$facilities_ID = array_diff($facilities_ID,array($val['ID']));
+					}
+				}
 				$data = array("start_time"=>date("Y-m-d H:i:s", strtotime($input_data['query_date'])),
 									"end_time"=>date("Y-m-d H:i:s", strtotime($input_data['query_date']."+5 days")),
 									"facility_ID"=>$facilities_ID);
@@ -924,11 +930,20 @@ class Facility extends MY_Controller {
 				foreach($facilities as $facility){
 					if(!$this->facility_model->is_facility_super_admin() && !$this->facility_model->is_facility_admin($facility['ID']))
 					{
-						$start_time = strtotime($facility['pause_start_time']);
-						$end_time = strtotime($facility['pause_end_time']);
-						for($i = $start_time;$i < $end_time;$i += $min_unit_sec)
+						//取得暫停時間
+						$outages = $this->facility_model->get_outage_list(array(
+							"facility_SN"=>$facility['ID'],
+							"outage_start_time"=>$data['start_time'],
+							"outage_end_time"=>$data['end_time']
+						))->result_array();
+						foreach($outages as $outage)
 						{
-								$occupied_time[$i] = TRUE;
+							$start_time = strtotime($outage['outage_start_time']);
+							$end_time = strtotime(isset($outage['outage_end_time'])?$outage['outage_end_time']:$data['end_time']);
+							for($i = $start_time;$i < $end_time;$i += $min_unit_sec)
+							{
+									$occupied_time[$i] = TRUE;
+							}
 						}
 					}
 				}
@@ -992,10 +1007,12 @@ class Facility extends MY_Controller {
 				
 				//取得所有關聯的儀器
 				$f_IDs = sql_result_to_column($facility,"ID");
-				$facilities_ID = $this->facility_model->get_vertical_group_facilities($f_IDs);
-						
+				$facilities_ID = $this->facility_model->get_vertical_group_facilities($f_IDs,array("facility_only"=>TRUE));
+				$facilities = $this->facility_model->get_facility_list(array(
+					"ID"=>$facilities_ID
+				))->result_array();
 				//取得所有的可預約時間
-				foreach($facility as $val)//把沒有受限的儀器排除
+				foreach($facilities as $val)//把沒有受限的儀器排除
 				{
 					if(!$val['enable_occupation'])
 					{
@@ -1008,7 +1025,7 @@ class Facility extends MY_Controller {
 				$bookings = $this->facility_model->get_facility_booking_list($data)->result_array();
 				
 				//分析被佔領的時間
-				$min_unit_sec = min(sql_result_to_column($facility,"unit_sec"));
+				$min_unit_sec = min(sql_result_to_column($facilities,"unit_sec"));
 				$occupied_time = array();
 				foreach($bookings as $booking)
 				{
@@ -1020,23 +1037,31 @@ class Facility extends MY_Controller {
 					}
 				}
 				
-				//儀器暫時停止預約時段亦要標註(超級管理員與儀器管理者不再此限)
-				foreach($facility as $key => $val){
-					if(!$this->facility_model->is_facility_super_admin() && !$this->facility_model->is_facility_admin($val['ID']))
+				//儀器暫時停止預約時段亦要標註(非管理員適用)
+				foreach($facilities as $facility){
+					if(!$this->facility_model->is_facility_super_admin() && !$this->facility_model->is_facility_admin($facility['ID']))
 					{
-						$start_time = strtotime($val['pause_start_time']);
-						$end_time = strtotime($val['pause_end_time']);
-						for($i = $start_time;$i < $end_time;$i += $min_unit_sec)
+						//取得暫停時間
+						$outages = $this->facility_model->get_outage_list(array(
+							"facility_SN"=>$facility['ID'],
+							"outage_start_time"=>$data['start_time'],
+							"outage_end_time"=>$data['end_time']
+						))->result_array();
+						foreach($outages as $outage)
 						{
-								$occupied_time[$i] = TRUE;
+							$start_time = strtotime($outage['outage_start_time']);
+							$end_time = strtotime(isset($outage['outage_end_time'])?$outage['outage_end_time']:$data['end_time']);
+							for($i = $start_time;$i < $end_time;$i += $min_unit_sec)
+							{
+									$occupied_time[$i] = TRUE;
+							}
 						}
 					}
 				}
 				
 				
-				
 				//輸出
-				$max_unit_sec = max(sql_result_to_column($facility,"unit_sec"));
+				$max_unit_sec = max(sql_result_to_column($facilities,"unit_sec"));
 				for($i=strtotime($input_data['query_date']);$i<strtotime($input_data['query_date']." +1 days");$i+=$max_unit_sec)
 	        	{
 	         		$row = array(date("H:i",$i)." ~ ".date("H:i",$i+$max_unit_sec));
@@ -1097,7 +1122,7 @@ class Facility extends MY_Controller {
 			}
 			$user_profile = $this->user_model->get_user_profile_list($data)->row_array();
 
-//			//確認操作者有該機台權限
+			//確認操作者有該機台權限
 			
 			if($facility['enable_privilege'])
 			{
@@ -1156,11 +1181,18 @@ class Facility extends MY_Controller {
 					}
 				}
 				//確認時段未暫停預約(非管理者適用)
-				if($max_time > strtotime($facility['pause_start_time']) && $min_time < strtotime($facility['pause_end_time']))
-				{
-					throw new Exception("此儀器於{$facility['pause_start_time']} ~ {$facility['pause_end_time']}時段暫時停止預約",ERROR_CODE);
-					
+				$outages = $this->facility_model->get_outage_list(array(
+					"facility_SN"=>$facility['ID'],
+					"outage_start_time"=>date("Y-m-d H:i:s",$min_time),
+					"outage_end_time"=>date("Y-m-d H:i:s",$max_time)
+				))->result_array();
+				foreach($outages as $outage){
+					if($max_time > strtotime($outage['outage_start_time']) && ($min_time < strtotime($outage['outage_end_time']) || $outage['outage_end_time'] == NULL))
+					{
+						throw new Exception("此儀器於{$outage['outage_start_time']} ~ {$outage['outage_end_time']}時段暫時停止預約",ERROR_CODE);
+					}
 				}
+				
 				//確認結束時間小於五天後(非管理者適用)
 				if( $max_time > strtotime("+5 days 00:00:00"))
 				{
@@ -1300,11 +1332,15 @@ class Facility extends MY_Controller {
 					}
 				}
 				//確認時段未暫停預約
-				if($privilege['privilege'] != "admin")
-				{
-					if($max_time > strtotime($facility['pause_start_time']) && $min_time < strtotime($facility['pause_end_time']))
+				$outages = $this->facility_model->get_outage_list(array(
+					"facility_SN"=>$facility['ID'],
+					"outage_start_time"=>date("Y-m-d H:i:s",$min_time),
+					"outage_end_time"=>date("Y-m-d H:i:s",$max_time)
+				))->result_array();
+				foreach($outages as $outage){
+					if($max_time > strtotime($outage['outage_start_time']) && ($min_time < strtotime($outage['outage_end_time']) || $outage['outage_end_time'] == NULL))
 					{
-						throw new Exception("此儀器於{$facility['pause_start_time']} ~ {$facility['pause_end_time']}時段暫時停止預約",ERROR_CODE);
+						throw new Exception("此儀器於{$outage['outage_start_time']} ~ {$outage['outage_end_time']}時段暫時停止預約",ERROR_CODE);
 					}
 				}
 			}
