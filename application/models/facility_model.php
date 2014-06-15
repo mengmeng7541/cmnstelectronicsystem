@@ -257,16 +257,28 @@ class Facility_model extends MY_Model {
 			
 			
 		if(isset($input_data['user_ID'])){
-			$this->facility_db->where("$sTable.user_ID",$input_data['user_ID']);
+			if(is_array($input_data['user_ID'])&&empty($input_data['user_ID']))
+			{
+				$input_data['user_ID'] = array('');
+			}
+			$this->facility_db->where_in("$sTable.user_ID",$input_data['user_ID']);
 		}
 			
 		if(isset($input_data['facility_ID'])){
+			if(is_array($input_data['facility_ID'])&&empty($input_data['facility_ID']))
+			{
+				$input_data['facility_ID'] = array('');
+			}
 			$this->facility_db->where_in("$sTable.facility_ID",$input_data['facility_ID']);
 		}
 			
 		
 		if(isset($input_data['privilege']))
 		{
+			if(is_array($input_data['privilege'])&&empty($input_data['privilege']))
+			{
+				$input_data['privilege'] = array('');
+			}
 			$this->facility_db->where_in("$sTable.privilege",$input_data['privilege']);
 		}
 		if(isset($input_data['expiration_date_start']))
@@ -352,21 +364,20 @@ class Facility_model extends MY_Model {
 		if(isset($input_data['serial_no']))
 			$this->facility_db->where_in("{$sTable}.serial_no",$input_data['serial_no']);
 		
-		if($this->session->userdata('status')=="admin" && isset($input_data['user_ID']) && isset($input_data['facility_ID']) && is_array($input_data['facility_ID']))
-		{//special case
-			$this->facility_db->where("({$sTable}.user_ID = '{$input_data['user_ID']}' OR {$sTable}.facility_ID IN ('".implode("','",$input_data['facility_ID'])."'))");
-		}else{
-			if(isset($input_data['user_ID']))
-				$this->facility_db->where("{$sTable}.user_ID",$input_data['user_ID']);
-			if(isset($input_data['facility_ID'])){
-				if( is_array($input_data['facility_ID']) && count($input_data['facility_ID'])==0 )
-				{//fix where in syntex error
-					$input_data['facility_ID'] = array('');
-				}
-				$this->facility_db->where_in("{$sTable}.facility_ID",$input_data['facility_ID']);
+//		if($this->session->userdata('status')=="admin" && isset($input_data['user_ID']) && isset($input_data['facility_ID']) && is_array($input_data['facility_ID']))
+//		{//special case
+//			$this->facility_db->where("({$sTable}.user_ID = '{$input_data['user_ID']}' OR {$sTable}.facility_ID IN ('".implode("','",$input_data['facility_ID'])."'))");
+//		}else{
+		if(isset($input_data['user_ID']))
+			$this->facility_db->where("{$sTable}.user_ID",$input_data['user_ID']);
+		if(isset($input_data['facility_ID'])){
+			if( is_array($input_data['facility_ID']) && empty($input_data['facility_ID']) )
+			{//fix where in syntex error
+				$input_data['facility_ID'] = array('');
 			}
-				
+			$this->facility_db->where_in("{$sTable}.facility_ID",$input_data['facility_ID']);
 		}
+//		}
 		
 		if(isset($input_data['purpose']))
 			$this->facility_db->where("{$sTable}.purpose",$input_data['purpose']);
@@ -483,7 +494,7 @@ class Facility_model extends MY_Model {
 		}
 		if(isset($options['facility_SN']))
 		{
-			$this->facility_db->where("facility_SN",$options['facility_SN']);
+			$this->facility_db->where_in("facility_SN",$options['facility_SN']);
 		}
 		if(isset($options['outage_start_time']))
 		{
@@ -497,20 +508,10 @@ class Facility_model extends MY_Model {
 	}
 	public function add_outage($data)
 	{
-		return $this->update_outage($data);
-	}
-	public function update_outage($data)
-	{
-		if(isset($data['facility_SN']))
-		{
-			$this->facility_db->set("facility_SN",$data['facility_SN']);
-		}
-		if(isset($data['outage_start_time']))
-		{
-			$this->facility_db->set("outage_start_time",$data['outage_start_time'])
-			->set("outage_started_by",$this->session->userdata('ID'))
-			->set("outage_start_timestamp",date("Y-m-d H:i:s"));
-		}
+		$this->facility_db->set("facility_SN",$data['facility_SN']);
+		$this->facility_db->set("outage_start_time",$data['outage_start_time'])
+		->set("outage_started_by",$this->session->userdata('ID'))
+		->set("outage_start_timestamp",date("Y-m-d H:i:s"));
 		if(isset($data['outage_end_time']))
 		{
 			$this->facility_db->set("outage_end_time",$data['outage_end_time'])
@@ -518,15 +519,27 @@ class Facility_model extends MY_Model {
 			->set("outage_end_timestamp",date("Y-m-d H:i:s"));
 		}
 		$this->facility_db->set("outage_remark",$data['outage_remark']);
-		if(empty($data['outage_SN']))
+		$this->facility_db->insert("facility_outage");
+		return $this->facility_db->insert_id();
+	}
+	public function update_outage($data)
+	{
+		$outage = $this->get_outage_list(array("outage_SN"=>$data['outage_SN']))->row_array();
+		if($outage['outage_start_time']!=$data['outage_start_time'])
 		{
-			$this->facility_db->insert("facility_outage");
-			return $this->facility_db->insert_id();
-		}else{
-			$this->facility_db->where("outage_SN",$data['outage_SN']);
-			$this->facility_db->update("facility_outage");
+			$this->facility_db->set("outage_start_time",$data['outage_start_time'])
+			->set("outage_started_by",$this->session->userdata('ID'))
+			->set("outage_start_timestamp",date("Y-m-d H:i:s"));
 		}
-		
+		if($outage['outage_end_time']!=$data['outage_end_time'])
+		{
+			$this->facility_db->set("outage_end_time",$data['outage_end_time'])
+			->set("outage_ended_by",$this->session->userdata('ID'))
+			->set("outage_end_timestamp",date("Y-m-d H:i:s"));
+		}
+		$this->facility_db->set("outage_remark",$data['outage_remark']);
+		$this->facility_db->where("outage_SN",$data['outage_SN']);
+		$this->facility_db->update("facility_outage");
 	}
 	public function del_outage($data = array())
 	{

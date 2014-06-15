@@ -2467,37 +2467,60 @@ var App = function () {
 			}
 		});
 		//------------------------儀器停機表單--------------------------
-//		var table_facility_outage_list = $("#table_facility_outage_list").dataTable({
-//			"sAjaxSource": site_url+"facility/admin/outage/query/",
-//            "sDom": "t",
-//            "sPaginationType": "bootstrap",
-//            "oLanguage": {
-//                "sLengthMenu": "_MENU_ records per page",
-//                "oPaginate": {
-//                    "sPrevious": "Prev",
-//                    "sNext": "Next"
-//                }
-//            },
-//			"aaSorting": [[4,'desc']],
-//			"fnServerParams": function ( aoData ) {
-//				aoData.push(
-//					{"name":"facility_SN","value":$("#form_facility_config input[name='ID']").val()}
-//				);
-//	        },
-//		});
-//		$("#modal_facility_outage").on("click","button[name='confirm_outage']",function(){
-//			$("#form_facility_outage").submit().data('jqxhr').done(function(data){
-//				showResponse(data);
-//				table_facility_outage_list.fnReloadAjax(null,null,true);
-//			});
-//		});
-//		$("#table_facility_outage_list").on("click","button[name='edit']",function(){
-//			$.ajax({
-//				url: site_url+'facility/admin/outage/query/'+$(this).val(),
-//			}).done(function(data){
-//				$("#modal_facility_outage").modal('show');
-//			});
-//		});
+		var table_facility_outage_list = $("#table_facility_outage_list").dataTable({
+        	"sAjaxSource": site_url+"facility/admin/outage/query",
+            "sDom": "t",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+            "aoColumnDefs": [ {
+		      "aTargets": [ 0 ],
+		      "mData": function ( source, type, val ) {
+		      	
+		        return source['outage_start_time'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 1 ],
+		      "mData": function ( source, type, val ) {
+		        return source['outage_end_time'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 2 ],
+		      "mData": function ( source, type, val ) {
+		        return source['outage_remark'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 3 ],
+		      "mData": function ( source, type, val ) {
+		        return "<button type='button' class='btn btn-small btn-warning' ng-click='get_facility_outage("+source['outage_SN']+")' data-toggle='modal' data-target='#modal_facility_outage'>編輯</button>";
+		      }
+		    }],
+		    "initComplete": function(settings, json) {
+		    	
+		    },
+            "fnDrawCallback": function (oSettings) {
+            	
+			},
+            "fnServerParams": function ( aoData ) {
+            	aoData.push(
+					{"name":"facility_SN","value":$("#form_facility_outage input[name='facility_SN']").val()}
+				);
+		    },
+        });
+        $("#modal_facility_outage").on('click',"button[name='confirm_outage']",function(){
+			$("#form_facility_outage").submit().data('jqxhr').done(function(data){
+				showResponse(data);
+				table_facility_outage_list.fnReloadAjax(null,null,true);
+			});
+        });
 		$("#table_facility_outage_list").on("click","button[name='del']",function(){
 			$.ajax({
 				url: site_url+'facility/admin/outage/del/'+$(this).val(),
