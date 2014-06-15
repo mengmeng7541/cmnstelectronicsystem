@@ -83,6 +83,7 @@ class User_privilege_model extends MY_Model {
 		))->result_array();
 		foreach($privileges as $privilege)
 		{
+			
 			$temp_facility_IDs = $this->facility_model->get_vertical_group_facilities($privilege['facility_ID'],array("facility_only"=>TRUE));
 			$temp_facility_IDs = array_merge($temp_facility_IDs,$this->facility_model->get_horizontal_group_facilities($privilege['facility_ID']));
 			//(先取得過往的預約紀錄，找出最近一次的預約紀錄，加上延展時間)
@@ -119,11 +120,11 @@ class User_privilege_model extends MY_Model {
 				}
 				$expiration_date = date("Y-m-d H:i:s",strtotime($old_booking['end_time'])+$privilege['extension_sec']+$outage_total_time);
 			}while($old_expiration_date!=$expiration_date);
-				
+			
 			//(最後更新資料)
 			$this->facility_model->update_user_privilege(
 			array("serial_no"=>$privilege['serial_no'],
-				  "expiration_date"=>(empty($privilege['expiration_date'])||empty($privilege['extension_sec']))?NULL:$expiration_date,
+				  "expiration_date"=>($privilege['privilege']=='super'||$privilege['privilege']=='admin'||empty($privilege['extension_sec']))?NULL:$expiration_date,
 				  "total_secs_used"=>$this->get_total_secs_used($privilege['user_ID'],$privilege['facility_ID']))
 			);
 		}
