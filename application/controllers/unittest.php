@@ -115,8 +115,8 @@ class Unittest extends MY_Controller {
 				$this->outage_model->add_outage(
 					$facility['ID'],
 					$facility['error_comment'],
-					date("Y-m-d H:i:00",strtotime($facility['pause_start_time'])),
-					date("Y-m-d H:i:00",strtotime($facility['pause_end_time']))
+					date("Y-m-d H:00:00",strtotime($facility['pause_start_time'])),
+					date("Y-m-d H:00:00",strtotime($facility['pause_end_time']))
 				);
 			}else if($facility['state']=='fault')
 			{
