@@ -2503,6 +2503,7 @@ var App = function () {
 		        return "<button type='button' class='btn btn-small btn-warning' ng-click='get_facility_outage("+source['outage_SN']+")' data-toggle='modal' data-target='#modal_facility_outage'>編輯</button>";
 		      }
 		    }],
+		    "aaSorting": [[0,'desc']],
 		    "initComplete": function(settings, json) {
 		    	
 		    },
