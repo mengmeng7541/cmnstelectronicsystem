@@ -21,6 +21,7 @@ class Outage_model extends MY_Model {
 				throw new Exception("起始時間需小於結束時間",WARNING_CODE);
 			}
 		}
+		
 		//檢查有無此儀器
 		$facilities = $this->facility_model->get_facility_list(array("ID"=>$f_SN))->result_array();
 		foreach($facilities as $facility)
@@ -34,6 +35,12 @@ class Outage_model extends MY_Model {
 			if($outages)
 			{
 				throw new Exception("停機時段已存在，不可重複",ERROR_CODE);
+			}
+			
+			//檢查時間有無整點
+			if(!is_int_multiple_unit_time(array(strtotime($start_time),strtotime($end_time)),$facility['unit_sec']))
+			{
+				throw new Exception("請輸入單位倍數的時間",WARNING_CODE);
 			}
 		}
 		
@@ -86,6 +93,12 @@ class Outage_model extends MY_Model {
 			{
 				throw new Exception("停機時段已存在，不可重複",ERROR_CODE);
 			}
+		}
+		$facility = $this->facility_model->get_facility_list(array("ID"=>$outage['facility_SN']))->row_array();
+		//檢查時間有無整點
+		if(!is_int_multiple_unit_time(array(strtotime($start_time),strtotime($end_time)),$facility['unit_sec']))
+		{
+			throw new Exception("請輸入單位倍數的時間",WARNING_CODE);
 		}
 		
 		//更新

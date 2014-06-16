@@ -18,6 +18,15 @@ class Facility_model extends MY_Model {
 	*/
 	public function get_facility_list($options = array())
 	{
+		$sTable = "facility_list";
+		$sJoinTable = array("outage"=>"facility_outage");
+		$this->facility_db->select("
+			$sTable.*,
+			IF({$sJoinTable['outage']}.outage_SN,'fault',$sTable.state) AS facility_state,
+			{$sJoinTable['outage']}.outage_SN,
+			{$sJoinTable['outage']}.outage_remark
+		",FALSE);
+		$this->facility_db->join($sJoinTable['outage'],"{$sJoinTable['outage']}.facility_SN = $sTable.ID AND outage_start_time <= NOW() AND (outage_end_time IS NULL OR outage_end_time >= NOW())","LEFT");
 		if(!empty($options['type']))
 			$this->facility_db->where("type",$options['type']);
 		if(!empty($options['ID']))
@@ -32,7 +41,7 @@ class Facility_model extends MY_Model {
 		{
 			$this->facility_db->where("horizontal_group_ID",$options['horizontal_group_ID']);
 		}
-		return $this->facility_db->get("facility_list");
+		return $this->facility_db->get($sTable);
 	}
 	public function get_facility_list_array($input_data)
 	{
@@ -89,7 +98,6 @@ class Facility_model extends MY_Model {
 		$this->facility_db->set("note",$input_data['note']);
 		$this->facility_db->set("ctrl_no",$input_data['ctrl_no']);
 		$this->facility_db->set("tel_ext",$input_data['tel_ext']);
-		$this->facility_db->set("error_comment",$input_data['error_comment']);
 		$this->facility_db->set("min_sec",$input_data['min_sec']);
 		$this->facility_db->set("unit_sec",$input_data['unit_sec']);
 		$this->facility_db->set("extension_sec",$input_data['extension_sec']);
@@ -113,7 +121,6 @@ class Facility_model extends MY_Model {
 		$this->facility_db->set("note",$input_data['note']);
 		$this->facility_db->set("ctrl_no",$input_data['ctrl_no']);
 		$this->facility_db->set("tel_ext",$input_data['tel_ext']);
-		$this->facility_db->set("error_comment",$input_data['error_comment']);
 		$this->facility_db->set("min_sec",$input_data['min_sec']);
 		$this->facility_db->set("unit_sec",$input_data['unit_sec']);
 		$this->facility_db->set("extension_sec",$input_data['extension_sec']);

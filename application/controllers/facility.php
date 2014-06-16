@@ -691,12 +691,14 @@ class Facility extends MY_Controller {
 				$row = array();
 				
 				$row[] = "{$facility['cht_name']} ({$facility['eng_name']})";
-				if($facility['state']=="fault")//故障
+				
+				$display = array();
+				$display[] = self::$facility_state[$facility['facility_state']];
+				if($facility['facility_state']=='fault')
 				{
-					$row[] = self::$facility_state[$facility['state']]." (".$facility['error_comment'].")";
-				}else{
-					$row[] = self::$facility_state[$facility['state']];
+					$display[] = "({$facility['outage_remark']})";
 				}
+				$row[] = implode(' ',$display);
 				
 				$row[] = $facility['enable_booking']?"是":"否";
 				$row[] = self::$privilege_level['super_admin'];
@@ -727,12 +729,15 @@ class Facility extends MY_Controller {
 				$row = array();
 				
 				$row[] = "{$facility['cht_name']} ({$facility['eng_name']})";
-				if($facility['state']=="fault")//故障
+				
+				$display = array();
+				$display[] = self::$facility_state[$facility['facility_state']];
+				if($facility['facility_state']=='fault')
 				{
-					$row[] = self::$facility_state[$facility['state']]." (".$facility['error_comment'].")";
-				}else{
-					$row[] = self::$facility_state[$facility['state']];
+					$display[] = "({$facility['outage_remark']})";
 				}
+				$row[] = implode(' ',$display);
+				
 				$row[] = $facility['enable_booking']?"是":"否";
 				if($facility['enable_privilege'])
 				{
@@ -756,35 +761,6 @@ class Facility extends MY_Controller {
 					
 				$output['aaData'][] = $row;
 			}
-		//-----------------------------------------------------------------------------------------------
-//			$privileges = $this->facility_model->get_user_privilege_list(array("user_ID"=>$this->session->userdata('ID')))->result_array();
-//			
-//			$output['aaData'] = array();
-//			foreach($privileges as $privilege)
-//			{
-//				//取得儀器資訊
-//				$facility = $this->facility_model->get_facility_list(array("ID"=>$privilege['facility_ID']))->row_array();
-//				
-//				$row = array();
-//				
-//				$row[] = "{$privilege['facility_cht_name']} ({$privilege['facility_eng_name']})";
-//				if($facility['state']=="fault")//故障
-//				{
-//					$row[] = self::$facility_state[$facility['state']]." (".$facility['error_comment'].")";
-//				}else{
-//					$row[] = self::$facility_state[$facility['state']];
-//				}
-//				$row[] = $privilege['enable_booking']?"是":"否";
-//				$row[] = self::$privilege_level[$privilege['privilege']];
-//				$row[] = empty($privilege['expiration_date'])?"無限制":$privilege['expiration_date'];
-//				$row[] = $this->secs_to_hours($privilege['total_secs_used']);
-//				$row[] = $privilege['facility_note'];
-//				if($this->is_admin_login(FALSE) || ($privilege['enable_booking'] && $facility['state']=="normal"))
-//					$row[] = anchor("/facility/".$this->session->userdata('status')."/booking/form/{$privilege['facility_ID']}","預約","class='btn btn-primary'");
-//				else
-//					$row[] = "";
-//				$output['aaData'][] = $row;
-//			}
 		}
 		echo json_encode($output);
 	}

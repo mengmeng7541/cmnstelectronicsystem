@@ -133,10 +133,6 @@
 										           <label class="control-label">儀器狀況</label>
 										           <div class="controls ">
 												      <label class="radio "><?=form_radio("status","normal",isset($state)?($state=="normal"):"");?>正常</label>
-													  <label class="radio ">
-													  <?=form_radio("status","fault",isset($state)?($state=="fault"):"");?>異常
-													  <input name="error_comment" type="text" value="<?=empty($error_comment)?"":$error_comment;?>"/>
-													  </label>
 													  <label class="radio "><?=form_radio("status","migrated",isset($state)?($state=="migrated"):"");?>移轉</label>
 													  
 										           </div>

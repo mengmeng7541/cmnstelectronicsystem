@@ -22,5 +22,18 @@
 		}
 		return $output;
 	}
-
+	function is_int_multiple_unit_time($ts,$unit)
+	{
+		$timezone_offset = timezones('UP8')*3600;
+		foreach((array)$ts as $t)
+		{
+			if(empty($t)) continue;
+			$t += $timezone_offset;
+			if($t%$unit!=0)
+			{
+				return FALSE;
+			}
+		}
+		return TRUE;
+	}
 ?>
