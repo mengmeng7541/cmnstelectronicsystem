@@ -8,7 +8,7 @@ class User_model extends MY_Model {
   {
     parent::__construct();
 	$this->common_db = $this->load->database("common",TRUE);
-//	$this->order_class = $this->load->database("order_class",TRUE);
+	$this->order_class = $this->load->database("order_class",TRUE);
 	$this->clock_db =  $this->load->database("clock",TRUE);
 	$this->facility_db = $this->load->database("facility",TRUE);
   }
