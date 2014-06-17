@@ -37,21 +37,22 @@ class Facility extends MY_Controller {
 		$this->is_admin_login();
 
 		$input_data = $this->input->get(NULL,TRUE);
+		$input_data['type'] = 'facility';
 		
-		$facility = $this->facility_model->get_facility_list_array($input_data);
+		$facilities = $this->facility_model->get_facility_list_with_admin($input_data)->result_array();
 		$output['aaData'] = array();
-		foreach ( $facility as $aRow )
+		foreach ( $facilities as $facility )
 		{
 			$row = array();
 			
-			$row[] = $aRow['facility_new_ID'];
-			$row[] = "{$aRow['facility_cht_name']}({$aRow['facility_eng_name']})";
-			$row[] = $aRow['facility_ctrl_no'];
-//			$row[] = self::$facility_category[$aRow['facility_tech']];
-//			$row[] = $aRow['facility_class'];
-			$row[] = self::$facility_state[$aRow['facility_state']];
-			$row[] = $aRow['admin_name'];
-			$row[] = anchor("/facility/admin/facility/edit/{$aRow['facility_ID']}","編輯","class='btn btn-warning'");
+			$row[] = $facility['new_ID'];
+			$row[] = "{$facility['cht_name']}({$facility['eng_name']})";
+			$row[] = $facility['ctrl_no'];
+//			$row[] = self::$facility_category[$facility['facility_tech']];
+//			$row[] = $facility['facility_class'];
+			$row[] = self::$facility_state[$facility['facility_state']];
+			$row[] = $facility['admin_name'];
+			$row[] = anchor("/facility/admin/facility/edit/{$facility['ID']}","編輯","class='btn btn-warning'");
 			
 			$output['aaData'][] = $row;
 		}
@@ -1112,7 +1113,12 @@ class Facility extends MY_Controller {
 				}
 			}
 			
-			$max_time = max($input_data['booking_time'])+$facility['unit_sec'];
+			//取得相關儀器
+			$facilities_IDs = $this->facility_model->get_vertical_group_facilities($facility['ID'],array("facility_only"=>TRUE));
+			$facilities = $this->facility_model->get_facility_list(array("ID"=>$facilities_IDs))->result_array();
+			$max_unit_sec = max(sql_column_to_key_value_array($facilities,"unit_sec"));
+			
+			$max_time = max($input_data['booking_time'])+$max_unit_sec;
 			$min_time = min($input_data['booking_time']);
 			//以下非中心人員要檢查
 			if(!$this->is_admin_login(FALSE))
@@ -1142,7 +1148,7 @@ class Facility extends MY_Controller {
 					
 				}
 				//確認有達低消(非管理者適用)
-				if($max_time+$facility['unit_sec']-$min_time<$facility['min_sec'])
+				if($max_time-$min_time<$facility['min_sec'])
 				{
 					throw new Exception("此儀器最低預約時間為".gmdate("H小時i分s秒",$facility['min_sec']),"","warning");
 					
@@ -1179,7 +1185,7 @@ class Facility extends MY_Controller {
 			
 			
 			//確認輸入了正確的時間
-			$this->booking_model->check_input_time($input_data['booking_time'],$facility['unit_sec']);
+			$this->booking_model->check_input_time($input_data['booking_time'],$max_unit_sec);
 			
 			//新增一筆記錄(若為自行操作，要判斷是否跨日，要拆單)
 			if(empty($input_data['purpose']) || $input_data['purpose']=="DIY")
@@ -1959,9 +1965,9 @@ class Facility extends MY_Controller {
 			$row[] = $aRow['admin_name'];
 			//
 			$display = array();
-			if(empty($aRow['AB_form_verified_by']))
+			if(empty($aRow['AB_form_verified_by']) && $aRow['type']=='apply')
 			{
-				$display[] = form_button("verify","AB表確認","class='btn btn-primary btn-small' value='{$aRow['user_ID']}'");
+				$display[] = form_button("verify","AB表確認","class='btn btn-primary btn-small' value='{$aRow['serial_no']}'");
 			}
 			if($aRow['checkpoint'] == "Officer")
 			{
@@ -2119,7 +2125,7 @@ class Facility extends MY_Controller {
 					//更新關卡
 					$input_data['checkpoint'] = "Notified";
 					//寄MAIL通知領卡
-					$this->email->to($card_app['email']);
+					$this->email->to($card_app['user_email']);
 					$this->email->subject("微奈米科技研究中心－通知領取磁卡");
 					$this->email->message("您好，您的磁卡已經申請成功，請攜帶大頭照、500元押金至微奈米中心領卡，第一次申請者必須連同攜帶AB量表於領卡時繳交，謝謝您。"); 
 					$this->email->send();

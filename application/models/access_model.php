@@ -6,6 +6,7 @@ class Access_model extends MY_Model {
 	{
 		parent::__construct();
 		$this->access_db = $this->load->database("access",TRUE);
+		$this->facility_db = $this->load->database("facility",TRUE);
 	}
 	//--------------------SYSTEM PRIVILEGE-----------------------
 	public function get_privilege_list($options = array())
@@ -95,8 +96,18 @@ class Access_model extends MY_Model {
 		}
 		return $this->access_db->get("enum_access_card_temp_application_checkpoint");
 	}
-	
-	//----------------------ACCESS_CARD TEMP APPLICATION--------------------------
+	//----------------------ACCESS CARD APPLICATION-------------------------------
+	public function update_card_application($data)
+	{
+		if(isset($data['AB_form_verified_by']))
+		{
+			$this->facility_db->set("AB_form_verified_by",$data['AB_form_verified_by']);
+			$this->facility_db->set("AB_form_verification_time",$data['AB_form_verification_time']);
+		}
+		$this->facility_db->where("serial_no",$data['serial_no']);
+		$this->facility_db->update("facility_card_application");
+	}
+	//----------------------ACCESS CARD TEMP APPLICATION--------------------------
 	public function get_access_card_temp_application_list($options = array())
 	{
 		$sTable = "access_card_temp_application";

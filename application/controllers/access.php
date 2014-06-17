@@ -441,6 +441,21 @@ class Access extends MY_Controller {
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
 	}
-
+	//------------------ACCOUNT VERIFY---------------------
+	public function verify_card_application($SN = "")
+	{
+		try{
+			$this->is_admin_login();
+			
+			$SN = $this->security->xss_clean($SN);
+			
+			$this->load->model('access/access_card_application_model');
+			$this->access_card_application_model->verify($SN);
+			
+			echo $this->info_modal("確認繳交成功");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
+	}
 }
 ?>

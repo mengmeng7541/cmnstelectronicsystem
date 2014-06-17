@@ -2806,7 +2806,7 @@ var App = function () {
 		});
 		$("#table_list_card_application").on("click","button[name='verify']",function(){
 			$.ajax({
-				url: site_url+"user/verify/"+$(this).val(),
+				url: site_url+"access/card/application/verify/"+$(this).val(),
 				beforeSend: function(){
 					showRequest();
 				}

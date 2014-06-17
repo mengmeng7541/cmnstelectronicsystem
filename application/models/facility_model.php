@@ -43,33 +43,62 @@ class Facility_model extends MY_Model {
 		}
 		return $this->facility_db->get($sTable);
 	}
-	public function get_facility_list_array($input_data)
+	public function get_facility_list_with_admin($options = array())//based on get_facility_list
 	{
-		$sTable = "cmnst_facility.facility_list";
-		$sJoinTable = array("cmnst_facility.facility_user_privilege","cmnst_common.user_profile");
-		$aColumns = array("$sTable.ID"=>"facility_ID",
-						  "$sTable.new_ID"=>"facility_new_ID",
-						  "$sTable.ctrl_no"=>"facility_ctrl_no",
-						  "$sTable.cht_name"=>"facility_cht_name",
-						  "$sTable.eng_name"=>"facility_eng_name",
-						  "$sTable.Facility_Tech"=>"facility_tech",
-						  "$sTable.Facility_Class"=>"facility_class",
-						  "$sTable.state"=>"facility_state",
-						  "GROUP_CONCAT($sJoinTable[1].name SEPARATOR ',')"=>"admin_name");
-		$sJoin = "LEFT OUTER JOIN $sJoinTable[0] ON $sJoinTable[0].facility_ID = $sTable.ID AND $sJoinTable[0].privilege='admin'
-				  LEFT OUTER JOIN $sJoinTable[1] ON $sJoinTable[1].ID = $sJoinTable[0].user_ID";
-		$sWhere = " WHERE type='facility'";
-		$sGroupBy = "GROUP BY $sTable.ID ";
-		
-		foreach($aColumns as $key => $val)
+		$sTable = "facility_list";
+		$sJoinTable = array("outage"=>"facility_outage","user"=>"cmnst_common.user_profile","privilege"=>"cmnst_facility.facility_user_privilege");
+		$this->facility_db->select("
+			$sTable.*,
+			IF({$sJoinTable['outage']}.outage_SN,'fault',$sTable.state) AS facility_state,
+			{$sJoinTable['outage']}.outage_SN,
+			{$sJoinTable['outage']}.outage_remark,
+			GROUP_CONCAT({$sJoinTable['user']}.name) AS admin_name
+		",FALSE);
+		$this->facility_db->join($sJoinTable['outage'],"{$sJoinTable['outage']}.facility_SN = $sTable.ID AND outage_start_time <= NOW() AND (outage_end_time IS NULL OR outage_end_time >= NOW())","LEFT");
+		$this->facility_db->join($sJoinTable['privilege'],"{$sJoinTable['privilege']}.facility_ID = $sTable.ID AND {$sJoinTable['privilege']}.privilege = 'admin'","LEFT")
+						  ->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = {$sJoinTable['privilege']}.user_ID","LEFT")
+						  ->group_by("$sTable.ID");
+						  
+		if(!empty($options['type']))
+			$this->facility_db->where("type",$options['type']);
+		if(!empty($options['ID']))
 		{
-			if(!empty($aColumns[$key]))
-				$aColumns[$key] = "{$key} AS {$val}";
+			$this->facility_db->where_in("ID",$options['ID']);
+		}	
+		if(!empty($options['parent_ID']))
+			$this->facility_db->where("parent_ID",$options['parent_ID']);
+		if(isset($options['ctrl_no']))
+			$this->facility_db->where("ctrl_no",$options['ctrl_no']);
+		if(isset($options['horizontal_group_ID']))
+		{
+			$this->facility_db->where("horizontal_group_ID",$options['horizontal_group_ID']);
 		}
-		$sql = "SELECT ".str_replace(" , ", " ", implode(", ", $aColumns))." FROM $sTable $sJoin $sWhere $sGroupBy";
-		$query = $this->facility_db->query($sql);
-		
-		return $query->result_array();
+		return $this->facility_db->get($sTable);
+//		$sTable = "cmnst_facility.facility_list";
+//		$sJoinTable = array("cmnst_facility.facility_user_privilege","cmnst_common.user_profile");
+//		$aColumns = array("$sTable.ID"=>"facility_ID",
+//						  "$sTable.new_ID"=>"facility_new_ID",
+//						  "$sTable.ctrl_no"=>"facility_ctrl_no",
+//						  "$sTable.cht_name"=>"facility_cht_name",
+//						  "$sTable.eng_name"=>"facility_eng_name",
+//						  "$sTable.Facility_Tech"=>"facility_tech",
+//						  "$sTable.Facility_Class"=>"facility_class",
+//						  "$sTable.state"=>"facility_state",
+//						  "GROUP_CONCAT($sJoinTable[1].name SEPARATOR ',')"=>"admin_name");
+//		$sJoin = "LEFT OUTER JOIN $sJoinTable[0] ON $sJoinTable[0].facility_ID = $sTable.ID AND $sJoinTable[0].privilege='admin'
+//				  LEFT OUTER JOIN $sJoinTable[1] ON $sJoinTable[1].ID = $sJoinTable[0].user_ID";
+//		$sWhere = " WHERE type='facility'";
+//		$sGroupBy = "GROUP BY $sTable.ID ";
+//		
+//		foreach($aColumns as $key => $val)
+//		{
+//			if(!empty($aColumns[$key]))
+//				$aColumns[$key] = "{$key} AS {$val}";
+//		}
+//		$sql = "SELECT ".str_replace(" , ", " ", implode(", ", $aColumns))." FROM $sTable $sJoin $sWhere $sGroupBy";
+//		$query = $this->facility_db->query($sql);
+//		
+//		return $query->result_array();
 	}
 	public function get_facility_by_ID($ID)
 	{
@@ -777,12 +806,12 @@ class Facility_model extends MY_Model {
 									$sTable.application_date,
 									$sTable.comment,
 									$sTable.card_num,
+									$sTable.AB_form_verified_by,
 									$sTable.issuance_date,
 									$sTable.checkpoint,
 									$sJoinTable[0].name AS user_name,
 									$sJoinTable[0].email AS user_email,
 									$sJoinTable[0].mobile AS user_mobile,
-									$sJoinTable[0].AB_form_verified_by,
 									admin.name AS admin_name")
 						  ->from($sTable)
 						  ->join($sJoinTable[0],"$sJoinTable[0].ID = $sTable.user_ID","LEFT")

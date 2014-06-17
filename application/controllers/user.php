@@ -253,20 +253,7 @@ class User extends MY_Controller {
 		
 		echo $this->info_modal("更新成功");
 	}
-	public function verify_account($ID = "")
-	{
-		try{
-			$this->is_admin_login();
-			
-			$ID = $this->security->xss_clean($ID);
-			
-			$this->user_model->verify_account($ID);
-			
-			echo $this->info_modal("確認繳交成功");
-		}catch(Exception $e){
-			echo $this->info_modal($e->getMessage(),"",$e->getCode());
-		}
-	}
+	
 	//------------------------ORG---------------------------
 	public function list_org()
 	{

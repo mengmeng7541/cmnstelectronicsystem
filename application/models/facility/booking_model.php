@@ -23,14 +23,17 @@ class Booking_model extends MY_Model {
 		//確認使用者有卡片
 		if(empty($user_profile['card_num']))
 			throw new Exception("您尚未擁有磁卡，請先向本中心申請，謝謝。",ERROR_CODE);
-
+		
+		//取得所有關聯的儀器
+		$f_IDs = sql_result_to_column($facilities,"ID");
+		$facilities_ID = $this->facility_model->get_vertical_group_facilities($f_IDs,array("facility_only"=>TRUE));
+		$facilities = $this->facility_model->get_facility_list(array(
+			"ID"=>$facilities_ID
+		))->result_array();
 		//確認起始時間大於現在時間(以單位時間為準)
 		$max_unit_sec = max(sql_result_to_column($facilities,"unit_sec"));
 		if( time() > $start_time+$max_unit_sec)
 			throw new Exception("預約時間不可早於現在時間。",WARNING_CODE);
-		//取得所有關聯的儀器
-		$f_IDs = sql_result_to_column($facilities,"ID");
-		$facilities_ID = $this->facility_model->get_vertical_group_facilities($f_IDs,array("facility_only"=>TRUE));
 		//確認預約時段無人預約
 		foreach($facilities as $facility)
 		{

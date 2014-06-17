@@ -498,29 +498,5 @@ class User_model extends MY_Model {
 		return $query;
 		//$this->clock_db->get("clock_user_manual");
 	}
-	//-------------------USER ACCOUNT----------------------
-	public function verify_account($ID)
-	{
-		$this->load->model('access_model');
-		if(!$this->access_model->is_super_admin())
-		{
-			throw new Exception("沒有權限",ERROR_CODE);
-		}
-		
-		$user_profile = $this->get_user_profile_list(array("user_ID"=>$ID))->row_array();
-		if(!$user_profile)
-		{
-			throw new Exception("無此使用者",ERROR_CODE);
-		}
-		
-		if(!empty($user_profile['AB_form_verified_by']))
-		{
-			throw new Exception("此使用者已確認過AB表繳交",ERROR_CODE);
-		}
-		
-		$this->update_user_profile(array(
-			"AB_form_verified_by"=>$this->session->userdata('ID'),
-			"ID"=>$user_profile['ID']
-		));
-	}
+	
 }
