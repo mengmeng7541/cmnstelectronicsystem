@@ -546,12 +546,9 @@ class Curriculum_model extends MY_Model {
 			$this->curriculum_db->where("{$sJoinTable['class']}.course_ID",$data['course_ID']);
 		if(isset($data['class_code']))
 			$this->curriculum_db->where("{$sJoinTable['class']}.class_code",$data['class_code']);
-		if(isset($data['reg_state']))
-			$this->curriculum_db->where("$sTable.reg_state",$data['reg_state']);
-		else
-			$this->curriculum_db->where("$sTable.reg_state",'canceled');
 		if(isset($data['reg_ID']))
 			$this->curriculum_db->where("$sTable.reg_ID",$data['reg_ID']);
+		$this->curriculum_db->set("$sTable.reg_state",'canceled');
 		$this->curriculum_db->set("$sTable.reg_canceled_by",isset($data['reg_canceled_by'])?$data['reg_canceled_by']:$this->session->userdata('ID'));
 		$this->curriculum_db->set("$sTable.reg_cancel_time",date("Y-m-d H:i:s"));
 		$this->curriculum_db->update($sTable." JOIN {$sJoinTable['class']} ON $sTable.class_ID = {$sJoinTable['class']}.class_ID");
