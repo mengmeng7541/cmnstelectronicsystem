@@ -167,6 +167,14 @@ class Curriculum_model extends MY_Model {
 			$this->curriculum_db->where("class_reg_end_time >=",$options['class_reg_start_time']);
 		if(isset($options['class_reg_end_time']))
 			$this->curriculum_db->where("class_reg_start_time <=",$options['class_reg_end_time']);
+		if(isset($options['class_reg_end_time_start']))
+		{
+			$this->curriculum_db->where("class_reg_end_time >=",$options['class_reg_end_time_start']);
+		}
+		if(isset($options['class_reg_end_time_end']))
+		{
+			$this->curriculum_db->where("class_reg_end_time <=",$options['class_reg_end_time_end']);
+		}
 		if(isset($options['class_start_time']))
 			$this->curriculum_db->having("class_end_time >=",$options['class_start_time']);
 		if(isset($options['class_end_time']))
@@ -462,7 +470,13 @@ class Curriculum_model extends MY_Model {
 			$this->curriculum_db->where("{$sJoinTable['class']}.class_reg_start_time <=",$options['class_reg_end_time']);
 		}
 		if(isset($options['class_ID']))
-			$this->curriculum_db->where("$sTable.class_ID",$options['class_ID']);
+		{
+			if(is_array($options['class_ID']) && empty($options['class_ID']))
+			{
+				$options['class_ID'] = array('');
+			}
+			$this->curriculum_db->where_in("$sTable.class_ID",$options['class_ID']);
+		}
 		if(isset($options['reg_state']))
 			$this->curriculum_db->where_in("$sTable.reg_state",$options['reg_state']);
 		if(isset($options['reg_ID']))
@@ -673,6 +687,16 @@ class Curriculum_model extends MY_Model {
 	//----------------------privilege------------------------
 	public function get_admin_privilege_list($options)
 	{
+		$sTable = "curriculum_admin_privilege";
+		$sJoinTable = array("admin"=>"cmnst_common.user_profile");
+		
+		$this->curriculum_db->select("
+			$sTable.*,
+			{$sJoinTable['admin']}.email AS admin_email
+		");
+		
+		$this->curriculum_db->join($sJoinTable['admin'],"{$sJoinTable['admin']}.ID = $sTable.admin_ID","LEFT");
+		
 		if(!empty($options['admin_ID']))
 			$this->curriculum_db->where("admin_ID",$options['admin_ID']);
 		if(!empty($options['privilege']))

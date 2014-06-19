@@ -91,7 +91,7 @@
    <script type="text/javascript" src="<?=base_url();?>js/jquery.fittext.js"></script>
    <script type="text/javascript" src="<?=base_url();?>js/jquery.fullscreen-0.4.1.min.js"></script>
    
-   <script src="<?=base_url();?>js/scripts.js?20140613"></script>
+   <script src="<?=base_url();?>js/scripts.js?20140618"></script>
    <script>
       var cmnstApp = angular.module('cmnstApp',[]);
       jQuery(document).ready(function() {       
