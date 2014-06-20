@@ -330,8 +330,7 @@ class Curriculum extends MY_Controller {
 					$row[] = $class['class_end_time'];
 					$row[] = $class['class_total_secs']/3600;
 					$row[] = $class['prof_name'];
-					$reg_participants = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID']))->num_rows();
-					$row[] = "$reg_participants/{$class['class_max_participants']}";
+					$row[] = "{$class['reg_participants']}/{$class['class_max_participants']}";
 					$row[] = $class['class_state_name'];
 					$row[] = $class['class_remark'];
 					
@@ -379,8 +378,7 @@ class Curriculum extends MY_Controller {
 					
 					$row[] = $this->curriculum_model->get_class_type_str($class['class_type']);
 					$row[] = $class['class_start_time'];
-					$reg_participants = $this->curriculum_model->get_reg_list(array("class_ID"=>$class['class_ID']))->num_rows();
-					$row[] = "$reg_participants/{$class['class_max_participants']}";
+					$row[] = "{$class['reg_participants']}/{$class['class_max_participants']}";
 					$row[] = $class['class_state_name'];
 					$row[] = $class['class_remark'];
 					

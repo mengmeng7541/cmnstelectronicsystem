@@ -123,7 +123,8 @@ class Curriculum_model extends MY_Model {
 				{$sJoinTable['course']}.course_eng_name,
 				MIN({$sJoinTable['lesson']}.lesson_start_time) AS class_start_time,
 				MAX({$sJoinTable['lesson']}.lesson_end_time) AS class_end_time,
-				SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time)) AS class_total_secs,
+				COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID) AS reg_participants,
+				IF(COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))/COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))) AS class_total_secs,
 				{$sJoinTable['user']}.name AS prof_name,
 				{$sJoinTable['location']}.location_cht_name AS location_cht_name
 			";
@@ -135,15 +136,17 @@ class Curriculum_model extends MY_Model {
 				{$sJoinTable['course']}.course_eng_name,
 				MIN({$sJoinTable['lesson']}.lesson_start_time) AS class_start_time,
 				MAX({$sJoinTable['lesson']}.lesson_end_time) AS class_end_time,
-				SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time)) AS class_total_secs,
+				COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID) AS reg_participants,
+				IF(COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))/COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))) AS class_total_secs,
 				{$sJoinTable['user']}.name AS prof_name,
 				{$sJoinTable['location']}.location_cht_name AS location_cht_name
 			";
-		}
+		}//class_total_secsc還要除以reg_participants才是真正的
 		$this->curriculum_db->select($sSelect,FALSE);
 		$this->curriculum_db->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = $sTable.course_ID","LEFT")
 							->join($sJoinTable['lesson'],"{$sJoinTable['lesson']}.class_ID = $sTable.class_ID","LEFT")
-							
+							->join($sJoinTable['reg'],"{$sJoinTable['reg']}.class_ID = $sTable.class_ID","LEFT")
+							->where("{$sJoinTable['reg']}.reg_canceled_by",NULL)
 							->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = {$sJoinTable['lesson']}.lesson_prof_ID","LEFT")
 							->join($sJoinTable['location'],"{$sJoinTable['location']}.location_ID = $sTable.class_location","LEFT")
 							->join($sJoinTable['state'],"{$sJoinTable['state']}.state_ID = $sTable.class_state","LEFT");
@@ -451,8 +454,8 @@ class Curriculum_model extends MY_Model {
 		}
 //(SELECT IF(@cur_group<>$sTable.class_ID,@cur_rank:=1,@cur_rank:=@cur_rank+1) AS reg_rank,@cur_group:=$sTable.class_ID,$sTable.* FROM $sTable, (SELECT @cur_rank:=0,@cur_group:=null) r WHERE reg_canceled_by IS NULL $additional_where ORDER BY $sTable.class_ID ASC,$sTable.reg_time ASC)
 		$this->curriculum_db->select($sSelect,FALSE);
-		$this->curriculum_db->join("(SELECT * FROM {$sJoinTable['class']} ORDER BY {$sJoinTable['class']}.class_type DESC) {$sJoinTable['class']}","{$sJoinTable['class']}.class_ID = $sTable.class_ID","LEFT");
-//		$this->curriculum_db->join($sJoinTable['class'],"{$sJoinTable['class']}.class_ID = $sTable.class_ID","LEFT");
+//		$this->curriculum_db->join("(SELECT * FROM {$sJoinTable['class']} ORDER BY {$sJoinTable['class']}.class_type DESC) {$sJoinTable['class']}","{$sJoinTable['class']}.class_ID = $sTable.class_ID","LEFT");
+		$this->curriculum_db->join($sJoinTable['class'],"{$sJoinTable['class']}.class_ID = $sTable.class_ID","LEFT");
 		$this->curriculum_db->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = {$sJoinTable['class']}.course_ID","LEFT");
 		$this->curriculum_db->where("$sTable.reg_canceled_by",NULL);
 		if(isset($options['user_ID']))
