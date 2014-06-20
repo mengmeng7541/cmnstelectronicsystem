@@ -80,8 +80,8 @@ class Course_model extends MY_Model {
 				return $this->admin_model->get_admin_ID_select_options();
 			}else{
 				$privilege = array("admin","super");
-				$this->load->model('facility/user_privilege_model','facility_user_privilege_model');
-				return $this->facility_user_privilege_model->get_available_users($facility_ID,$privilege);
+				$this->load->model('facility/user_privilege_model');
+				return $this->user_privilege_model->get_available_users($facility_ID,$privilege);
 			}
 		
 	}
