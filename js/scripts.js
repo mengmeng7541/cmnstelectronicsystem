@@ -2921,6 +2921,52 @@ var App = function () {
         
 	}
 	
+	var handleTablesOem = function()
+	{
+		var table_oem_form_list = $("#table_oem_form_list").dataTable({
+            "sAjaxSource": site_url+"oem/form/query",
+            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+            "aoColumnDefs": [ 
+	            {
+			      "aTargets": [ 0 ],
+			      "mData": function ( source, type, val ) {
+			        return source['form_cht_name']+' ('+source['form_eng_name']+')';
+			      }
+			    }, 
+			    {
+			      "aTargets": [ 1 ],
+			      "mData": function ( source, type, val ) {
+			      	return parseInt(source['form_enable'])?'是':'否';
+			      	
+			      }
+			    }, 
+			    {
+			      "aTargets": [ 2 ],
+			      "mData": function ( source, type, val ) {
+			      	return source['form_remark'];
+			      	
+			      }
+			    }, 
+			    {
+			      "aTargets": [ 3 ],
+			      "mData": function ( source, type, val ) {
+			        return "<a href='"+site_url+"oem/form/edit/"+source['form_SN']+"' class='btn btn-primary'>編輯</a>";
+			      }
+			    }, 
+		    ]
+//			"aaSorting": [[0,'desc']],
+//			"iDisplayLength": 100,
+        });
+	}
+	
 	var handleClock = function(){
 		//------------------------手動打卡(中心人員)-----------------------------
         var table_admin_manual_clock_list = $("#table_admin_manual_clock_list").dataTable({
@@ -4321,6 +4367,7 @@ var App = function () {
 			handleBoss();
 			handleFormFacility();//儀器預約系統
 			handleTablesFacility();
+			handleTablesOem();
 			handleTablesCurriculum();
 			handleTablesNanomark(); // handles data tables
 			handleTableNanomarkTestItem();

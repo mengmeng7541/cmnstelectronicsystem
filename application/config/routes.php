@@ -195,6 +195,24 @@ $route['facility/admin/nocharge/del'] = 'facility/del_nocharge';
 
 $route['facility/admin/tracker/list'] = 'admin/list_clock';
 
+//oem
+$route['oem/config/edit'] = 'oem/edit_config';
+$route['oem/config/update'] = 'oem/update_config';
+$route['oem/app/list'] = 'oem/list_app';
+$route['oem/app/query'] = 'oem/query_app';
+$route['oem/app/new'] = 'oem/new_app';
+$route['oem/app/edit'] = 'oem/edit_app';
+$route['oem/app/add'] = 'oem/add_app';
+$route['oem/app/update'] = 'oem/update_app';
+$route['oem/app/del'] = 'oem/del_app';
+$route['oem/form/list'] = 'oem/list_form';
+$route['oem/form/query'] = 'oem/query_form';
+$route['oem/form/new'] = 'oem/new_form';
+$route['oem/form/edit/(:num)'] = 'oem/edit_form/$1';
+$route['oem/form/add'] = 'oem/add_form';
+$route['oem/form/update'] = 'oem/update_form';
+$route['oem/form/del'] = 'oem/del_form';
+
 //access_system
 $route['access/card/application/temp/list'] = 'access/list_card_temp_application';
 $route['access/card/application/temp/query'] = 'access/query_card_temp_application';

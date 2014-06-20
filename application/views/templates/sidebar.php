@@ -34,6 +34,18 @@
 						<li><a class="" href="<?=site_url();?>/facility/admin/privilege/list">使用者權限</a></li>
 	                </ul>
 				</li>
+				<li class="has-sub ">
+					<a href="javascript:;" class="">
+					<span class="icon-box"><i class="icon-cogs"></i></span> 儀器代工
+					<span class="arrow"></span>
+					</a>
+					<ul class="sub">
+						<li><a class="" href="<?=site_url();?>/oem/app/new">代工申請</a></li>
+						<li><a class="" href="<?=site_url();?>/oem/app/list">代工審查</a></li>
+						<li><a class="" href="<?=site_url();?>/oem/form/list">代工表單維護</a></li>
+	                    <li><a class="" href="<?=site_url();?>/oem/config/edit">系統設定</a></li>
+	                </ul>
+				</li>
 				<li class="has-sub">
 					<a href="javascript:;" class="">
 					<span class="icon-box"><i class="icon-cogs"></i></span> 訓練課程

@@ -186,6 +186,22 @@ $db['facility']['swap_pre'] = "";
 $db['facility']['autoinit'] = TRUE;
 $db['facility']['stricton'] = FALSE;
 
+$db['oem']['hostname'] = "127.0.0.1";
+$db['oem']['username'] = "cmnst";
+$db['oem']['password'] = "2080103";
+$db['oem']['database'] = "cmnst_oem";
+$db['oem']['dbdriver'] = "mysql";
+$db['oem']['dbprefix'] = "";
+$db['oem']['pconnect'] = FALSE;
+$db['oem']['db_debug'] = TRUE;
+$db['oem']['cache_on'] = FALSE;
+$db['oem']['cachedir'] = "";
+$db['oem']['char_set'] = "utf8";
+$db['oem']['dbcollat'] = "utf8_general_ci";
+$db['oem']['swap_pre'] = "";
+$db['oem']['autoinit'] = TRUE;
+$db['oem']['stricton'] = FALSE;
+
 $db['access']['hostname'] = "127.0.0.1";
 $db['access']['username'] = "cmnst";
 $db['access']['password'] = "2080103";
