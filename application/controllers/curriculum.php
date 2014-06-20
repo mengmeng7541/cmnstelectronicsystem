@@ -882,12 +882,27 @@ class Curriculum extends MY_Controller {
 					$this->load->model('facility_model');
 					if(empty($facility_IDs))
 					{
-						throw new Exception("權限不足！",ERROR_CODE);
+						//沒儀器通常是安全講習，丹琪說給技術長或研究員權限
+						$this->load->model('admin_model');
+						$privilege = $this->admin_model->get_org_chart_list(array(
+							"admin_ID"=>$this->session->userdata('ID'),
+							"status_ID"=>array("CTO","researcher")
+						))->row_array();
+						if(!$privilege)
+						{
+							throw new Exception("權限不足！",ERROR_CODE);
+						}
+					}else{
+						$privilege = $this->facility_model->get_user_privilege_list(array(
+							"facility_ID"=>$facility_IDs,
+							"privilege"=>"admin",
+							"user_ID"=>$this->session->userdata('ID')
+						))->row_array();
+						if(!$privilege){
+							throw new Exception("權限不足！",ERROR_CODE);
+						}
 					}
-					$privilege = $this->facility_model->get_user_privilege_list(array("facility_ID"=>$facility_IDs,"privilege"=>"admin","user_ID"=>$this->session->userdata('ID')))->row_array();
-					if(!$privilege){
-						throw new Exception("權限不足！",ERROR_CODE);
-					}
+					
 					if(time()>strtotime(date("Y-m-d 12:00:00",strtotime($class['class_reg_start_time']." -1day")))){
 						throw new Exception("已過可排課時間！",ERROR_CODE);
 					}
