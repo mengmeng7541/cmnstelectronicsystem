@@ -408,7 +408,7 @@ class User extends MY_Controller {
 			echo $this->info_modal($e->getMessage(),"",$e->getCode());
 		}
 	}
-	public function del_org($SN)
+	public function del_org($SN = "")
 	{
 		try{
 			$this->is_admin_login();
@@ -424,6 +424,11 @@ class User extends MY_Controller {
 			if($user_profile_nums)
 			{
 				throw new Exception("該組織已有使用者綁定，不可刪除",ERROR_CODE);
+			}
+			$boss_profile_nums = $this->user_model->get_boss_list(array("org_SN"=>$SN))->num_rows();
+			if($user_profile_nums)
+			{
+				throw new Exception("該組織已有老師/主管綁定，不可刪除",ERROR_CODE);
 			}
 			
 			$this->user_model->del_org(array("serial_no"=>$org['serial_no']));

@@ -268,6 +268,10 @@ class User_model extends MY_Model {
 		{
 			$this->common_db->where("$sTable.serial_no",$options['serial_no']);
 		}
+		if(isset($options['org_SN']))
+		{
+			$this->common_db->where("{$sJoinTable['org']}.serial_no",$options['org_SN']);
+		}
 		
 		return $this->common_db->get($sTable);	
 	}
