@@ -476,6 +476,9 @@ class Facility extends MY_Controller {
 		if(empty($SN))
 		{
 			//新增
+			//取得使用者選單
+			$this->load->model('user_model');
+			$this->data['user_ID_select_options'] = $this->user_model->get_user_ID_select_options();
 			$this->data['action'] = site_url()."/facility/admin/privilege/add";
 			$this->data['facility_ID_select'] = form_dropdown("facility_ID[]",$facility_ID_select_options,"","multiple='multiple' class='span12 chosen'");
 		}else{

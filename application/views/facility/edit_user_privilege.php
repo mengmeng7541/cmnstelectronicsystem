@@ -1,14 +1,3 @@
-<?
-if(empty($user_ID))
-{
-	$user_profile = $this->user_model->get_user_profile_list()->result_array();
-	$user_ID_select_options = array(""=>"");
-	foreach($user_profile as $u){
-		$user_ID_select_options[$u['ID']] = $u['name']." ({$u['ID']})";
-	}
-}
-
-?>
 <div id="main-content">
     <!-- BEGIN PAGE CONTAINER-->
     <div class="container-fluid">

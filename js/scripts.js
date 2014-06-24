@@ -2923,7 +2923,8 @@ var App = function () {
 	
 	var handleTablesOem = function()
 	{
-		var table_oem_form_list = $("#table_oem_form_list").dataTable({
+		var table_oem_form_list = $("#table_oem_form_list");
+		var datatable_oem_form_list = table_oem_form_list.dataTable({
             "sAjaxSource": site_url+"oem/form/query",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
@@ -2958,12 +2959,73 @@ var App = function () {
 			    {
 			      "aTargets": [ 3 ],
 			      "mData": function ( source, type, val ) {
-			        return "<a href='"+site_url+"oem/form/edit/"+source['form_SN']+"' class='btn btn-primary'>編輯</a>";
+			      	if(table_oem_form_list.data('mode')=='app'){
+						return "<a href='"+site_url+"oem/app/new/"+source['form_SN']+"' class='btn btn-primary'>申請</a>";
+					}else if(table_oem_form_list.data('mode')=='form'){
+						return "<a href='"+site_url+"oem/form/edit/"+source['form_SN']+"' class='btn btn-primary'>編輯</a>";
+					}
+			        return '';
 			      }
 			    }, 
 		    ]
 //			"aaSorting": [[0,'desc']],
 //			"iDisplayLength": 100,
+        });
+        
+        var table_oem_app_list = $("#table_oem_app_list").dataTable({
+            "sAjaxSource": site_url+"oem/app/query",
+            "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            "sPaginationType": "bootstrap",
+            "oLanguage": {
+                "sLengthMenu": "_MENU_ records per page",
+                "oPaginate": {
+                    "sPrevious": "Prev",
+                    "sNext": "Next"
+                }
+            },
+//            "aoColumnDefs": [ 
+//	            {
+//			      "aTargets": [ 0 ],
+//			      "mData": function ( source, type, val ) {
+//			        return source['app_SN'];
+//			      }
+//			    }, 
+//			    {
+//			      "aTargets": [ 1 ],
+//			      "mData": function ( source, type, val ) {
+//			      	return source['form_cht_name']+' ('+source['form_eng_name']+')';
+//			      	
+//			      }
+//			    }, 
+//			    {
+//			      "aTargets": [ 2 ],
+//			      "mData": function ( source, type, val ) {
+//			      	return source['user_name'];
+//			      	
+//			      }
+//			    }, 
+//			    {
+//			      "aTargets": [ 3 ],
+//			      "mData": function ( source, type, val ) {
+//			      	return source['org_name'];
+//			      	
+//			      }
+//			    },
+//			    {
+//			      "aTargets": [ 4 ],
+//			      "mData": function ( source, type, val ) {
+//			      	return '';
+//			      	
+//			      }
+//			    }, 
+//			    {
+//			      "aTargets": [ 5 ],
+//			      "mData": function ( source, type, val ) {
+//			      	return '';
+//			      	
+//			      }
+//			    }, 
+//		    ]
         });
 	}
 	

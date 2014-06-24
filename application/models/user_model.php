@@ -109,9 +109,7 @@ class User_model extends MY_Model {
   }
   public function get_user_profile_by_ID($ID)
   {
-    $sql = "SELECT * FROM user_profile WHERE ID = '{$ID}'";
-    $query = $this->common_db->query($sql);
-    return $query->row_array();
+  	return $this->get_user_profile_list(array("user_ID"=>$ID))->row_array();
   }
   public function get_user_profile_by_email($user_email)
   {
