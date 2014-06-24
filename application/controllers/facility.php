@@ -1546,14 +1546,9 @@ class Facility extends MY_Controller {
 				"team_ID"=>"common_lab",
 				"status_ID"=>"section_chief"
 			))->result_array();
-				
-			//確認選擇了連續時段
-			$this->booking_model->check_input_time($input_data['booking_time'],$facility['unit_sec']);
 			
-			//寫入預約紀錄
-			$min_time = min($input_data['booking_time']);
-			$max_time = max($input_data['booking_time'])+$facility['unit_sec'];
-			$booking_ID = $this->booking_model->add($facility['ID'],$this->session->userdata('ID'),$min_time,$max_time,"maintenance");
+			//用checkbox UI預約
+			$booking_ID = $this->booking_model->add_by_checkbox($facility['ID'],$this->session->userdata('ID'),$input_data['booking_time'],"maintenance");
 			
 			//寫入維修單並取得維修調教單號
 			$data = array("applicant_ID"=>$this->session->userdata('ID'),

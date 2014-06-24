@@ -1,13 +1,32 @@
 <?php
 class Booking_model extends MY_Model {
   
-  public function __construct()
-  {
-  	parent::__construct();
-    $this->load->model("facility_model");
-    $this->load->model("user_model");
-  }
-  
+	public function __construct()
+	{
+		parent::__construct();
+		$this->load->model("facility_model");
+		$this->load->model("user_model");
+	}
+	
+	//--------------------------UI--------------------------
+	public function add_by_checkbox($f_IDs,$user_ID,$checkboxes,$purpose = "DIY")
+	{
+		//取得相關儀器
+		$facilities_IDs = $this->facility_model->get_vertical_group_facilities($f_IDs,array("facility_only"=>TRUE));
+		$facilities = $this->facility_model->get_facility_list(array("ID"=>$facilities_IDs))->result_array();
+		$max_unit_sec = max(sql_column_to_key_value_array($facilities,"unit_sec"));
+		
+		$max_time = max($checkboxes)+$max_unit_sec;
+		$min_time = min($checkboxes);
+		
+		//確認輸入了正確的時間
+		$this->check_input_time($checkboxes,$max_unit_sec);
+		
+		//預約
+		return $this->add($f_IDs,$user_ID,$min_time,$max_time,$purpose);
+	}
+	//------------------------------------------------------
+	
 	public function add($f_ID,$user_ID,$start_time,$end_time,$purpose = "DIY")
 	{
 	  	//取得儀器基本資料
