@@ -925,7 +925,7 @@ class Curriculum extends MY_Controller {
 						throw new Exception(validation_errors(),WARNING_CODE);
 					
 					$this->load->model('facility/booking_model');
-					$booking_time = $this->booking_model->get_booking_time($input_data['booking_time'],$facility_IDs);
+					$booking_time = $this->booking_model->get_time_by_checkbox($input_data['booking_time'],$facility_IDs);
 					//新增課堂
 					$this->lesson_model->add($class['class_ID'],$input_data['user_ID'],$booking_time[0],$booking_time[1],$input_data['lesson_comment']);
 				}
@@ -976,7 +976,7 @@ class Curriculum extends MY_Controller {
 						throw new Exception(validation_errors(),WARNING_CODE);
 					
 					$this->load->model('facility/booking_model');
-					$booking_time = $this->booking_model->get_booking_time($input_data['booking_time'],$facility_IDs);
+					$booking_time = $this->booking_model->get_time_by_checkbox($input_data['booking_time'],$facility_IDs);
 					//修改課堂資訊
 					$this->lesson_model->update($lesson['lesson_ID'],$input_data['user_ID'],$booking_time[0],$booking_time[1],$input_data['lesson_comment']);
 				}
@@ -1159,7 +1159,7 @@ class Curriculum extends MY_Controller {
 				if(!$booking) throw new Exception("無此預約",ERROR_CODE);
 				//取得選填的時段
 				$this->load->model('facility/booking_model');
-				$booking_time = $this->booking_model->get_booking_time($input_data['booking_time'],$booking['facility_ID']);
+				$booking_time = $this->booking_model->get_time_by_checkbox($input_data['booking_time'],$booking['facility_ID']);
 				//更新預約記錄
 				$this->booking_model->update_time($booking['booking_ID'],$booking_time[0],$booking_time[1]);
 				

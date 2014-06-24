@@ -1520,57 +1520,10 @@ class Facility extends MY_Controller {
 				echo $this->info_modal(validation_errors(),"","warning");
 				return;
 			}
-			//取得使用者基本資料
-			$user_profile = $this->user_model->get_user_profile_list(
-							array("user_ID"=>$this->session->userdata('ID'))
-							)->row_array();
-			//先確認有權限
-			$privilege =	$this->facility_model->get_user_privilege_list(
-							array("facility_ID"=>$input_data['facility_ID'],
-								  "user_ID"=>$user_profile['ID'],
-								  "privilege"=>"admin")
-							)->row_array();
-			if(!$privilege)
-			{
-				echo $this->info_modal("權限不足！","","error");
-				return;
-			}
-			//取得儀器基本資料
-			$facility = $this->facility_model->get_facility_list(
-						array("ID"=>$input_data['facility_ID'])
-						)->row_array();
 			
-			//取得共同實驗室組組長資料
-			$this->load->model('admin_model');
-			$managers = $this->admin_model->get_org_chart_list(array(
-				"team_ID"=>"common_lab",
-				"status_ID"=>"section_chief"
-			))->result_array();
-			
-			//用checkbox UI預約
-			$booking_ID = $this->booking_model->add_by_checkbox($facility['ID'],$this->session->userdata('ID'),$input_data['booking_time'],"maintenance");
-			
-			//寫入維修單並取得維修調教單號
-			$data = array("applicant_ID"=>$this->session->userdata('ID'),
-					  "facility_ID"=>$input_data['facility_ID'],
-					  "subject"=>$input_data['subject'],
-					  "content"=>$input_data['content'],
-					  "booking_ID"=>$booking_ID,
-					  "result"=>"1");
-			$serial_no = $this->facility_model->add_maintenance($data);
-			
-			//寄信通知組長
-			foreach($managers as $manager){
-				$this->email->to($manager['admin_email']);
-				$this->email->subject("成大微奈米科技研究中心 -儀器維修調教通知-");
-				$this->email->message("{$manager['team_name']} {$manager['status_name']} {$manager['admin_name']} 您好：<br>
-										中心儀器：{$facility['cht_name']}<br>
-										被該儀器管理員 {$user_profile['name']} 申請 {$input_data['subject']}<br>
-										申請原因： {$input_data['content']}<br>
-										使用時段為：".date("Y-m-d H:i",$min_time)."~".date("Y-m-d H:i",$max_time)."<br>
-										系統特此通知，謝謝");
-				$this->email->send();
-			}
+			$booking_time = $this->booking_model->get_time_by_checkbox($input_data['booking_time'],$input_data['facility_ID']);
+			$this->load->model('facility/maintenance_model');
+			$this->maintenance_model->add($input_data['facility_ID'],$this->session->userdata('ID'),$input_data['subject'],$input_data['content'],$booking_time[0],$booking_time[1]);
 			
 			echo $this->info_modal("新增成功","/facility/admin/booking/list/");	
 		}catch(Exception $e){
