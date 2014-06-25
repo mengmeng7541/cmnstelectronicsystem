@@ -258,8 +258,12 @@ class Booking_model extends MY_Model {
   }
   
 	//--------------------------UI--------------------------
-	public function get_time_by_checkbox($input_array_time,$f_ID){
-		$facilities = $this->facility_model->get_facility_list(array("ID"=>$f_ID))->result_array();
+	public function get_time_by_checkbox($input_array_time,$f_IDs){
+		$facilities_ID = $this->facility_model->get_vertical_group_facilities($f_IDs,array("facility_only"=>TRUE));
+		$facilities = $this->facility_model->get_facility_list(array(
+			"ID"=>$facilities_ID
+		))->result_array();
+		
 		if(!$facilities){
 			throw new Exception("無此儀器！",ERROR_CODE);
 		}
