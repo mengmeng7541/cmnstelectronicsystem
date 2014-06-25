@@ -85,22 +85,24 @@ class Oem extends MY_Controller {
 			
 			$output['aaData'] = array();
 			
-			$apps = $this->oem_model->get_app_list()->result_array();
-//			$output['aaData'] = $apps;
-			foreach($apps as $app)
-			{
-				$row = array();
-				$row[] = $app['app_SN'];
-				$row[] = "{$app['form_cht_name']} ({$app['form_eng_name']})";
-				$row[] = $app['user_name'];
-				$row[] = $app['org_name'];
-				$row[] = $app['app_SN'];
-				$display = array();
-				$display[] = anchor("oem/app/edit/{$app['app_SN']}","審核","class='btn btn-primary'");
-				$row[] = implode(' ',$display);
-				$output['aaData'][] = $row;
-			}
-				
+			$input_data = $this->input->get(NULL,TRUE);
+			
+			
+			$apps = $this->oem_model->get_app_list($input_data)->result_array();
+			$output['aaData'] = $apps;
+//			foreach($apps as $app)
+//			{
+//				$row = array();
+//				$row[] = $app['app_SN'];
+//				$row[] = "{$app['form_cht_name']} ({$app['form_eng_name']})";
+//				$row[] = $app['user_name'];
+//				$row[] = $app['org_name'];
+//				$row[] = $app['app_SN'];
+//				$display = array();
+//				$display[] = anchor("oem/app/edit/{$app['app_SN']}","審核","class='btn btn-primary'");
+//				$row[] = implode(' ',$display);
+//				$output['aaData'][] = $row;
+//			}
 			echo json_encode($output);
 		}catch(Exception $e){
 			echo json_encode($output);
@@ -202,6 +204,7 @@ class Oem extends MY_Controller {
 			$input_data = $this->input->post(NULL,TRUE);
 			
 			$this->form_validation->set_rules("app_SN","代工單號","required");
+			$this->form_validation->set_rules("action_btn","動作","required");
 			if(!$this->form_validation->run())
 			{
 				throw new Exception(validation_errors(),ERROR_CODE);
@@ -212,27 +215,32 @@ class Oem extends MY_Controller {
 				throw new Exception("無此代工單",ERROR_CODE);
 			}
 			
-			switch($app['checkpoint'])
+			$this->load->model('oem/app_model');
+			switch($app['app_checkpoint'])
 			{
-				case '':
-					$this->app_model->save($app['app_SN'],$input_data['app_description']);
+				case 'user_init':
+					if($input_data['action_btn']=='save')
+					{
+						$this->app_model->save($app['app_SN'],$input_data['app_description']);
+					}else if($input_data['action_btn']=='submit'){
+						$this->app_model->submit($app['app_SN'],$input_data['app_description']);
+					}
 					break;
 				case 'facility_admin_init':
+				case 'common_lab_section_chief':
+				case 'user_boss':
+					$this->app_model->confirm($app['app_SN'],$this->session->userdata('ID'),$input_data['checkpoint_comment'],$input_data['action_btn']);
 					break;
 				case 'common_lab_deputy_section_chief':
 					break;
-				case 'common_lab_section_chief':
-					break;
-				case 'user_boss':
-					break;
 				case 'facility_admin_final':
 					break;
-				case 'customer_survey':
+				case 'user_final':
 					break;
 				case 'completed':
 					break;
 				default:
-					throw new Exception("未知的動作",ERROR_CODE);
+					throw new Exception("未知的狀態",ERROR_CODE);
 			}
 			
 			echo $this->info_modal("審核成功","oem/app/list");

@@ -161,12 +161,52 @@ class Oem_model extends MY_Model {
 		$this->oem_db->insert("oem_application");
 		return $this->oem_db->insert_id();
 	}
-	public function update_app()
+	public function update_app($data)
 	{
-		
+		if(isset($data['form_SN']))
+		{
+			$this->oem_db->set("form_SN",$data['form_SN']);
+		}
+		if(isset($data['app_description']))
+		{
+			$this->oem_db->set("app_description",$data['app_description']);
+		}
+		if(isset($data['add_checkpoint']))
+		{
+			$this->oem_db->set("app_checkpoint",$data['app_checkpoint']);
+		}
+		$this->oem_db->where("app_SN",$data['app_SN']);
+		$this->oem_db->update("oem_application");
 	}
 	public function del_app()
 	{
 		
+	}
+	//---------------------APP CHECKPOINT----------------------------
+	public function get_app_checkpoint_list($options = array())
+	{
+		$sTable = "oem_application_checkpoint";
+		$sJoinTable = array("app"=>"oem_application");
+		
+		$this->oem_db->select("
+			$sTable.*
+		");
+		$this->oem_db->join($sJoinTable['app'],"{$sJoinTable['app']}.app_SN = $sTable.app_SN","LEFT");
+		
+		if(isset($options['app_SN']))
+		{
+			$this->oem_db->where("$sTable.app_SN",$options['app_SN']);
+		}
+		
+		return $this->oem_db->get($sTable);
+	}
+	public function add_app_checkpoint($data)
+	{
+		$this->oem_db->set("app_SN",$data['app_SN']);
+		$this->oem_db->set("checkpoint_ID",$data['checkpoint_ID']);
+		$this->oem_db->set("checkpoint_admin_ID",$data['checkpoint_admin_ID']);
+		$this->oem_db->set("checkpoint_comment",$data['checkpoint_comment']);
+		$this->oem_db->insert("oem_application_checkpoint");
+		return $this->oem_db->insert_id();
 	}
 }

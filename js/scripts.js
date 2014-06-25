@@ -2983,49 +2983,50 @@ var App = function () {
                     "sNext": "Next"
                 }
             },
-//            "aoColumnDefs": [ 
-//	            {
-//			      "aTargets": [ 0 ],
-//			      "mData": function ( source, type, val ) {
-//			        return source['app_SN'];
-//			      }
-//			    }, 
-//			    {
-//			      "aTargets": [ 1 ],
-//			      "mData": function ( source, type, val ) {
-//			      	return source['form_cht_name']+' ('+source['form_eng_name']+')';
-//			      	
-//			      }
-//			    }, 
-//			    {
-//			      "aTargets": [ 2 ],
-//			      "mData": function ( source, type, val ) {
-//			      	return source['user_name'];
-//			      	
-//			      }
-//			    }, 
-//			    {
-//			      "aTargets": [ 3 ],
-//			      "mData": function ( source, type, val ) {
-//			      	return source['org_name'];
-//			      	
-//			      }
-//			    },
-//			    {
-//			      "aTargets": [ 4 ],
-//			      "mData": function ( source, type, val ) {
-//			      	return '';
-//			      	
-//			      }
-//			    }, 
-//			    {
-//			      "aTargets": [ 5 ],
-//			      "mData": function ( source, type, val ) {
-//			      	return '';
-//			      	
-//			      }
-//			    }, 
-//		    ]
+            "aoColumnDefs": [ 
+	            {
+			      "aTargets": [ 0 ],
+			      "mData": function ( source, type, val ) {
+			        return source['app_SN'];
+			      }
+			    }, 
+			    {
+			      "aTargets": [ 1 ],
+			      "mData": function ( source, type, val ) {
+			      	return source['form_cht_name']+' ('+source['form_eng_name']+')';
+			      	
+			      }
+			    }, 
+			    {
+			      "aTargets": [ 2 ],
+			      "mData": function ( source, type, val ) {
+			      	return source['user_name'];
+			      	
+			      }
+			    }, 
+			    {
+			      "aTargets": [ 3 ],
+			      "mData": function ( source, type, val ) {
+			      	return source['org_name'];
+			      	
+			      }
+			    },
+			    {
+			      "aTargets": [ 4 ],
+			      "mData": function ( source, type, val ) {
+			      	return source['app_SN'];
+			      	
+			      }
+			    }, 
+			    {
+			      "aTargets": [ 5 ],
+			      "mData": function ( source, type, val ) {
+			      	
+			      	return "<a href='"+site_url+"oem/app/edit/"+source['app_SN']+"' class='btn btn-primary'>審核</a>";
+			      	
+			      }
+			    }, 
+		    ]
         });
 	}
 	
