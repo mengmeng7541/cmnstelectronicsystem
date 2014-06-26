@@ -127,6 +127,27 @@ class User extends MY_Controller {
 		$this->load->view('user/list',$this->data);
 		$this->load->view('templates/footer');
 	}
+	public function query_account()
+	{
+		try{
+			$this->is_user_login();
+			
+			$output['aaData'] = array();
+			
+			$input_data = $this->input->get(NULL,TRUE);
+			if(!$this->is_admin_login(FALSE)){
+				//一般使用者只能看到自己的資料
+				$input_data['user_ID'] = $this->session->userdata('ID');
+			}
+			
+			$user_profile = $this->user_model->get_user_profile_list($input_data)->result_array();
+			$output['aaData'] = $user_profile;
+			
+			echo json_encode($output);
+		}catch(Exception $e){
+			echo json_encode($output);
+		}
+	}
 	public function list_account_query()
 	{
 		$this->is_admin_login();

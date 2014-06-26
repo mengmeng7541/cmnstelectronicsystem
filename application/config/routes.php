@@ -77,6 +77,7 @@ $route['user/forget'] = 'user/forget_passwd';
 $route['user/form'] = 'user/form_account';
 $route['user/edit'] = 'user/edit_account';
 $route['user/list'] = 'user/list_account';
+$route['user/query'] = 'user/query_account';
 $route['user/list/query'] = 'user/list_account_query';
 $route['user/edit/(:any)'] = 'user/edit_account/$1';
 $route['user/add'] = 'user/add_account';

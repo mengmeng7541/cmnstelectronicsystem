@@ -273,7 +273,8 @@ class Oem extends MY_Controller {
 			
 			$output['aaData'] = array();
 			
-			$forms = $this->oem_model->get_form_list()->result_array();
+			$input_data = $this->input->get(NULL,TRUE);
+			$forms = $this->oem_model->get_form_list($input_data)->result_array();
 			$output['aaData'] = $forms;
 			
 			echo json_encode($output);
