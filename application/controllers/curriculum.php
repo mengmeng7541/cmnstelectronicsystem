@@ -998,20 +998,31 @@ class Curriculum extends MY_Controller {
 			
 			
 			if(!$this->curriculum_model->is_super_admin()){
-				$facility_IDs = $this->curriculum_model->get_course_facility_map($lesson['course_ID']);
+				$this->load->model('curriculum/course_model');
+				$facility_IDs = $this->course_model->get_course_map_facility_ID($lesson['course_ID']);
 				if(empty($facility_IDs))
 				{
-					throw new Exception("權限不足！",ERROR_CODE);
-				}
-				$this->load->model('facility_model');
-				$privilege = $this->facility_model->get_user_privilege_list(array(
-					"facility_ID"=>$facility_IDs,
-					"user_ID"=>$this->session->userdata('ID'),
-					"privilege"=>"admin"
-				))->row_array();
-				if(!$privilege)
-				{
-					throw new Exception("權限不足！",ERROR_CODE);
+					//沒儀器通常是安全講習，丹琪說給技術長或研究員權限
+					$this->load->model('admin_model');
+					$privilege = $this->admin_model->get_org_chart_list(array(
+						"admin_ID"=>$this->session->userdata('ID'),
+						"status_ID"=>array("CTO","researcher")
+					))->row_array();
+					if(!$privilege)
+					{
+						throw new Exception("權限不足！",ERROR_CODE);
+					}
+				}else{
+					$this->load->model('facility_model');
+					$privilege = $this->facility_model->get_user_privilege_list(array(
+						"facility_ID"=>$facility_IDs,
+						"user_ID"=>$this->session->userdata('ID'),
+						"privilege"=>"admin"
+					))->row_array();
+					if(!$privilege)
+					{
+						throw new Exception("權限不足！",ERROR_CODE);
+					}
 				}
 				$class = $this->curriculum_model->get_class_list(array("class_ID"=>$lesson['class_ID']))->row_array();
 				if(time()>strtotime(date("Y-m-d 12:00:00",strtotime($class['class_reg_start_time']." -1day")))){

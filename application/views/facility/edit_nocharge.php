@@ -84,10 +84,10 @@
                      			<div class="controls">
                      				<? if($page!="view"){ ?>
 	                     				<input name="start_date" type="text" value="<?=empty($start_time)?"":date("Y-m-d",strtotime($start_time));?>" class="input-medium date-picker" />
-	                     				<input name="start_time" type="text" value="<?=empty($start_time)?"":date("H:i:s",strtotime($start_time));?>" class="input-medium timepicker-24"/>
+	                     				<input name="start_time" type="text" value="<?=empty($start_time)?"":date("H:i",strtotime($start_time));?>" class="input-medium timepicker-24-30m"/>
 	                     				~
 	                     				<input name="end_date" type="text" value="<?=empty($end_time)?"":date("Y-m-d",strtotime($end_time));?>" class="input-medium date-picker"/>
-	                     				<input name="end_time" type="text" value="<?=empty($end_time)?"":date("H:i:s",strtotime($end_time));?>" class="input-medium timepicker-24"/>
+	                     				<input name="end_time" type="text" value="<?=empty($end_time)?"":date("H:i",strtotime($end_time));?>" class="input-medium timepicker-24-30m"/>
                      				<? }else{ 
                      					echo $nocharge_start_time."~".$nocharge_end_time;
                      				   } ?>
