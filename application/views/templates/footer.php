@@ -39,7 +39,6 @@
    <!-- BEGIN JAVASCRIPTS -->    
    
    <!-- Load javascripts at bottom, this will reduce page load time -->
-   <script src="<?=base_url();?>assets/angular-1.2.17/angular.min.js"></script>
    
    <script src="<?=base_url();?>js/jquery.validate.js"></script>
    <script src="<?=base_url();?>assets/jquery-slimscroll/jquery-ui-1.9.2.custom.min.js"></script>
@@ -92,8 +91,8 @@
    <script type="text/javascript" src="<?=base_url();?>js/jquery.fullscreen-0.4.1.min.js"></script>
    
    <script src="<?=base_url();?>js/scripts.js?20140618"></script>
+   
    <script>
-      var cmnstApp = angular.module('cmnstApp',[]);
       jQuery(document).ready(function() {       
          // initiate layout and plugins
          App.init();

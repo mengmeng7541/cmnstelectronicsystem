@@ -66,10 +66,12 @@ class User_model extends MY_Model {
   {
   	$sTable = "user_profile";
   	$sJoinTable = array("org"=>"organization","boss"=>"boss_profile");
-  	$this->common_db->select("{$sTable}.*,
-  							  {$sJoinTable['org']}.name AS org_name,
-  							  {$sJoinTable['boss']}.name AS boss_name,
-  							  {$sJoinTable['boss']}.email AS boss_email,")
+  	$this->common_db->select("
+  		{$sTable}.*,
+		{$sJoinTable['org']}.name AS org_name,
+		{$sJoinTable['boss']}.name AS boss_name,
+		{$sJoinTable['boss']}.email AS boss_email,
+	")
   					->from($sTable)
   					->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = {$sTable}.organization","LEFT")
   					->join($sJoinTable['boss'],"{$sJoinTable['boss']}.serial_no = {$sTable}.boss_no","LEFT");
