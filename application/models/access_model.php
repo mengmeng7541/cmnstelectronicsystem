@@ -102,7 +102,7 @@ class Access_model extends MY_Model {
 		if(isset($data['AB_form_verified_by']))
 		{
 			$this->facility_db->set("AB_form_verified_by",$data['AB_form_verified_by']);
-			$this->facility_db->set("AB_form_verification_time",$data['AB_form_verification_time']);
+			$this->facility_db->set("AB_form_verification_time",isset($data['AB_form_verification_time'])?$data['AB_form_verification_time']:date("Y-m-d H:i:s"));
 		}
 		$this->facility_db->where("serial_no",$data['serial_no']);
 		$this->facility_db->update("facility_card_application");
