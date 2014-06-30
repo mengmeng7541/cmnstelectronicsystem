@@ -136,12 +136,28 @@ class User extends MY_Controller {
 			
 			$input_data = $this->input->get(NULL,TRUE);
 			if(!$this->is_admin_login(FALSE)){
-				//一般使用者只能看到自己的資料
+				//一般使用者一定只能看到自己的資料
 				$input_data['user_ID'] = $this->session->userdata('ID');
+			}else{
+				if(isset($input_data['user_ID']) && empty($input_data['user_ID']))
+				{
+					$input_data['user_ID'] = $this->session->userdata('ID');
+				}
 			}
 			
-			$user_profile = $this->user_model->get_user_profile_list($input_data)->result_array();
-			$output['aaData'] = $user_profile;
+			$user_profiles = $this->user_model->get_user_profile_list($input_data)->result_array();
+			foreach($user_profiles as $user_profile)
+			{
+				$row = array();
+				$row['user_ID'] = $user_profile['ID'];
+				$row['user_name'] = $user_profile['name'];
+				$row['user_mobile'] = $user_profile['mobile'];
+				$row['user_email'] = $user_profile['email'];
+				$row['user_boss_name'] = $user_profile['boss_name'];
+				$row['user_org_name'] = $user_profile['org_name'];
+				$row['user_department'] = $user_profile['department'];
+				$output['aaData'][] = $row;
+			}
 			
 			echo json_encode($output);
 		}catch(Exception $e){

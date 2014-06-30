@@ -51,7 +51,7 @@
 								<div class="control-group span6">
 						            <label class="control-label">指導教授或主管姓名</label>
 						            <div class="controls">
-						            	<input type="text" value="{{app.boss_name}}" class="span12" disabled="disabled"/>
+						            	<input type="text" value="{{app.user_boss_name}}" class="span12" disabled="disabled"/>
 									</div>
 								</div>
                      		</div>
@@ -73,7 +73,7 @@
                      			<div class="control-group span6">
 						            <label class="control-label">單位</label>
 						            <div class="controls">
-						            	<input type="text" value="{{app.org_name}}" class="span12" disabled="disabled"/>
+						            	<input type="text" value="{{app.user_org_name}}" class="span12" disabled="disabled"/>
 									</div>
 								</div>
 								<div class="control-group span6">
@@ -120,7 +120,7 @@
                      		<div class="control-group">
 					            <label class="control-label"></label>
 					            <div class="controls">
-					            	<button type="button" class="btn btn-primary" ng-click="new_guest(app.guests)">新增一筆</button>
+					            	<button type="button" class="btn btn-primary" ng-click="new_guest()">新增一筆</button>
 								</div>
 							</div>
 							<h4>簽核流程</h4>

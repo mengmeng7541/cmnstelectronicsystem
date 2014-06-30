@@ -60,8 +60,7 @@
 <!-- BEGIN BODY -->
 <body class="">
 	<script src="<?=base_url();?>js/jquery-1.8.3.min.js"></script>
-	<script src="<?=base_url();?>assets/angular-1.2.17/angular.min.js"></script>
-	<script src="<?=base_url();?>js/cmnst/cmnst-app.js"></script>
+	
   <!-- BEGIN HEADER -->
 	<div id="header" class="navbar navbar-inverse">
 	<!-- BEGIN LOGO -->

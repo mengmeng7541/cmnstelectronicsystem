@@ -3007,7 +3007,7 @@ var App = function () {
 			    {
 			      "aTargets": [ 3 ],
 			      "mData": function ( source, type, val ) {
-			      	return source['org_name'];
+			      	return source['user_org_name'];
 			      	
 			      }
 			    },

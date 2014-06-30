@@ -1,35 +1,40 @@
 var cmnstApp = angular.module('cmnstApp',[]);
 
 cmnstApp
-.controller("oem_application_edit",function($scope,$http){
+.factory("user_profile_service",function($http){
+	return {
+		get_my: function(){
+			return $http.get(site_url+'user/query',{params:{user_ID:''}});
+		}
+	}
+})
+//-----------------------------OEM------------------------------
+.controller("oem_application_edit",function($scope,$http,user_profile_service){
 	//initial
 	$scope.get_app = function(SN){
 		$http
 		.get(site_url+'oem/app/query',{params:{app_SN:SN}})
 		.success(function(data){
-			var output = data.aaData[0];
-			output.guests = [];
-			$scope.app = output;
+			data.aaData[0].guests = [];
+			$scope.app = data.aaData[0];
 		});
 	};
 	$scope.get_form = function(SN){
-		$http
-		.get(site_url+'user/query',{params:{user_ID:''}})
+		$scope.app = [];
+		user_profile_service.get_my()
 		.success(function(data){
-			var output = data.aaData[0];
-			$scope.user = output;
-			console.log($scope.user);
+			$.extend($scope.app,data.aaData[0]);
 		});
+		
 		$http
 		.get(site_url+'oem/form/query',{params:{form_SN:SN}})
 		.success(function(data){
-			var output = data.aaData[0];
-			output.guests = [];
-			$scope.app = output;
+			data.aaData[0].guests = [];
+			$.extend($scope.app,data.aaData[0]);
 		});
 	};
 	
-	$scope.new_guest = function(container){
-		container.push({name:'',mobile:''});
+	$scope.new_guest = function(){
+		$scope.app.guests.push({name:'',mobile:''});
 	}
 });

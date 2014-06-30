@@ -134,8 +134,8 @@ class Oem_model extends MY_Model {
 			{$sJoinTable['user']}.email AS user_email,
 			{$sJoinTable['user']}.mobile AS user_mobile,
 			{$sJoinTable['user']}.department AS user_department,
-			{$sJoinTable['org']}.name AS org_name,
-			{$sJoinTable['boss']}.name AS boss_name
+			{$sJoinTable['org']}.name AS user_org_name,
+			{$sJoinTable['boss']}.name AS user_boss_name
 		");
 		
 		$this->oem_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.app_user_ID","LEFT")
