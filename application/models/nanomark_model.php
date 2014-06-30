@@ -328,9 +328,10 @@ class Nanomark_model extends MY_Model {
 			$this->nanomark_db->select("*")
 				 ->from("Nanomark_quotation")
 				 ->order_by("serial_no","desc");
-			if(!empty($input_data['serial_no']))
+			if(isset($input_data['serial_no']))
+			{
 				$this->nanomark_db->where("serial_no",$input_data['serial_no']);
-			
+			}
 			
 			return $this->nanomark_db->get();
 		}

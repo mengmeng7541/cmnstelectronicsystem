@@ -972,58 +972,66 @@ class Nanomark extends MY_Controller {
 		
 		
 	}
-	public function view_quotation($SN)
+	public function view_quotation($SN = "")
 	{
-		//確認有編號
-		if(!isset($SN))
-		{
-			$this->show_error_page();
-			return;
-		}
-		//確認瀏覽密碼
-		$code = $this->input->get("code");
-		$code = $this->encrypt->decode($code);
-		if($SN != $code)
-		{
-			$this->show_error_page();
-			return;
-		}
-		
-		$quotation = $this->nanomark_model->get_quotation_by_SN($SN);
-		//確認瀏覽者權限
-//		if(!empty($quotation['applicant_ID']))
-//		{
-//			$this->is_user_login();
-//			if($quotation['applicant_ID'] != $this->session->userdata('ID') && !$this->is_admin_login(FALSE))
-//			{
-//				$this->show_error_page();
-//				return;
-//			}
-//		}
-		
-		$this->data = $quotation;
-		
-		$this->data['data'] = array();
-		$quotation_test_items = $this->nanomark_model->get_quotation_test_items_by_quotation_ID($quotation['serial_no']);
-		$i = 0;
-		foreach($quotation_test_items as $row)
-		{
-			$r = array();
+		try{
+			//確認有編號
+			if(!isset($SN))
+			{
+				throw new Exception();
+			}
 			
-			$r['index'] = ++$i;
-			$test_item = $this->nanomark_model->get_test_item_by_SN($row->test_item);
-			$r['name'] = $test_item['name'];
-			$r['amount'] = $row->amount;
-			$r['fees'] = $row->fees;
-			$r['total_fees'] = $row->total_fees;
-		    
-		    $this->data['data'][] = $r;
+			
+			
+			$quotation = $this->nanomark_model->get_quotation_list(array("serial_no"=>$SN))->row_array();
+			if(!$quotation){
+				throw new Exception();
+			}
+			
+			if(!$this->is_user_login(FALSE))
+			{
+				//確認瀏覽密碼
+				$code = $this->input->get("code");
+				$code = $this->encrypt->decode($code);
+				if($SN != $code)
+				{
+					throw new Exception();
+				}
+			}else{
+				//確認瀏覽者權限
+				if($quotation['applicant_ID'] != $this->session->userdata('ID') && !$this->is_admin_login(FALSE))
+				{
+					throw new Exception();
+				}
+			}
+			
+			$this->data = $quotation;
+			
+			$this->data['data'] = array();
+			$quotation_test_items = $this->nanomark_model->get_quotation_test_items_by_quotation_ID($quotation['serial_no']);
+			$i = 0;
+			foreach($quotation_test_items as $row)
+			{
+				$r = array();
+				
+				$r['index'] = ++$i;
+				$test_item = $this->nanomark_model->get_test_item_by_SN($row->test_item);
+				$r['name'] = $test_item['name'];
+				$r['amount'] = $row->amount;
+				$r['fees'] = $row->fees;
+				$r['total_fees'] = $row->total_fees;
+			    
+			    $this->data['data'][] = $r;
+			}
+			
+			$this->load->view('templates/header');
+			$this->load->view('templates/sidebar');
+			$this->load->view('nanomark/view_quotation',$this->data);
+			$this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
 		}
 		
-		$this->load->view('templates/header');
-		$this->load->view('templates/sidebar');
-		$this->load->view('nanomark/view_quotation',$this->data);
-		$this->load->view('templates/footer');
 	}
 	public function add_quotation()
 	{	
