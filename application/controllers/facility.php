@@ -2341,8 +2341,8 @@ class Facility extends MY_Controller {
 			//準備資料
 			$data['admin_ID'] = $this->session->userdata('ID');
 			$data['comment'] = $input_data['comment'];
-			$data['start_time'] = date("Y-m-d H:i:s",$input_data['start_date']." ".$input_data['start_time']);
-			$data['end_time'] = date("Y-m-d H:i:s",$input_data['end_date']." ".$input_data['end_time']);
+			$data['start_time'] = date("Y-m-d H:i:s",strtotime($input_data['start_date']." ".$input_data['start_time']));
+			$data['end_time'] = date("Y-m-d H:i:s",strtotime($input_data['end_date']." ".$input_data['end_time']));
 			//檢查是否超過原預約時段
 			if($data['start_time'] < $booking['start_time'] || $data['end_time'] > $booking['end_time'])
 			{
