@@ -720,6 +720,8 @@ class Curriculum extends MY_Controller {
 	{
 		try{
 			$this->is_user_login();
+			
+			$output['aaData'] = array();
 		
 			$input_data = $this->input->get(NULL,TRUE);
 			
@@ -732,6 +734,10 @@ class Curriculum extends MY_Controller {
 				$class = $this->curriculum_model->get_class_list(array(
 					"class_ID"=>$input_data['class_ID']
 				))->row_array();
+				if(!$class)
+				{
+					throw new Exception();
+				}
 				
 				if($this->class_model->is_certification_class_only($class['class_type']))
 				{
@@ -752,7 +758,6 @@ class Curriculum extends MY_Controller {
 			
 			$class_type = $this->class_model->get_class_type_select_options();
 			
-			$output['aaData'] = array();
 			foreach($lessons as $lesson)
 			{
 				$row = array();

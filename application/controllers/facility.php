@@ -2341,8 +2341,8 @@ class Facility extends MY_Controller {
 			//準備資料
 			$data['admin_ID'] = $this->session->userdata('ID');
 			$data['comment'] = $input_data['comment'];
-			$data['start_time'] = $input_data['start_date']." ".$input_data['start_time'];
-			$data['end_time'] = $input_data['end_date']." ".$input_data['end_time'];
+			$data['start_time'] = date("Y-m-d H:i:s",$input_data['start_date']." ".$input_data['start_time']);
+			$data['end_time'] = date("Y-m-d H:i:s",$input_data['end_date']." ".$input_data['end_time']);
 			//檢查是否超過原預約時段
 			if($data['start_time'] < $booking['start_time'] || $data['end_time'] > $booking['end_time'])
 			{
@@ -2351,7 +2351,7 @@ class Facility extends MY_Controller {
 			//檢查是否為整點時段(30分為單位)
 			if(strtotime($data['start_time'])%1800 != 0 || strtotime($data['end_time'])%1800 != 0)
 			{
-				throw new Exception("核可不計費時段超出原預約時段",WARNING_CODE);
+				throw new Exception("核可不計費時段需為整點時間(30分鐘為單位)",WARNING_CODE);
 			}
 			$data['result'] = $input_data['result'];
 			$data['booking_ID'] = $input_data['booking_ID'];

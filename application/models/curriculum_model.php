@@ -123,8 +123,8 @@ class Curriculum_model extends MY_Model {
 				{$sJoinTable['course']}.course_eng_name,
 				MIN({$sJoinTable['lesson']}.lesson_start_time) AS class_start_time,
 				MAX({$sJoinTable['lesson']}.lesson_end_time) AS class_end_time,
-				COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID) AS reg_participants,
-				IF(COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))/COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))) AS class_total_secs,
+				COUNT(DISTINCT {$sJoinTable['reg']}.user_ID) AS reg_participants,
+				IF(COUNT(DISTINCT {$sJoinTable['reg']}.user_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))/COUNT(DISTINCT {$sJoinTable['reg']}.user_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))) AS class_total_secs,
 				{$sJoinTable['user']}.name AS prof_name,
 				{$sJoinTable['location']}.location_cht_name AS location_cht_name
 			";
@@ -136,8 +136,8 @@ class Curriculum_model extends MY_Model {
 				{$sJoinTable['course']}.course_eng_name,
 				MIN({$sJoinTable['lesson']}.lesson_start_time) AS class_start_time,
 				MAX({$sJoinTable['lesson']}.lesson_end_time) AS class_end_time,
-				COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID) AS reg_participants,
-				IF(COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))/COUNT(DISTINCT {$sJoinTable['reg']}.reg_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))) AS class_total_secs,
+				COUNT(DISTINCT {$sJoinTable['reg']}.user_ID) AS reg_participants,
+				IF(COUNT(DISTINCT {$sJoinTable['reg']}.user_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))/COUNT(DISTINCT {$sJoinTable['reg']}.user_ID),SUM(UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_end_time)-UNIX_TIMESTAMP({$sJoinTable['lesson']}.lesson_start_time))) AS class_total_secs,
 				{$sJoinTable['user']}.name AS prof_name,
 				{$sJoinTable['location']}.location_cht_name AS location_cht_name
 			";
