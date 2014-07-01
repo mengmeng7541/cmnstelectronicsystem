@@ -221,7 +221,7 @@ class Cash_model extends MY_Model {
 			{$sJoinTable['org']}.status_ID AS org_status_ID,
 			'curriculum' AS bill_type,
 			reg_table.reg_ID AS bill_ID,
-			IF({$sJoinTable['org']}.status_ID='academia',IF(reg_table.reg_confirmed_by IS NULL,price_table.Price_Count*0.5,price_table.Price_Count),IF(reg_table.reg_confirmed_by IS NULL,price_table.Price_Count_Ent*0.5,price_table.Price_Count_Ent)) AS bill_amount,
+			IF({$sJoinTable['org']}.status_ID='academia',IF(reg_table.reg_confirmed_by IS NULL,{$sJoinTable['price']}.Price_Count*0.5,{$sJoinTable['price']}.Price_Count),IF(reg_table.reg_confirmed_by IS NULL,{$sJoinTable['price']}.Price_Count_Ent*0.5,{$sJoinTable['price']}.Price_Count_Ent)) AS bill_amount,
 			IFNULL({$sJoinTable['aliance']}.discount_percent/10,1) AS bill_discount_percent,
 			SUM({$sJoinTable['ab_map']}.amount_transacted) AS bill_amount_received,
 			GROUP_CONCAT({$sJoinTable['receipt']}.receipt_ID) AS receipt_ID,
@@ -256,7 +256,10 @@ class Cash_model extends MY_Model {
 		}
 		
 		//price
-		$this->cash_db->join("(SELECT * FROM {$sJoinTable['price']} ORDER BY Price_Start_Date DESC) price_table","price_table.Course_ID = {$sJoinTable['class']}.course_ID AND price_table.Price_Start_Date <= {$sJoinTable['lesson']}.lesson_start_time AND (({$sJoinTable['class']}.class_type='certification' AND price_table.Is_Certification = 1) OR ({$sJoinTable['class']}.class_type!='certification' AND price_table.Is_Certification = 0))","LEFT");
+//		$this->cash_db->join("(SELECT * FROM {$sJoinTable['price']} ORDER BY Price_Start_Date DESC) price_table","price_table.Course_ID = {$sJoinTable['class']}.course_ID AND price_table.Price_Start_Date <= {$sJoinTable['lesson']}.lesson_start_time AND (({$sJoinTable['class']}.class_type='certification' AND price_table.Is_Certification = 1) OR ({$sJoinTable['class']}.class_type!='certification' AND price_table.Is_Certification = 0))","LEFT");
+		$this->cash_db->join($sJoinTable['price'],"
+			{$sJoinTable['price']}.Course_Price_ID = (SELECT Course_Price_ID FROM {$sJoinTable['price']} WHERE Course_ID = {$sJoinTable['class']}.course_ID AND Price_Start_Date <= {$sJoinTable['lesson']}.lesson_start_time AND (({$sJoinTable['class']}.class_type='certification' AND Is_Certification = 1) OR ({$sJoinTable['class']}.class_type!='certification' AND Is_Certification = 0)) ORDER BY Price_Start_Date DESC LIMIT 1)
+		","LEFT",FALSE);
 		
 		if(isset($options['reg_ID']))
 		{
