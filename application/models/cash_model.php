@@ -182,6 +182,7 @@ class Cash_model extends MY_Model {
 			"class"=>"cmnst_curriculum.class_list",
 			"course"=>"cmnst_curriculum.course_list",
 			"user"=>"cmnst_common.user_profile",
+			"boss"=>"cmnst_common.boss_profile",
 			"org"=>"cmnst_common.organization",
 			"aliance"=>"cmnst_accounting.aliance_discount",
 			"price"=>"cmnst_report.Course_Price_List",
@@ -245,8 +246,12 @@ class Cash_model extends MY_Model {
 		$this->cash_db->order_by("reg_table.reg_time","ASC");
 		
 		$this->cash_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = reg_table.user_ID","LEFT");
+		$this->cash_db->join($sJoinTable['boss'],"{$sJoinTable['boss']}.serial_no = {$sJoinTable['user']}.boss_no","LEFT");
 		$this->cash_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = {$sJoinTable['user']}.organization","LEFT");
-		$this->cash_db->join($sJoinTable['aliance'],"{$sJoinTable['aliance']}.aliance_type = {$sJoinTable['org']}.aliance_no AND {$sJoinTable['aliance']}.discount_type = 1 AND DATE({$sJoinTable['lesson']}.lesson_start_time) BETWEEN DATE({$sJoinTable['aliance']}.discount_start) AND DATE({$sJoinTable['aliance']}.discount_end)","LEFT");//課程discount_type=1
+//		$this->cash_db->join($sJoinTable['aliance'],"{$sJoinTable['aliance']}.aliance_type = {$sJoinTable['org']}.aliance_no AND {$sJoinTable['aliance']}.discount_type = 1 AND DATE({$sJoinTable['lesson']}.lesson_start_time) BETWEEN DATE({$sJoinTable['aliance']}.discount_start) AND DATE({$sJoinTable['aliance']}.discount_end)","LEFT");//課程discount_type=1
+		$this->cash_db->join($sJoinTable['aliance'],"
+			{$sJoinTable['aliance']}.ID = (SELECT ID FROM {$sJoinTable['aliance']} WHERE discount_type = 1 AND (DATE({$sJoinTable['lesson']}.lesson_start_time) BETWEEN DATE(discount_start) AND DATE(discount_end)) AND aliance_type = {$sJoinTable['org']}.aliance_no AND ((discount_hours = 3) OR ({$sJoinTable['user']}.name = {$sJoinTable['boss']}.name AND discount_hours = 4) OR ({$sJoinTable['boss']}.new_expiration_time <= DATE({$sJoinTable['lesson']}.lesson_start_time) AND discount_hours = 5)) ORDER BY discount_percent ASC LIMIT 1)
+		","LEFT",FALSE);//教師與學生OR新進教師本人(幹，老師真的與學生同名就GG了)OR新進教師學生
 		$this->cash_db->join($sJoinTable['bill'],"{$sJoinTable['bill']}.bill_ID = reg_table.reg_ID AND {$sJoinTable['bill']}.bill_type = 'curriculum'","LEFT");
 		$this->cash_db->join($sJoinTable['ab_map'],"{$sJoinTable['ab_map']}.bill_no = {$sJoinTable['bill']}.bill_no","LEFT");
 		$this->cash_db->join($sJoinTable['receipt'],"{$sJoinTable['receipt']}.receipt_account = {$sJoinTable['ab_map']}.account_no","LEFT");
