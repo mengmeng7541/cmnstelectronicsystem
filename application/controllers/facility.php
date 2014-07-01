@@ -1150,7 +1150,7 @@ class Facility extends MY_Controller {
 				//確認有達低消(非管理者適用)
 				if($max_time-$min_time<$facility['min_sec'])
 				{
-					throw new Exception("此儀器最低預約時間為".gmdate("H小時i分s秒",$facility['min_sec']),"","warning");
+					throw new Exception("此儀器最低預約時間為".gmdate("H小時i分s秒",$facility['min_sec']),WARNING_CODE);
 					
 				}
 				//確認權限未到期(非管理者適用)
