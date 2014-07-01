@@ -187,7 +187,8 @@ class Cash_model extends MY_Model {
 			"aliance"=>"cmnst_accounting.aliance_discount",
 			"price"=>"cmnst_report.Course_Price_List",
 			"bill"=>"cmnst_cash.cash_bill",
-			"receipt"=>"cmnst_cash.cash_receipt"
+			"receipt"=>"cmnst_cash.cash_receipt",
+			"constant"=>"cmnst_database_constants.cmnst_accounting"
 		);
 		
 		$this->cash_db->select("
@@ -223,14 +224,16 @@ class Cash_model extends MY_Model {
 			'curriculum' AS bill_type,
 			reg_table.reg_ID AS bill_ID,
 			IF({$sJoinTable['org']}.status_ID='academia',{$sJoinTable['price']}.Price_Count,{$sJoinTable['price']}.Price_Count_Ent) AS bill_amount,
-			IF(reg_table.reg_state = 'selected',0.5,IFNULL({$sJoinTable['aliance']}.discount_percent/10,1)) AS bill_discount_percent,
+			IF({$sJoinTable['class']}.class_state = 'additional',1.5,IF(reg_table.reg_state = 'selected',0.5,IFNULL({$sJoinTable['aliance']}.discount_percent/10,1))) AS bill_discount_percent,
+			aliance_constant.comment AS aliance_name,
+			IF({$sJoinTable['class']}.class_state = 'additional','加開',IF(reg_table.reg_state = 'selected','未到',discount_status_constant.comment)) AS discount_status_name,
 			SUM({$sJoinTable['ab_map']}.amount_transacted) AS bill_amount_received,
 			GROUP_CONCAT({$sJoinTable['receipt']}.receipt_ID) AS receipt_ID,
 			{$sJoinTable['receipt']}.receipt_delivery_way AS receipt_delivery_way,
 			{$sJoinTable['receipt']}.receipt_checkpoint AS receipt_checkpoint
 			FROM
 			 (SELECT $sTable.* FROM $sTable LEFT JOIN  {$sJoinTable['class']} ON {$sJoinTable['class']}.class_ID = $sTable.class_ID ORDER BY {$sJoinTable['class']}.class_type ASC ) reg_table
-		",FALSE);
+		",FALSE);//bill_discount_percent加開收1.5倍，未到收0.5倍
 		$this->cash_db->where("reg_table.reg_canceled_by",NULL);
 		
 		
@@ -252,6 +255,8 @@ class Cash_model extends MY_Model {
 		$this->cash_db->join($sJoinTable['aliance'],"
 			{$sJoinTable['aliance']}.ID = (SELECT ID FROM {$sJoinTable['aliance']} WHERE discount_type = 1 AND (DATE({$sJoinTable['lesson']}.lesson_start_time) BETWEEN DATE(discount_start) AND DATE(discount_end)) AND aliance_type = {$sJoinTable['org']}.aliance_no AND ((discount_hours = 3) OR ({$sJoinTable['user']}.name = {$sJoinTable['boss']}.name AND discount_hours = 4) OR ({$sJoinTable['boss']}.new_expiration_time <= DATE({$sJoinTable['lesson']}.lesson_start_time) AND discount_hours = 5)) ORDER BY discount_percent ASC LIMIT 1)
 		","LEFT",FALSE);//教師與學生OR新進教師本人(幹，老師真的與學生同名就GG了)OR新進教師學生
+		$this->cash_db->join("{$sJoinTable['constant']} aliance_constant","aliance_constant.column = 'aliance_type' AND aliance_constant.constant = {$sJoinTable['aliance']}.aliance_type","LEFT",FALSE);
+		$this->cash_db->join("{$sJoinTable['constant']} discount_status_constant","discount_status_constant.column = 'discount_hours' AND discount_status_constant.constant = {$sJoinTable['aliance']}.discount_hours","LEFT",FALSE);
 		$this->cash_db->join($sJoinTable['bill'],"{$sJoinTable['bill']}.bill_ID = reg_table.reg_ID AND {$sJoinTable['bill']}.bill_type = 'curriculum'","LEFT");
 		$this->cash_db->join($sJoinTable['ab_map'],"{$sJoinTable['ab_map']}.bill_no = {$sJoinTable['bill']}.bill_no","LEFT");
 		$this->cash_db->join($sJoinTable['receipt'],"{$sJoinTable['receipt']}.receipt_account = {$sJoinTable['ab_map']}.account_no","LEFT");

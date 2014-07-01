@@ -371,12 +371,16 @@ class Cash extends MY_Controller {
 				$row[] = $curriculum_bill['user_name'];
 				$row[] = $curriculum_bill['org_name'];
 				
+				$display = array();
 				if(isset($curriculum_bill['bill_discount_percent']))
 				{
-					$row[] = $curriculum_bill['bill_amount']." * ".($curriculum_bill['bill_discount_percent'])." = ".round($curriculum_bill['bill_amount']*$curriculum_bill['bill_discount_percent']);
+					$display[] = $curriculum_bill['bill_amount']." * ".($curriculum_bill['bill_discount_percent'])." = ".round($curriculum_bill['bill_amount']*$curriculum_bill['bill_discount_percent']);
+					$display[] = isset($curriculum_bill['aliance_name'])?"[{$curriculum_bill['aliance_name']}]":"";
+					$display[] = isset($curriculum_bill['discount_status_name'])?"[{$curriculum_bill['discount_status_name']}]":"";
 				}else{
-					$row[] = $curriculum_bill['bill_amount'];
+					$display[] = $curriculum_bill['bill_amount'];
 				}
+				$row[] = implode(' ',$display);
 				
 				$display = array();
 				if($curriculum_bill['bill_amount']*$curriculum_bill['bill_discount_percent']>$curriculum_bill['bill_amount_received'])//應收大於已收
