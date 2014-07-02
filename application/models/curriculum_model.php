@@ -277,7 +277,11 @@ class Curriculum_model extends MY_Model {
 			
 		if(isset($options['lesson_ID']))
 		{
-			$this->curriculum_db->where("$sTable.lesson_ID",$options['lesson_ID']);
+			if(is_array($options['lesson_ID'])&&empty($options['lesson_ID']))
+			{
+				$options['lesson_ID'] = array('');
+			}
+			$this->curriculum_db->where_in("$sTable.lesson_ID",$options['lesson_ID']);
 		}
 		if(isset($options['lesson_type']))
 		{
@@ -329,7 +333,13 @@ class Curriculum_model extends MY_Model {
 			$this->curriculum_db->where_in("{$sJoinTable['lesson']}.class_ID",$options['class_ID']);
 		}
 		if(isset($options['lesson_ID']))
-			$this->curriculum_db->where("$sTable.lesson_ID",$options['lesson_ID']);
+		{
+			if(is_array($options['lesson_ID']) && empty($options['lesson_ID']))
+			{
+				$options['lesson_ID'] = array('');
+			}
+			$this->curriculum_db->where_in("$sTable.lesson_ID",$options['lesson_ID']);
+		}
 		if(isset($options['booking_ID']))
 			$this->curriculum_db->where("$sTable.booking_ID",$options['booking_ID']);
 		if(isset($options['booking_state']))
@@ -370,7 +380,11 @@ class Curriculum_model extends MY_Model {
 	}
 	public function del_lesson($data)
 	{
-		$this->curriculum_db->where("lesson_ID",$data['lesson_ID']);
+		if(is_array($data['lesson_ID'])&&empty($data['lesson_ID']))
+		{
+			$data['lesson_ID'] = array('');
+		}
+		$this->curriculum_db->where_in("lesson_ID",$data['lesson_ID']);
 		$this->curriculum_db->delete("lesson_list");
 	}
 	//------------------------REG--------------------------

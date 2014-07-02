@@ -86,24 +86,28 @@ class Lesson_model extends MY_Model {
 	public function del($lesson_ID)
 	{
 		//取得課堂資訊
-		$lesson = $this->curriculum_model->get_lesson_list(array("lesson_ID"=>$lesson_ID))->row_array();
-		if(!$lesson){
+		$lessons = $this->curriculum_model->get_lesson_list(array("lesson_ID"=>$lesson_ID))->result_array();
+		if(!$lessons){
 			throw new Exception("無此課堂",ERROR_CODE);
 		}
+		$lesson_IDs = sql_column_to_key_value_array($lessons,"lesson_ID");
 		
 		//先刪除預約紀錄
-		$maps = $this->curriculum_model->get_lesson_booking_map(array("lesson_ID"=>$lesson_ID))->result_array();
+		$maps = $this->curriculum_model->get_lesson_booking_map(array("lesson_ID"=>$lesson_IDs))->result_array();
 		$this->load->model('facility/booking_model');
 		foreach($maps as $map){
 			$this->booking_model->del($map['booking_ID']);
 		}
 		
 		//然後刪除lesson紀錄
-		$this->curriculum_model->del_lesson(array("lesson_ID"=>$lesson_ID));
+		$this->curriculum_model->del_lesson(array("lesson_ID"=>$lesson_IDs));
 		
 		//然後更新可預約時間
 		$this->load->model('curriculum/class_model');
-		$this->class_model->update_reg_end_time($lesson['class_ID']);
+		foreach($lessons as $lesson)
+		{
+			$this->class_model->update_reg_end_time($lesson['class_ID']);
+		}
 	}
 	
 	public function get_lesson_map_booking_ID($lesson_ID,$booking_state = NULL){

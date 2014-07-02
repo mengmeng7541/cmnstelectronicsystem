@@ -663,10 +663,8 @@ class Curriculum extends MY_Controller {
 				echo $this->info_modal("新增成功","/curriculum/class/list");
 			}else{
 				$data['class_ID'] = $input_data['class_ID'];
-				$this->curriculum_model->update_class($data);
-				if($data['class_reg_end_time_auto']){
-					$this->class_model->update_reg_end_time($data['class_ID']);
-				}
+				$this->class_model->update($data);
+				
 				echo $this->info_modal("修改成功","/curriculum/class/list");
 			}
 		}catch(Exception $e){

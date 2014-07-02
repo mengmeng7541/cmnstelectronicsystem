@@ -10,6 +10,45 @@ class Class_model extends MY_Model {
 		
 		$this->load->model('curriculum_model');
 	}
+	public function update($data)
+	{
+		if(!isset($data['class_ID']))
+		{
+			throw new Exception("無開此課",ERROR_CODE);
+		}
+		
+		$class = $this->curriculum_model->get_class_list(array("class_ID"=>$data['class_ID']))->row_array();
+		if(!$class)
+		{
+			throw new Exception("無開此課",ERROR_CODE);
+		}
+		
+		if(isset($data['class_reg_end_time_auto']) && $data['class_reg_end_time_auto']){
+			$this->update_reg_end_time($data['class_ID']);
+		}
+		
+		//如果原本為不停開改停開，須把預約的儀器都取消
+		if($class['class_state']!='canceled' && isset($data['class_state']) && $data['class_state']=='canceled')
+		{
+			//把預約的儀器全部取消
+			$bookings = $this->curriculum_model->get_lesson_booking_map(array("class_ID"=>$data['class_ID']))->result_array();
+			$b_IDs = sql_result_to_column($bookings,"booking_ID");
+			$this->load->model('facility/booking_model');
+			$this->booking_model->del($b_IDs);
+		}
+		
+		//如果原本為停開改不停開(正常或加開)，把課程全部洗掉，讓他們重排課
+		if($class['class_state']=='canceled' && isset($data['class_state']) && $data['class_state']!='canceled')
+		{
+			//取得所有課堂
+			$lessons = $this->curriculum_model->get_lesson_list(array("class_ID"=>$data['class_ID']))->result_array();
+			$lesson_IDs = sql_column_to_key_value_array($lessons,"lesson_ID");
+			$this->load->model('model/lesson_model');
+			$this->lesson_model->del($lesson_IDs);
+		}
+		
+		$this->curriculum_model->update_class($data);
+	}
 	public function del($class_ID = ""){
 		if(!$this->curriculum_model->is_super_admin())
 		{
