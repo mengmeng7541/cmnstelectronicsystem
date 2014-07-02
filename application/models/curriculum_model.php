@@ -145,8 +145,7 @@ class Curriculum_model extends MY_Model {
 		$this->curriculum_db->select($sSelect,FALSE);
 		$this->curriculum_db->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = $sTable.course_ID","LEFT")
 							->join($sJoinTable['lesson'],"{$sJoinTable['lesson']}.class_ID = $sTable.class_ID","LEFT")
-							->join($sJoinTable['reg'],"{$sJoinTable['reg']}.class_ID = $sTable.class_ID","LEFT")
-							->where("{$sJoinTable['reg']}.reg_canceled_by",NULL)
+							->join($sJoinTable['reg'],"{$sJoinTable['reg']}.class_ID = $sTable.class_ID AND {$sJoinTable['reg']}.reg_state != 'canceled'","LEFT")
 							->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = {$sJoinTable['lesson']}.lesson_prof_ID","LEFT")
 							->join($sJoinTable['location'],"{$sJoinTable['location']}.location_ID = $sTable.class_location","LEFT")
 							->join($sJoinTable['state'],"{$sJoinTable['state']}.state_ID = $sTable.class_state","LEFT");
