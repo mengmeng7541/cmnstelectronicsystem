@@ -234,10 +234,11 @@ class Cash_model extends MY_Model {
 			FROM
 			 (SELECT $sTable.* FROM $sTable LEFT JOIN  {$sJoinTable['class']} ON {$sJoinTable['class']}.class_ID = $sTable.class_ID ORDER BY {$sJoinTable['class']}.class_type ASC ) reg_table
 		",FALSE);//bill_discount_percent加開收1.5倍，未到收0.5倍
-		$this->cash_db->where("reg_table.reg_canceled_by",NULL);
+		$this->cash_db->where("reg_table.reg_state !=",'canceled');
 		
 		
 		$this->cash_db->join($sJoinTable['class'],"{$sJoinTable['class']}.class_ID = reg_table.class_ID","LEFT");
+		$this->cash_db->where("{$sJoinTable['class']}.class_state !=","canceled");//沒開的不用
 		$this->cash_db->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = {$sJoinTable['class']}.course_ID","LEFT");
 		$this->cash_db->join($sJoinTable['lesson'],"{$sJoinTable['lesson']}.class_ID = {$sJoinTable['class']}.class_ID","LEFT");
 		
@@ -251,7 +252,6 @@ class Cash_model extends MY_Model {
 		$this->cash_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = reg_table.user_ID","LEFT");
 		$this->cash_db->join($sJoinTable['boss'],"{$sJoinTable['boss']}.serial_no = {$sJoinTable['user']}.boss_no","LEFT");
 		$this->cash_db->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = {$sJoinTable['user']}.organization","LEFT");
-//		$this->cash_db->join($sJoinTable['aliance'],"{$sJoinTable['aliance']}.aliance_type = {$sJoinTable['org']}.aliance_no AND {$sJoinTable['aliance']}.discount_type = 1 AND DATE({$sJoinTable['lesson']}.lesson_start_time) BETWEEN DATE({$sJoinTable['aliance']}.discount_start) AND DATE({$sJoinTable['aliance']}.discount_end)","LEFT");//課程discount_type=1
 		$this->cash_db->join($sJoinTable['aliance'],"
 			{$sJoinTable['aliance']}.ID = (SELECT ID FROM {$sJoinTable['aliance']} WHERE discount_type = 1 AND (DATE({$sJoinTable['lesson']}.lesson_start_time) BETWEEN DATE(discount_start) AND DATE(discount_end)) AND aliance_type = {$sJoinTable['org']}.aliance_no AND ((discount_hours = 3) OR ({$sJoinTable['user']}.name = {$sJoinTable['boss']}.name AND {$sJoinTable['boss']}.new_expiration_time IS NOT NULL AND DATE({$sJoinTable['lesson']}.lesson_start_time) <= {$sJoinTable['boss']}.new_expiration_time AND discount_hours = 4) OR ({$sJoinTable['boss']}.new_expiration_time IS NOT NULL AND DATE({$sJoinTable['lesson']}.lesson_start_time) <= {$sJoinTable['boss']}.new_expiration_time AND discount_hours = 5)) ORDER BY discount_percent ASC LIMIT 1)
 		","LEFT",FALSE);//教師與學生OR新進教師本人(幹，老師真的與學生同名就GG了)OR新進教師學生
@@ -266,7 +266,6 @@ class Cash_model extends MY_Model {
 		}
 		
 		//price
-//		$this->cash_db->join("(SELECT * FROM {$sJoinTable['price']} ORDER BY Price_Start_Date DESC) price_table","price_table.Course_ID = {$sJoinTable['class']}.course_ID AND price_table.Price_Start_Date <= {$sJoinTable['lesson']}.lesson_start_time AND (({$sJoinTable['class']}.class_type='certification' AND price_table.Is_Certification = 1) OR ({$sJoinTable['class']}.class_type!='certification' AND price_table.Is_Certification = 0))","LEFT");
 		$this->cash_db->join($sJoinTable['price'],"
 			{$sJoinTable['price']}.Course_Price_ID = (SELECT Course_Price_ID FROM {$sJoinTable['price']} WHERE Course_ID = {$sJoinTable['class']}.course_ID AND Price_Start_Date <= {$sJoinTable['lesson']}.lesson_start_time AND (({$sJoinTable['class']}.class_type='certification' AND Is_Certification = 1) OR ({$sJoinTable['class']}.class_type!='certification' AND Is_Certification = 0)) ORDER BY Price_Start_Date DESC LIMIT 1)
 		","LEFT",FALSE);
