@@ -10,17 +10,35 @@ class Class_model extends MY_Model {
 		
 		$this->load->model('curriculum_model');
 	}
-	public function del($class_ID){
+	public function del($class_ID = ""){
+		if(!$this->curriculum_model->is_super_admin())
+		{
+			throw new Exception("權限不足",ERROR_CODE);
+		}
+		
+		$classes = $this->curriculum_model->get_class_list(array("class_ID"=>$class_ID))->result_array();
+		if(!$classes)
+		{
+			throw new Exception("無此開課資訊",ERROR_CODE);
+		}
+		$class_IDs = sql_column_to_key_value_array($classes,"class_ID");
 		
 		//先確認無人報名
-		$reg = $this->curriculum_model->get_reg_list(array("class_ID"=>$class_ID))->row_array();
+		$reg = $this->curriculum_model->get_reg_list(array("class_ID"=>$class_IDs))->row_array();
 		if($reg){
 			throw new Exception("此課已有人報名，不可刪除",ERROR_CODE);
 		}
 		
 		//先刪除所有報名的人
-		$this->curriculum_db->where("class_ID",$class_ID);
+		$this->curriculum_db->where_in("class_ID",$class_IDs);
 		$this->curriculum_db->delete("class_registration");
+		
+		//把預約的儀器全部取消
+		$bookings = $this->curriculum_model->get_lesson_booking_map(array("class_ID"=>$class_IDs))->result_array();
+		$b_IDs = sql_result_to_column($bookings,"booking_ID");
+		$this->load->model('facility/booking_model');
+		$this->booking_model->del($b_IDs);
+		
 		//再真正刪除課堂
 		$this->curriculum_model->del_class(
 			array("class_ID"=>$class_ID)

@@ -674,11 +674,10 @@ class Curriculum extends MY_Controller {
 		}
 		
 	}
-	public function del_class($class_ID)
+	public function del_class($class_ID = "")
 	{
 		try{
 			$this->is_admin_login();
-			if(!$this->curriculum_model->is_super_admin())	throw new Exception("權限不足！",ERROR_CODE);
 			
 			$class_ID = $this->security->xss_clean($class_ID);
 			

@@ -234,11 +234,11 @@ class Cash_model extends MY_Model {
 			FROM
 			 (SELECT $sTable.* FROM $sTable LEFT JOIN {$sJoinTable['class']} ON {$sJoinTable['class']}.class_ID = $sTable.class_ID ORDER BY {$sJoinTable['class']}.class_type ASC ) reg_table
 		",FALSE);//bill_discount_percent加開收1.5倍，未到收0.5倍
-		$this->cash_db->where("reg_table.reg_state !=",'canceled');
+		$this->cash_db->where("reg_table.reg_state !=",'canceled');//註冊取消的不用
 		
 		
 		$this->cash_db->join($sJoinTable['class'],"{$sJoinTable['class']}.class_ID = reg_table.class_ID","LEFT");
-		$this->cash_db->where("{$sJoinTable['class']}.class_state !=","canceled");//沒開的不用
+		$this->cash_db->where("{$sJoinTable['class']}.class_state !=","canceled");//課沒開成的不用
 		$this->cash_db->where("({$sJoinTable['class']}.class_max_participants = 0 OR (reg_table.reg_rank <= {$sJoinTable['class']}.class_max_participants OR reg_table.reg_state != 'selected'))");//class_max_participants=0時，全部都要，不為0時，考慮是否小於最大人數或有點名
 		$this->cash_db->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = {$sJoinTable['class']}.course_ID","LEFT");
 		$this->cash_db->join($sJoinTable['lesson'],"{$sJoinTable['lesson']}.lesson_ID = (SELECT lesson_ID FROM {$sJoinTable['lesson']} WHERE class_ID = {$sJoinTable['class']}.class_ID ORDER BY lesson_start_time ASC LIMIT 1)","LEFT",FALSE);

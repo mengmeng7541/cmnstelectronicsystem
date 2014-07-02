@@ -322,7 +322,11 @@ class Curriculum_model extends MY_Model {
 		$this->curriculum_db->where("{$sJoinTable['booking']}.cancel_time",NULL);
 		if(isset($options['class_ID']))
 		{
-			$this->curriculum_db->where("{$sJoinTable['lesson']}.class_ID",$options['class_ID']);
+			if(is_array($options['class_ID']) && empty($options['class_ID']))
+			{
+				$options['class_ID'] = array('');
+			}
+			$this->curriculum_db->where_in("{$sJoinTable['lesson']}.class_ID",$options['class_ID']);
 		}
 		if(isset($options['lesson_ID']))
 			$this->curriculum_db->where("$sTable.lesson_ID",$options['lesson_ID']);
