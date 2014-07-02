@@ -232,15 +232,16 @@ class Cash_model extends MY_Model {
 			{$sJoinTable['receipt']}.receipt_delivery_way AS receipt_delivery_way,
 			{$sJoinTable['receipt']}.receipt_checkpoint AS receipt_checkpoint
 			FROM
-			 (SELECT $sTable.* FROM $sTable LEFT JOIN  {$sJoinTable['class']} ON {$sJoinTable['class']}.class_ID = $sTable.class_ID ORDER BY {$sJoinTable['class']}.class_type ASC ) reg_table
+			 (SELECT $sTable.* FROM $sTable LEFT JOIN {$sJoinTable['class']} ON {$sJoinTable['class']}.class_ID = $sTable.class_ID ORDER BY {$sJoinTable['class']}.class_type ASC ) reg_table
 		",FALSE);//bill_discount_percent加開收1.5倍，未到收0.5倍
 		$this->cash_db->where("reg_table.reg_state !=",'canceled');
 		
 		
 		$this->cash_db->join($sJoinTable['class'],"{$sJoinTable['class']}.class_ID = reg_table.class_ID","LEFT");
 		$this->cash_db->where("{$sJoinTable['class']}.class_state !=","canceled");//沒開的不用
+		$this->cash_db->where("({$sJoinTable['class']}.class_max_participants = 0 OR (reg_table.reg_rank <= {$sJoinTable['class']}.class_max_participants OR reg_table.reg_state != 'selected'))");//class_max_participants=0時，全部都要，不為0時，考慮是否小於最大人數或有點名
 		$this->cash_db->join($sJoinTable['course'],"{$sJoinTable['course']}.course_ID = {$sJoinTable['class']}.course_ID","LEFT");
-		$this->cash_db->join($sJoinTable['lesson'],"{$sJoinTable['lesson']}.class_ID = {$sJoinTable['class']}.class_ID","LEFT");
+		$this->cash_db->join($sJoinTable['lesson'],"{$sJoinTable['lesson']}.lesson_ID = (SELECT lesson_ID FROM {$sJoinTable['lesson']} WHERE class_ID = {$sJoinTable['class']}.class_ID ORDER BY lesson_start_time ASC LIMIT 1)","LEFT",FALSE);
 		
 		$this->cash_db->group_by("{$sJoinTable['class']}.course_ID,{$sJoinTable['class']}.class_code,reg_table.user_ID");
 		$this->cash_db->order_by("{$sJoinTable['course']}.course_ID","ASC");

@@ -355,15 +355,6 @@ class Cash extends MY_Controller {
 			$this->load->model('curriculum_model');
 			foreach($curriculum_bills as $curriculum_bill)
 			{
-				//如果超過上限，才不用SHOW，但還要再判斷若超過上限也有確認，還是要付錢
-				if(
-					$curriculum_bill['reg_rank'] > $curriculum_bill['class_max_participants'] &&
-					empty($curriculum_bill['reg_confirmed_by'])
-				)
-				{
-					continue;
-				}
-				
 				$row = array();
 				$row[] = $curriculum_bill['course_cht_name'];
 				$row[] = $curriculum_bill['class_code'];
