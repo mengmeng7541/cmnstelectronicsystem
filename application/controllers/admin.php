@@ -152,6 +152,7 @@ class Admin extends MY_Controller {
 	if(empty($_FILES['userfile']))
 	{
 		$this->admin_model->update_account($input_data);
+		$this->user_model->update_user_profile($input_data);
 		$this->user_model->update_user_card_num($input_data['ID'],$input_data['card_num']);
 	}else{
 		if ( !$this->upload->do_upload())
@@ -165,6 +166,7 @@ class Admin extends MY_Controller {
     	//插入資料庫
 		$input_data['stamp'] = $config['upload_path'].$upload_data['file_name'];
 		$this->admin_model->update_account($input_data);
+		$this->user_model->update_user_profile($input_data);
 		$this->user_model->update_user_card_num($input_data['ID'],$input_data['card_num']);
 	}
 	echo $this->info_modal("更新成功","/admin/list");
