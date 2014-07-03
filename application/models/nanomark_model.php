@@ -281,7 +281,7 @@ class Nanomark_model extends MY_Model {
 	{
 		$ym = date('ym-');
 		
-		$sql = "SELECT serial_no,ID FROM Nanomark_application WHERE ID LIKE '{$ym}%' AND checkpoint != 'Canceled' ORDER BY ID DESC LIMIT 1";
+		$sql = "SELECT serial_no,ID FROM Nanomark_application WHERE ID LIKE '{$ym}%' ORDER BY ID DESC LIMIT 1";
 		$query = $this->nanomark_db->query($sql);
 		if($query->num_rows()){
 			$result = $query->row_array();
@@ -415,7 +415,7 @@ class Nanomark_model extends MY_Model {
 			{$sJoinTalbe['constant_checkpoint']}.application_checkpoint_name AS checkpoint_name
 		");
 		$this->nanomark_db->join($sJoinTalbe['constant_checkpoint'],"{$sJoinTalbe['constant_checkpoint']}.application_checkpoint_no = $sTable.checkpoint");
-		$this->nanomark_db->where("$sTable.checkpoint !=","Canceled");
+//		$this->nanomark_db->where("$sTable.checkpoint !=","Canceled");
 		if(isset($options['serial_no']))
 			$this->nanomark_db->where("serial_no",$options['serial_no']);
 		if(isset($options['application_ID']))

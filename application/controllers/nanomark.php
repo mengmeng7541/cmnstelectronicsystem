@@ -133,7 +133,9 @@ class Nanomark extends MY_Controller {
 			$row[] = $aRow['work_start_date'];
 			$row[] = $aRow['scheduled_completion_date'];
 			
-			if($aRow['checkpoint'] == "Case_Officer_1st" && 
+			if($aRow['checkpoint'] == "Canceled"){
+				$row[] = anchor("nanomark/view_application/{$aRow['serial_no']}","已取消","class='btn btn-inverse'");
+			}else if($aRow['checkpoint'] == "Case_Officer_1st" && 
 			   $this->nanomark_model->get_admin_privilege_list(array("admin_ID"=>$this->session->userdata('ID'),"privilege"=>'application_case_officer_1st'))->row_array() )
 			{
 				$row[] = anchor("nanomark/edit_application/{$aRow['serial_no']}","審核","class='btn btn-warning'");
@@ -1508,7 +1510,9 @@ class Nanomark extends MY_Controller {
 		$application = $this->nanomark_model->get_application_list(array("applicant_ID"=>$user_ID))->result_array();
 		foreach($application as $row)
 		{
-			if($row['checkpoint'] == "Client_Final"){
+			if($row['checkpoint'] == "Canceled"){
+				$this->table->add_row($row['ID'],anchor("nanomark/view_application/{$row['serial_no']}","已取消","class='btn btn-inverse'"));
+			}else if($row['checkpoint'] == "Client_Final"){
 				$this->table->add_row($row['ID'],anchor("nanomark/form_customer_survey/{$row['serial_no']}","請點我","class='btn btn-warning'"));
 			}else if($row['checkpoint'] == "Completed"){
 				$this->table->add_row($row['ID'],anchor("nanomark/view_application/{$row['serial_no']}","已完成","class='btn btn-success'"));
