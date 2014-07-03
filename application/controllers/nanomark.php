@@ -165,19 +165,32 @@ class Nanomark extends MY_Controller {
 	}
 	public function form_application()
 	{		
-		$this->is_user_login();
+		try{
+			$this->is_user_login();
+			
+			//取得申請人資料
+			$this->load->model('user_model');
+			$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$this->session->userdata('ID')))->row_array();
+			$this->data = $user_profile;
+			foreach($this->data as $k=>$v)
+			{
+				$this->data['user_'.$k] = $v;//暫時的...沒辦法只能先這樣
+			}
 		
-		$this->data['test_item_select_options'] = $this->test_item_model->get_test_item_select_options();
-		
-		$this->data['app_form'] = $this->load->view('nanomark/form_application_print_ver3',$this->data,TRUE);
-		
-		$this->data['action_url'] = site_url().'/nanomark/add_application';
-		$this->data['action_btn'] = form_button("preview","預覽報告內容","class='btn btn-warning'")." ".form_submit("submit","送出","class='btn btn-success'")." ".form_reset("reset","重設","class='btn '");
-		
-		$this->load->view('templates/header');
-		$this->load->view('templates/sidebar');
-		$this->load->view('nanomark/form_application',$this->data);
-		$this->load->view('templates/footer');
+			$this->data['test_item_select_options'] = $this->test_item_model->get_test_item_select_options();
+			
+			$this->data['app_form'] = $this->load->view('nanomark/form_application_print_ver3',$this->data,TRUE);
+			
+			$this->data['action_url'] = site_url().'/nanomark/add_application';
+			$this->data['action_btn'] = form_button("preview","預覽報告內容","class='btn btn-warning'")." ".form_submit("submit","送出","class='btn btn-success'")." ".form_reset("reset","重設","class='btn '");
+			
+			$this->load->view('templates/header');
+			$this->load->view('templates/sidebar');
+			$this->load->view('nanomark/form_application',$this->data);
+			$this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
 	}
 	public function edit_application($SN)
 	{

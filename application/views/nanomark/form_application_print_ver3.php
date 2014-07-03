@@ -72,24 +72,24 @@
   </tr>
   <tr>
     <td>客戶資料</td>
-    <td colspan="8">報告抬頭/廠商：<?=form_input("report_title",isset($report_title)?$report_title:"","class='input-large'".$readonly);?></div>
+    <td colspan="8">報告抬頭/廠商：<?=form_input("report_title",isset($report_title)?$report_title:(isset($user_org_name)?$user_org_name:""),"class='input-large'".$readonly);?>
       
-      收據抬頭：<?=form_input("receipt_title",isset($receipt_title)?$receipt_title:"","class='input-large'".$readonly);?>
+      收據抬頭：<input type="checkbox" name="as_report_title" value="1" >同報告抬頭 <?=form_input("receipt_title",isset($receipt_title)?$receipt_title:(isset($user_org_name)?$user_org_name:""),"class='input-large'".$readonly);?>
       <br>
-      報告地址：<?=form_input("report_address",isset($report_address)?$report_address:"","class='input-xxlarge'".$readonly);?>
+      報告地址：<?=form_input("report_address",isset($report_address)?$report_address:(isset($user_address)?$user_address:""),"class='input-xxlarge'".$readonly);?>
       <br>
-      郵寄地址：<?=form_input("mail_address",isset($mail_address)?$mail_address:"","class='input-xlarge'".$readonly);?>
-      (報告書與收據之郵寄地址) 營利事業統一編號：<?=form_input("VAT",isset($VAT)?$VAT:"","class='input-medium'".$readonly);?>
+      郵寄地址：<?=form_input("mail_address",isset($mail_address)?$mail_address:(isset($user_address)?$user_address:""),"class='input-xlarge'".$readonly);?>
+      (報告書與收據之郵寄地址) 營利事業統一編號：<?=form_input("VAT",isset($VAT)?$VAT:(isset($user_org_VAT)?$user_org_VAT:""),"class='input-medium'".$readonly);?>
       
 	  <br>
-      聯絡人：<?=form_input("contact_name",isset($contact_name)?$contact_name:"","class='input-small'".$readonly);?>
+      聯絡人：<?=form_input("contact_name",isset($contact_name)?$contact_name:(isset($user_name)?$user_name:""),"class='input-small'".$readonly);?>
       
-      聯絡電話：<?=form_input("contact_tel",isset($contact_tel)?$contact_tel:"","class='input-small'".$readonly);?>
-      手機：<?=form_input("contact_mobile",isset($contact_mobile)?$contact_mobile:"","class='input-small'".$readonly);?>
+      聯絡電話：<?=form_input("contact_tel",isset($contact_tel)?$contact_tel:(isset($user_tel)?$user_tel:""),"class='input-small'".$readonly);?>
+      手機：<?=form_input("contact_mobile",isset($contact_mobile)?$contact_mobile:(isset($user_mobile)?$user_mobile:""),"class='input-small'".$readonly);?>
       
       傳真：<?=form_input("contact_FAX",isset($contact_FAX)?$contact_FAX:"","class='input-small'".$readonly);?>
       
-      Email：<?=form_input("contact_email",isset($contact_email)?$contact_email:"","class='input-medium'".$readonly);?>
+      Email：<?=form_input("contact_email",isset($contact_email)?$contact_email:(isset($user_email)?$user_email:""),"class='input-medium'".$readonly);?>
     </td>
   </tr>
   </thead>

@@ -3427,15 +3427,6 @@ var App = function () {
 		
 		
 		//表單驗證
-		$('#form_nanomark_application').validate
-		(
-			{
-				rules:{
-				},
-				messages:{
-				},
-			}
-		);
 		$("#widget_application button[name='preview']").click(function(){
 			var d = new Date();
 			var strDate = d.getFullYear() + "年" + (d.getMonth()+1) + "月" + d.getDate() + "日";
@@ -3449,6 +3440,11 @@ var App = function () {
 			$("#widget_preview_report #specimen_company_name").text($("#widget_application input[name='specimen_company_name[]']").val());
 			$("#widget_preview_report #specimen_brand").text($("#widget_application input[name='specimen_brand[]']").val());
 			$("#widget_preview_report #specimen_model").text($("#widget_application input[name='specimen_model[]']").val());
+			$("#widget_preview_report #verification_norm").text($("#widget_application textarea[name='verification_norm']").val());
+			$("#widget_preview_report #verification_norm2").text($("#widget_application textarea[name='verification_norm']").val());
+			$("#widget_preview_report #test_outline").text($("#widget_application input[name='test_outline[]']:checked").parents('label').map(function(){
+				return $( this ).text();
+			}).get().join(','));
 		});
 		$("#widget_preview_report button[name='back']").click(function(){
 			$("#widget_application").show();

@@ -67,11 +67,11 @@
 						     </tr>
 						     <tr>
 						       <td colspan="4" style="border:1px dashed black;">
-							   <p>樣品名稱：<span id="specimen_name" style="color:red;">123</span></p>
-						       <p>委託項目：尺度量測</p>
-						       <p>委託單位：<span id="report_title" style="color:red;">123</span></p>
-						       <p>委託單位地址：<span id="report_address" style="color:red;">123</span></p>
-						       <p>委託日期：<span id="application_date" style="color:red;">123</span></p></td>
+							   <p>樣品名稱：<span id="specimen_name" class="text-error">123</span></p>
+						       <p>委託項目：<span id="test_outline" class="text-error">123</span></p>
+						       <p>委託單位：<span id="report_title" class="text-error">123</span></p>
+						       <p>委託單位地址：<span id="report_address" class="text-error">123</span></p>
+						       <p>委託日期：<span id="application_date" class="text-error">123</span></p></td>
 						     </tr>
 						     <tr>
 						       <td colspan="4"><p>上項樣品經本實驗室測試，結果如內文。</p>
@@ -105,9 +105,9 @@
 							 </tr>
 						     <tr>
 						       <td>
-						         <p>．樣品資訊：[廠商名稱：<span id="specimen_company_name" style="color:red;">123</span>]、[樣品名稱：<span id="specimen_name" style="color:red;">123</span>]、[樣品廠牌：<span id="specimen_brand" style="color:red;">123</span>] 、[樣品型號：<span id="specimen_model" style="color:red;">123</span>]</p>
-						         <p>．測試方法：TN-008奈米表面處理抗污衛生陶瓷器驗證規範</p>
-						         <p>．參考資料：TN-008奈米表面處理抗污衛生陶瓷器驗證規範</p>
+						         <p>．樣品資訊：[廠商名稱：<span id="specimen_company_name" class="text-error">123</span>]、[樣品名稱：<span id="specimen_name" class="text-error">123</span>]、[樣品廠牌：<span id="specimen_brand" class="text-error">123</span>] 、[樣品型號：<span id="specimen_model" class="text-error">123</span>]</p>
+						         <p>．測試方法：<span class="text-error" id="verification_norm">123</span></p>
+						         <p>．參考資料：<span class="text-error" id="verification_norm2">123</span></p>
 						       </td>
 						     </tr>
 						</table>

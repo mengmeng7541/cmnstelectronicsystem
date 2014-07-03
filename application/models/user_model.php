@@ -68,6 +68,7 @@ class User_model extends MY_Model {
   	$sJoinTable = array("org"=>"organization","boss"=>"boss_profile");
   	$this->common_db->select("{$sTable}.*,
   							  {$sJoinTable['org']}.name AS org_name,
+  							  {$sJoinTable['org']}.VAT AS org_VAT,
   							  {$sJoinTable['boss']}.name AS boss_name,
   							  {$sJoinTable['boss']}.email AS boss_email,")
   					->from($sTable)
