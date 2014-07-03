@@ -8,6 +8,7 @@ class Nanomark extends MY_Controller {
 	{
 		parent::__construct();
 		$this->load->model('nanomark_model');
+		$this->load->model('nanomark/app_model');
 		$this->load->model('nanomark/test_item_model');
 		$this->load->model('facility_model');
 		$this->load->model('admin_model');
@@ -907,14 +908,20 @@ class Nanomark extends MY_Controller {
 	
 	public function delete_application($ID = '')
 	{
-		$this->is_admin_login();
+		try{
+			$this->is_admin_login();
 		
-		if(empty($ID))
-			$ID = $this->input->post("application_ID",TRUE);
-		
-		$this->nanomark_model->delete_application($ID);
-		
-		echo $this->info_modal("刪除成功","/nanomark/list_application");
+			if(empty($ID))
+				$ID = $this->input->post("application_SN",TRUE);
+				
+			$ID = $this->security->xss_clean($ID);
+			
+			$this->app_model->del($ID);
+			
+			echo $this->info_modal("刪除成功","/nanomark/list_application");
+		}catch(Exception $e){
+			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+		}
 	}
 	public function form_quotation()
 	{
