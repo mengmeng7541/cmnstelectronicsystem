@@ -1,4 +1,5 @@
 <!-- Modal -->
+<div ng-controller="bootstrap_modal_controller">
 <div id="info_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -9,6 +10,18 @@
     </div>
     <div class="modal-footer">
 		<button data-dismiss="modal" class="btn btn-primary hide">OK</button>
+    </div>
+</div>
+<div modal watch="$root.modal.info" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">{{$root.modal.info.header.title}}</h3>
+    </div>
+    <div class="modal-body">
+        <p><div class="alert alert-{{$root.modal.info.body.message}}"><strong>{{$root.modal.info.body.state|uppercase}}!</strong> {{$root.modal.info.body.message}}</div></p>
+    </div>
+    <div class="modal-footer" ng-show="$root.modal.info.footer">
+		<a ng-href="{{button.link_url}}" data-dismiss="{{button.dismiss}}" class="btn btn-primary" ng-repeat="button in $root.modal.info.footer" ng-show="button.text != ''">{{button.text}}</a>
     </div>
 </div>
 <div id="form_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:640px;margin-left:-320px">
@@ -23,14 +36,14 @@
 		<button name="form_modal_submit" data-dismiss="modal" class="btn btn-primary">送出</button>
     </div>
 </div>
-
+</div>
 
 
    </div>
    <!-- END CONTAINER -->
    <!-- BEGIN FOOTER -->
    <div id="footer">
-       2013 &copy; CMNST E-System.
+       2013-2014 &copy; CMNST E-System.
       <div class="span pull-right">
          <span class="go-top"><i class="icon-arrow-up"></i></span>
       </div>
@@ -91,7 +104,7 @@
    <script type="text/javascript" src="<?=base_url();?>js/jquery.fittext.js"></script>
    <script type="text/javascript" src="<?=base_url();?>js/jquery.fullscreen-0.4.1.min.js"></script>
    
-   <script src="<?=base_url();?>js/scripts.js?20140618"></script>
+   <script src="<?=base_url();?>js/scripts.js?20140704"></script>
    <script src="<?=base_url();?>js/cmnst/cmnst-app.js"></script>
    
    <script>

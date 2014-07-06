@@ -119,7 +119,27 @@ class MY_Controller extends CI_Controller
 			    	"<button type='button' class='btn btn-primary'>取消</button>
 			    </div>";
 	}
-	
+	public function get_info_modal_array($str,$link = "",$state = SUCCESS_CODE)
+	{
+		$output = array();
+		
+		if($state === SUCCESS_CODE) 
+			$state = "success";
+		else if($state === WARNING_CODE) 
+			$state = "warning";
+		else if($state === ERROR_CODE) 
+			$state = "error";
+		
+		$output['header']['title'] = "訊息";
+		$output['body']['message'] = $str;
+		$output['body']['state'] = $state;
+		$output['footer']['confirm']['text'] = "OK";
+		$output['footer']['confirm']['link_url'] = empty($link)?"":site_url($link);
+		$output['footer']['cancel']['text'] = "";
+		$output['footer']['cancel']['link_url'] = "";
+		
+		return $output;
+	}
 	
 	
 	

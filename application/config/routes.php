@@ -100,7 +100,7 @@ $route['org/del/(:num)'] = 'user/del_org/$1';
 
 //facility booking
 $route['facility/admin/facility/list'] = 'facility/list_facility';
-$route['facility/admin/facility/query'] = 'facility/query_facility';
+$route['facility/facility/query'] = 'facility/query_facility';
 $route['facility/admin/facility/form'] = 'facility/edit_facility_config/';
 $route['facility/admin/facility/edit/batch'] = 'facility/edit_batch_facility';
 $route['facility/admin/facility/edit/(:any)'] = 'facility/edit_facility_config/$1';

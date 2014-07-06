@@ -34,30 +34,37 @@ class Facility extends MY_Controller {
 	}
 	public function query_facility()
 	{
-		$this->is_admin_login();
-
-		$input_data = $this->input->get(NULL,TRUE);
-		$input_data['type'] = 'facility';
-		
-		$facilities = $this->facility_model->get_facility_list_with_admin($input_data)->result_array();
-		$output['aaData'] = array();
-		foreach ( $facilities as $facility )
-		{
-			$row = array();
+		try{
+			$this->is_user_login();
+			$output['aaData'] = array();
 			
-			$row[] = $facility['new_ID'];
-			$row[] = "{$facility['cht_name']}({$facility['eng_name']})";
-			$row[] = $facility['ctrl_no'];
-//			$row[] = self::$facility_category[$facility['facility_tech']];
-//			$row[] = $facility['facility_class'];
-			$row[] = self::$facility_state[$facility['facility_state']];
-			$row[] = $facility['admin_name'];
-			$row[] = anchor("/facility/admin/facility/edit/{$facility['ID']}","編輯","class='btn btn-warning'");
 			
-			$output['aaData'][] = $row;
+			$options = $this->input->get(NULL,TRUE);
+			$options['type'] = 'facility';
+			
+			$facilities = $this->facility_model->get_facility_list_with_admin($options)->result_array();
+			$output['aaData'] = $facilities;
+			
+//			foreach ( $facilities as $facility )
+//			{
+//				$row = array();
+//				
+//				$row[] = $facility['new_ID'];
+//				$row[] = "{$facility['cht_name']}({$facility['eng_name']})";
+//				$row[] = $facility['ctrl_no'];
+//	//			$row[] = self::$facility_category[$facility['facility_tech']];
+//	//			$row[] = $facility['facility_class'];
+//				$row[] = self::$facility_state[$facility['facility_state']];
+//				$row[] = $facility['admin_name'];
+//				$row[] = anchor("/facility/admin/facility/edit/{$facility['ID']}","編輯","class='btn btn-warning'");
+//				
+//				$output['aaData'][] = $row;
+//			}
+			
+			echo json_encode( $output );
+		}catch(Exception $e){
+			echo json_encode( $output );
 		}
-		
-		echo json_encode( $output );
 	}
 
 	public function edit_facility_config($facility_ID = "")

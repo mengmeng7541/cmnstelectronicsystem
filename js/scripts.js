@@ -2631,7 +2631,7 @@ var App = function () {
 		//-------------------儀器設備列表----------------------------
         $("#table_list_facility").dataTable({
 			"bProcessing": true,
-	        "sAjaxSource": site_url+"facility/admin/facility/query/",
+	        "sAjaxSource": site_url+"facility/facility/query/",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {
@@ -2642,7 +2642,44 @@ var App = function () {
                 }
             },
             "aaSorting": [],
-			
+			"aoColumnDefs": [
+				{
+					"aTargets": [0],
+					"mData": function(source,type,val){
+						return source['facility_ID'];
+					}
+				},
+				{
+					"aTargets": [1],
+					"mData": function(source,type,val){
+						return source['facility_cht_name']+' ('+source['facility_eng_name']+')';
+					}
+				},
+				{
+					"aTargets": [2],
+					"mData": function(source,type,val){
+						return source['facility_ctrl_no'];
+					}
+				},
+				{
+					"aTargets": [3],
+					"mData": function(source,type,val){
+						return source['facility_dynamic_state'];
+					}
+				},
+				{
+					"aTargets": [4],
+					"mData": function(source,type,val){
+						return source['facility_admin_name'];
+					}
+				},
+				{
+					"aTargets": [5],
+					"mData": function(source,type,val){
+						return '<a href="'+site_url+'facility/admin/facility/edit/'+source['facility_SN']+'" class="btn btn-warning btn-small">編輯</a>';
+					}
+				},
+			]
         });
 
         $("#table_list_user_privilege").dataTable({

@@ -275,6 +275,14 @@ class Oem extends MY_Controller {
 			
 			$input_data = $this->input->get(NULL,TRUE);
 			$forms = $this->oem_model->get_form_list($input_data)->result_array();
+			
+			//TEST
+			foreach($forms as $key => $form)
+			{
+				$facilities = $this->oem_model->get_form_facility_map_list(array("form_SN"=>$form['form_SN']))->result_array();
+				$forms[$key]['form_facility_SN'] = sql_column_to_key_value_array($facilities,"facility_SN");
+			}
+			
 			$output['aaData'] = $forms;
 			
 			echo json_encode($output);
@@ -335,26 +343,34 @@ class Oem extends MY_Controller {
 		try{
 			$this->is_admin_login();
 			
-			$this->form_validation->set_rules("form_cht_name","代工單中文名稱","required");
-			$this->form_validation->set_rules("form_eng_name","代工單英文名稱","required");
-			$this->form_validation->set_rules("facility_SN[]","代工單對應儀器","required");
-			$this->form_validation->set_rules("form_note","注意事項","required");
-			$this->form_validation->set_rules("form_description","預設描述(客戶填寫)","required");
-			$this->form_validation->set_rules("form_enable","是否開放代工","required");
-			$this->form_validation->set_rules("form_admin_ID","代工單管理員","required");
-			if(!$this->form_validation->run())
+			$input = file_get_contents('php://input');
+			$forms = json_decode($input,TRUE);
+
+			foreach($forms as $form)
 			{
-				throw new Exception(validation_errors(),WARNING_CODE);
+//				var_dump($form['form_facility_SN']);
 			}
 			
-			$input_data = $this->input->post(NULL,TRUE);
-			
-			$this->load->model('oem/form_model');
-			$this->form_model->add($input_data);
-			
-			echo $this->info_modal("新增成功","oem/form/list");
+//			$this->form_validation->set_rules("form_cht_name","代工單中文名稱","required");
+//			$this->form_validation->set_rules("form_eng_name","代工單英文名稱","required");
+//			$this->form_validation->set_rules("facility_SN[]","代工單對應儀器","required");
+//			$this->form_validation->set_rules("form_note","注意事項","required");
+//			$this->form_validation->set_rules("form_description","預設描述(客戶填寫)","required");
+//			$this->form_validation->set_rules("form_enable","是否開放代工","required");
+//			$this->form_validation->set_rules("form_admin_ID","代工單管理員","required");
+//			if(!$this->form_validation->run())
+//			{
+//				throw new Exception(validation_errors(),WARNING_CODE);
+//			}
+//			
+//			$input_data = $this->input->post(NULL,TRUE);
+//			
+//			$this->load->model('oem/form_model');
+//			$this->form_model->add($input_data);
+//			
+			echo json_encode($this->get_info_modal_array("新增成功","oem/form/list"));
 		}catch(Exception $e){
-			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+			echo json_encode($this->get_info_modal_array($e->getMessage(),"",$e->getCode()));
 		}
 	}
 	public function update_form()
@@ -389,5 +405,20 @@ class Oem extends MY_Controller {
 	{
 		
 	}
+	//--------------------FORM FACILITY MAP-------------------------
+//	public function query_form_facility_map()
+//	{
+//		try{
+//			$this->is_admin_login();
+//			$output = array();
+//			
+//			$maps = $this->oem_model->get_form_facility_map_list()->result_array();
+//			$output = $maps;
+//			
+//			echo json_encode($output);
+//		}catch(Exception $e){
+//			echo json_encode($output);
+//		}
+//	}
 }
 ?>
