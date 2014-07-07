@@ -32,7 +32,7 @@
      	
         <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#collapse_{{key}}">
         <i class=" icon-plus"></i>
-        <button ng-click="del_form(key)" class="btn btn-danger">刪除</button> {{form.form_cht_name + ' (' + form.form_eng_name + ')'}} 
+        <button ng-click="del_form(key)" class="btn btn-danger btn-small">刪除</button> {{form.form_cht_name + ' (' + form.form_eng_name + ')'}} 
         </a>
         
      </div>

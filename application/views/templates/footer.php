@@ -18,7 +18,7 @@
         <h3 id="myModalLabel">{{$root.modal.info.header.title}}</h3>
     </div>
     <div class="modal-body">
-        <p><div class="alert alert-{{$root.modal.info.body.message}}"><strong>{{$root.modal.info.body.state|uppercase}}!</strong> {{$root.modal.info.body.message}}</div></p>
+        <div class="alert alert-{{$root.modal.info.body.state}}"><strong>{{$root.modal.info.body.state|uppercase}}!</strong> <p ng-bind-html="$root.modal.info.body.message"></p></div>
     </div>
     <div class="modal-footer" ng-show="$root.modal.info.footer">
 		<a ng-href="{{button.link_url}}" data-dismiss="{{button.dismiss}}" class="btn btn-primary" ng-repeat="button in $root.modal.info.footer" ng-show="button.text != ''">{{button.text}}</a>
@@ -53,6 +53,7 @@
    
    <!-- Load javascripts at bottom, this will reduce page load time -->
    <script src="<?=base_url();?>assets/angular-1.2.17/angular.min.js"></script>
+   <script src="<?=base_url();?>assets/angular-1.2.17/angular-sanitize.min.js"></script>
    
    <script src="<?=base_url();?>js/jquery.validate.js"></script>
    <script src="<?=base_url();?>assets/jquery-slimscroll/jquery-ui-1.9.2.custom.min.js"></script>

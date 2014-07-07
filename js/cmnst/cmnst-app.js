@@ -1,4 +1,4 @@
-var cmnstApp = angular.module('cmnstApp',[]);
+var cmnstApp = angular.module('cmnstApp',['ngSanitize']);
 
 cmnstApp
 .factory("user_profile_service",function($http){
@@ -86,13 +86,14 @@ cmnstApp
 })
 .directive('modal',function($rootScope){
 	var linker = function(scope,element,attrs){
-
 		element.modal({backdrop:'static',keyboard:true,show:false});
 		element.modal('hide');
 		scope.$watch(attrs.watch, function (new_val,old_val) {
-//			new_val.footer.forEach(function(ele,idx,arr){
-//				
-//			});
+			if(new_val===old_val)
+			{
+				//initialization
+				return;
+			}
 			for(var key in new_val.footer)
 			{
 				if(!new_val.footer[key].link_url || !new_val.footer[key].link_url.length)
@@ -109,7 +110,7 @@ cmnstApp
 	}
 })
 //---------------------BOOTSTRAP MODAL CONTROLLER--------------------------
-.controller("bootstrap_modal_controller",function($scope,$http,bootstrap_modal_service){
+.controller("bootstrap_modal_controller",function($scope,$http){
 	
 })
 //-----------------------------OEM CONTROLLER------------------------------
@@ -160,6 +161,14 @@ cmnstApp
 			if(data.aaData.length)
 			{
 				$scope.forms[0] = data.aaData[0];
+				
+				$http.get(site_url+'oem/form/query',{params:{form_parent_SN:SN}})
+				.success(function(data){
+					for(var key in data.aaData)
+					{
+						$scope.forms.push(data.aaData[key]);
+					}
+				});
 			}
 		});
 	};
@@ -180,9 +189,11 @@ cmnstApp
 			.success(function(data){
 				bootstrap_modal_service.set_info_modal(data);
 			});
-			
 		}else{
-			
+			$http.post(site_url+'oem/form/update',$scope.forms)
+			.success(function(data){
+				bootstrap_modal_service.set_info_modal(data);
+			});
 		}
 		
 	}
