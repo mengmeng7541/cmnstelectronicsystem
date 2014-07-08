@@ -875,8 +875,8 @@ class Nanomark extends MY_Controller {
 				
 				//寫入預約
 				$this->load->model('facility/booking_model');
-				$this->booking_model->check_input_time($input_data['booking_time'],$facility['unit_sec']);
-				$booking_ID = $this->booking_model->add($specimen['facility_ID'],$input_data['engineer_ID'],min($input_data['booking_time']),max($input_data['booking_time'])+$facility['unit_sec'],"nanomark");
+				$booking_time = $this->booking_model->get_time_by_checkbox($input_data['booking_time'],$facility['ID']);
+				$booking_ID = $this->booking_model->add($specimen['facility_ID'],$input_data['engineer_ID'],$booking_time[0],$booking_time[1],"nanomark");
 				//寫入map
 				$data = array("specimen_ID"=>$specimen['specimen_SN'],"booking_ID"=>$booking_ID);
 				$this->nanomark_model->add_specimen_booking_map($data);

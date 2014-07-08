@@ -1158,9 +1158,9 @@ class Curriculum extends MY_Controller {
 				if(!$user_profile) throw new Exception("無此使用者",ERROR_CODE);
 				//檢查填選的時段
 				$this->load->model('facility/booking_model');
-				$this->booking_model->check_input_time($input_data['booking_time'],$facility['unit_sec']);
+				$booking_time = $this->booking_model->get_time_by_checkbox($input_data['booking_time'],$facility['ID']);
 				//新增預約紀錄
-				$booking_ID = $this->booking_model->add($facility['ID'],$lesson['lesson_prof_ID'],min($input_data['booking_time']),max($input_data['booking_time'])+$facility['unit_sec'],"course");
+				$booking_ID = $this->booking_model->add($facility['ID'],$lesson['lesson_prof_ID'],$booking_time[0],$booking_time[1],"course");
 				
 				//新增課堂與預約儀器間關係
 				$this->curriculum_model->add_lesson_booking_map(array("lesson_ID"=>$lesson['lesson_ID'],"booking_ID"=>$booking_ID,"booking_state"=>"additional","booking_remark"=>$input_data['booking_remark']));
