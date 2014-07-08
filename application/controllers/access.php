@@ -214,6 +214,8 @@ class Access extends MY_Controller {
 				$row[] = $app['guest_name'];
 				$row[] = $app['guest_access_start_time'].'~'.$app['guest_access_end_time'];
 				$row[] = $app['guest_access_card_num'];
+				$row[] = $app['issuer_name'];
+				$row[] = $app['refunder_name'];
 				$display = array();
 				if($app['application_checkpoint_ID']=='applied'){
 					$display[] = anchor("access/card/application/temp/edit/".$app['serial_no'],"審查","class='btn btn-small btn-primary'");
@@ -242,6 +244,8 @@ class Access extends MY_Controller {
 			$this->load->model('admin_model');
 			$this->data['used_by_array'] = $this->admin_model->get_admin_ID_select_options();
 			
+			$this->load->model('facility_model');
+			$this->data['facility_SN_select_options'] = $this->facility_model->get_facility_select_options("door");
 			
 			$this->load->view('templates/header');
 			$this->load->view('templates/sidebar');
@@ -274,6 +278,11 @@ class Access extends MY_Controller {
 			if($app['application_checkpoint_ID']=='applied' && $this->access_model->is_super_admin()){
 				$this->data['page'] = "issue";
 			}
+			
+			$this->load->model('facility_model');
+			$this->data['facility_SN_select_options'] = $this->facility_model->get_facility_select_options("door");
+			$maps = $this->access_model->get_access_card_temp_app_facility_map_list(array("temp_app_SN"=>$app['serial_no']))->result_array();
+			$this->data['facility_SN'] = sql_column_to_key_value_array($maps,"facility_SN");
 			
 			$this->load->view('templates/header');
 			$this->load->view('templates/sidebar');
@@ -336,6 +345,7 @@ class Access extends MY_Controller {
 				$this->form_validation->set_rules("guest_access_start_time","磁卡使用時段","required");
 				$this->form_validation->set_rules("guest_access_end_date","磁卡使用時段","required");
 				$this->form_validation->set_rules("guest_access_end_time","磁卡使用時段","required");
+				$this->form_validation->set_rules("facility_SN[]","需求門禁","required");
 				if(!$this->form_validation->run()){
 					throw new Exception(validation_errors(),WARNING_CODE);
 				}

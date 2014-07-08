@@ -32,6 +32,8 @@
                  				<th width="40">使用者</th>
                  				<th >使用時段</th>
                  				<th width="60">磁卡卡號</th>
+                 				<th width="60">核可人</th>
+                 				<th width="60">歸還確認</th>
                  				<th width="100"></th>
                  			</thead>
                  		</table>

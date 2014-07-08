@@ -121,7 +121,9 @@ class Access_model extends MY_Model {
 		
 		$this->access_db->select("
 			$sTable.*,
-			{$sJoinTable['user']}.name AS applicant_name,
+			applicant.name AS applicant_name,
+			issuer.name AS issuer_name,
+			refunder.name AS refunder_name,
 			{$sJoinTable['enum_type']}.type_ID AS application_type_ID,
 			{$sJoinTable['enum_type']}.type_name AS application_type_name,
 			{$sJoinTable['enum_purpose']}.purpose_ID AS guest_purpose_ID,
@@ -132,7 +134,9 @@ class Access_model extends MY_Model {
 		$this->access_db->join($sJoinTable['checkpoint'],"{$sJoinTable['checkpoint']}.checkpoint_no = $sTable.application_checkpoint","LEFT");
 		$this->access_db->join($sJoinTable['enum_type'],"{$sJoinTable['enum_type']}.type_no = $sTable.application_type","LEFT");
 		$this->access_db->join($sJoinTable['enum_purpose'],"{$sJoinTable['enum_purpose']}.purpose_no = $sTable.guest_purpose","LEFT");
-		$this->access_db->join($sJoinTable['user'],"{$sJoinTable['user']}.ID = $sTable.applied_by","LEFT");
+		$this->access_db->join("{$sJoinTable['user']} applicant","applicant.ID = $sTable.applied_by","LEFT");
+		$this->access_db->join("{$sJoinTable['user']} issuer","issuer.ID = $sTable.issued_by","LEFT");
+		$this->access_db->join("{$sJoinTable['user']} refunder","refunder.ID = $sTable.refunded_by","LEFT");
 		if(isset($options['serial_no']))
 		{
 			$this->access_db->where("$sTable.serial_no",$options['serial_no']);
@@ -204,6 +208,26 @@ class Access_model extends MY_Model {
 	{
 		$this->access_db->where("serial_no",$data['serial_no']);
 		$this->access_db->delete("access_card_temp_application");
+	}
+	//------------ACCESS CARD TEMP APPLICATION FACILITY MAP------------
+	public function get_access_card_temp_app_facility_map_list($options = array())
+	{
+		if(isset($options['facility_SN']))
+		{
+			$this->access_db->where("facility_SN",$options['facility_SN']);
+		}
+		if(isset($options['temp_app_SN']))
+		{
+			$this->access_db->where("temp_app_SN",$options['temp_app_SN']);
+		}
+		return $this->access_db->get("access_card_temp_app_facility_map");
+	}
+	public function add_access_card_temp_app_facility_map($data)
+	{
+		$this->access_db->set("temp_app_SN",$data['temp_app_SN']);
+		$this->access_db->set("facility_SN",$data['facility_SN']);
+		$this->access_db->insert("access_card_temp_app_facility_map");
+		return $this->access_db->insert_id();
 	}
 	//---------------------------ACCESS LOG----------------------------
 	public function sync_access_card_log_list()

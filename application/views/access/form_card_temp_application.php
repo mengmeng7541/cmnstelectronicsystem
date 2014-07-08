@@ -49,11 +49,17 @@
 						            <label class="control-label">磁卡使用時段</label>
 						            <div class="controls">
 										<input type="text" name="guest_access_start_date" value="<?=isset($guest_access_start_time)?date("Y-m-d",strtotime($guest_access_start_time)):date("Y-m-d");?>" class="input-small date-picker"/>
-										<input type="text" name="guest_access_start_time" value="<?=isset($guest_access_start_time)?date("H:00",strtotime($guest_access_start_time."+1hour")):date("H:i");?>" class="input-mini timepicker-24-30m"/>
+										<input type="text" name="guest_access_start_time" value="<?=isset($guest_access_start_time)?date("H:i",strtotime($guest_access_start_time)):date("H:i");?>" class="input-mini timepicker-24-30m"/>
 										~
 										<input type="text" name="guest_access_end_date" value="<?=isset($guest_access_end_time)?date("Y-m-d",strtotime($guest_access_end_time)):date("Y-m-d");?>" class="input-small date-picker"/>
-										<input type="text" name="guest_access_end_time" value="<?=isset($guest_access_end_time)?date("H:00",strtotime($guest_access_end_time."+5hours")):date("H:i");?>" class="input-mini timepicker-24-30m"/>
+										<input type="text" name="guest_access_end_time" value="<?=isset($guest_access_end_time)?date("H:i",strtotime($guest_access_end_time)):date("H:i");?>" class="input-mini timepicker-24-30m"/>
 										
+									</div>
+								</div>
+								<div class="control-group">
+						            <label class="control-label">需求門禁</label>
+						            <div class="controls">
+										<?=form_multiselect("facility_SN[]",isset($facility_SN_select_options)?$facility_SN_select_options:array(),isset($facility_SN)?$facility_SN:array(),"class='span12 chosen'");?>
 									</div>
 								</div>
 								<div class="row-fluid batch-input-area">

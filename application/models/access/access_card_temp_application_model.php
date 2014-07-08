@@ -91,16 +91,11 @@ class Access_card_temp_application_model extends MY_Model {
 			{
 				throw new Exception("結束時間需大於起始時間",WARNING_CODE);
 			}
-			//廠商維修限制須小於四小時
-//			if(strtotime($end_time)-strtotime($start_time)>4*60*60)
-//			{
-//				throw new Exception("臨時卡不可超過四小時",ERROR_CODE);
-//			}
 			//寫入資料
 			foreach((array)$data['guest_name'] as $idx => $guest_name){
 				$guest_name = trim($guest_name);
 				if(empty($guest_name)) continue;//如果是空的就略過
-				$insert_id = $this->access_model->add_access_card_temp_application(array(
+				$temp_app_SN = $this->access_model->add_access_card_temp_application(array(
 					"applied_by"=>$this->session->userdata('ID'),
 					"application_type"=>$type['type_no'],
 					"guest_name"=>$guest_name,
@@ -109,6 +104,15 @@ class Access_card_temp_application_model extends MY_Model {
 					"guest_access_start_time"=>$data['guest_access_start_date'].' '.$data['guest_access_start_time'],
 					"guest_access_end_time"=>$data['guest_access_end_date'].' '.$data['guest_access_end_time']
 				));
+				
+				//寫入門禁對應資料
+				foreach((array)$data['facility_SN'] as $facility_SN)
+				{
+					$this->access_model->add_access_card_temp_app_facility_map(array(
+						"temp_app_SN"=>$temp_app_SN,
+						"facility_SN"=>$facility_SN
+					));
+				}
 			}
 			
 		}else if($data['application_type_ID']=="user"){
@@ -146,7 +150,7 @@ class Access_card_temp_application_model extends MY_Model {
 		}else{
 			//先檢查是否被occupied
 			$card = $this->access_model->get_access_card_pool_list(array("access_card_num"=>$card_num))->row_array();
-			if($card['occupied'])
+			if($card && $card['occupied'])
 			{
 				throw new Exception("此卡尚未歸還",ERROR_CODE);
 			}
@@ -169,7 +173,10 @@ class Access_card_temp_application_model extends MY_Model {
 		//開啟權限
 		if($app['application_type_ID']=="guest"){
 			$this->load->model('facility/access_ctrl_model');
-			$this->access_ctrl_model->open_all_door_by_num($app['guest_access_card_num'],strtotime($app['guest_access_start_time']),strtotime($app['guest_access_end_time']));
+			//取得要開哪些門禁的列表
+			$app_facility_maps = $this->access_model->get_access_card_temp_app_facility_map_list(array("temp_app_SN"=>$app['serial_no']))->result_array();
+			$door_IDs = sql_column_to_key_value_array($app_facility_maps,"facility_SN");
+			$this->access_ctrl_model->add_by_card_num($door_IDs,$app['guest_access_card_num'],strtotime($app['guest_access_start_time']),strtotime($app['guest_access_end_time']));
 		}else if($app['application_type_ID']=="user"){
 			$this->load->model('facility/access_ctrl_model');
 			$this->access_ctrl_model->open_all_door_by_num($app['guest_access_card_num'],strtotime($app['guest_access_start_time']),strtotime($app['guest_access_end_time']));

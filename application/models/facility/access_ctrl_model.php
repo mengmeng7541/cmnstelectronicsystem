@@ -395,15 +395,14 @@ class Access_ctrl_model extends MY_Model {
 	}
   }
   
-  //------------------------------無帳號專區---------------------------
-  public function open_all_door_by_num($card_num,$start,$end)
-  {
-  	//取得所有門禁資訊
-  	$doors = $this->facility_model->get_facility_list(array("type"=>"door"))->result_array();
-  	//取得所有門禁的編號
-  	$door_IDs = sql_result_to_column($doors,"ID");
-  	//新增
-  	$this->add_by_card_num($door_IDs,$card_num,$start,$end);
-  }
-
+	//------------------------------無帳號專區---------------------------
+	public function open_all_door_by_num($card_num,$start,$end)
+	{
+		//取得所有門禁資訊
+		$doors = $this->facility_model->get_facility_list(array("type"=>"door"))->result_array();
+		//取得所有門禁的編號
+		$door_IDs = sql_result_to_column($doors,"ID");
+		//新增
+		$this->add_by_card_num($door_IDs,$card_num,$start,$end);
+	}
 }
