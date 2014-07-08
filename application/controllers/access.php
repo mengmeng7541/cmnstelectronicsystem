@@ -261,6 +261,11 @@ class Access extends MY_Controller {
 		try{
 			$this->is_admin_login();
 			
+			if(!$this->access_model->is_super_admin())
+			{
+				throw new Exception();
+			}
+			
 			$SN = $this->security->xss_clean($SN);
 			
 			$app = $this->access_model->get_access_card_temp_application_list(array("serial_no"=>$SN))->row_array();

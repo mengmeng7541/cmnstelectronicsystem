@@ -338,7 +338,8 @@ class Curriculum extends MY_Controller {
 					{
 						$facility_IDs = $this->course_model->get_course_map_facility_ID($class['course_ID']);
 						if(!empty($facility_IDs)){
-							$privilege = $this->facility_model->get_user_privilege_list(array("facility_ID"=>$facility_IDs,"privilege"=>"admin","user_ID"=>$this->session->userdata('ID')))->result_array();
+							$privilege = $this->facility_model->get_user_privilege_list(array("facility_ID"=>$facility_IDs,"privilege"=>"admin","user_ID"=>$this->session->userdata('ID')))->result_array();//只有儀器管理員權限才可以看到相關開設的課程
+							//現在還要加入技術長的部分可以看自己組下的課程
 							if(!$privilege){
 								continue;
 							}
