@@ -1113,13 +1113,9 @@ class Facility extends MY_Controller {
 				}
 			}
 			
-			//取得相關儀器
-			$facilities_IDs = $this->facility_model->get_vertical_group_facilities($facility['ID'],array("facility_only"=>TRUE));
-			$facilities = $this->facility_model->get_facility_list(array("ID"=>$facilities_IDs))->result_array();
-			$max_unit_sec = max(sql_column_to_key_value_array($facilities,"unit_sec"));
+			//檢查並取得輸入時間
+			list($min_time,$max_time) = $this->booking_model->get_time_by_checkbox($input_data['booking_time'],$facility['ID']);
 			
-			$max_time = max($input_data['booking_time'])+$max_unit_sec;
-			$min_time = min($input_data['booking_time']);
 			//以下非中心人員要檢查
 			if(!$this->is_admin_login(FALSE))
 			{
@@ -1182,10 +1178,6 @@ class Facility extends MY_Controller {
 					
 				}
 			}
-			
-			
-			//確認輸入了正確的時間
-			$this->booking_model->check_input_time($input_data['booking_time'],$max_unit_sec);
 			
 			//新增一筆記錄(若為自行操作，要判斷是否跨日，要拆單)
 			if(empty($input_data['purpose']) || $input_data['purpose']=="DIY")
@@ -1272,8 +1264,7 @@ class Facility extends MY_Controller {
 			$facility = $this->facility_model->get_facility_list(array("ID"=>$booking['facility_ID']))->row_array();
 			$ori_min_time = strtotime($booking['start_time']);
 			$ori_max_time = strtotime($booking['end_time']);
-			$max_time = max($input_data['booking_time'])+$facility['unit_sec'];
-			$min_time = min($input_data['booking_time']);
+			list($min_time,$max_time) = $this->booking_model->get_time_by_checkbox($input_data['booking_time'],$facility['ID']);
 			//修改：１小時前可修改，只能延長時間，24小時內不得換時段。一天前可換當日時段。
 			if($ori_min_time-time()>24*60*60)//大於24小時
 			{
@@ -1326,10 +1317,6 @@ class Facility extends MY_Controller {
 					}
 				}
 			}
-			
-			
-			$this->booking_model->check_input_time($input_data['booking_time'],$facility['unit_sec']);
-			
 			
 			//寄信(給使用者與老師)
 			if(empty($user_profile['email']))
