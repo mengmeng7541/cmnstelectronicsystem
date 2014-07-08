@@ -19,7 +19,7 @@ class Access_ctrl_model extends MY_Model {
   }
   /**
   * 
-  * @param undefined $facility_ID	若為陣列，視為指定特定機種開啟，不為陣列者，會自動尋找主從關係
+  * @param undefined $facility_ID	
   * @param undefined $user_ID
   * @param undefined $start			UNIX_TIME
   * @param undefined $end			UNIX_TIME
@@ -28,16 +28,12 @@ class Access_ctrl_model extends MY_Model {
   * @return
   */
   public function add($facility_ID,$user_ID,$start,$end,$door_only = FALSE)
-  {
+  {//door_only目前主要在課程時會用到
   	$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$user_ID))->row_array();
   	if($door_only && $user_profile['group']=="admin") return;
   	if(!$user_profile) throw new Exception("無此使用者",ERROR_CODE);
   	if(empty($user_profile['card_num'])) throw new Exception("此使用者無卡片，請先申請。",WARNING_CODE);
-  	if(is_array($facility_ID)){
-		$f_IDs = $facility_ID;
-	}else{
-		$f_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("no_child"=>TRUE,"facility_only"=>$user_profile['group']=="admin","door_only"=>$door_only));
-	}
+  	
   	
   	//判斷是否有借用卡
   	$this->load->model('access_model');
@@ -49,9 +45,10 @@ class Access_ctrl_model extends MY_Model {
   		"application_checkpoint_ID"=>"issued"
   	))->row_array();
   	if($temp_app){
-		$this->add_by_card_num($f_IDs,$temp_app['guest_access_card_num'],$start,$end);
+		$this->add_by_card_num($facility_ID,$temp_app['guest_access_card_num'],$start,$end,$door_only);
 	}
   	
+	$f_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("no_child"=>TRUE,"facility_only"=>$user_profile['group']=="admin","door_only"=>$door_only));
   	//寫入卡機(關聯的父儀器都要開)
 	$data = array();
 	foreach($f_IDs as $f_ID){
@@ -111,14 +108,14 @@ class Access_ctrl_model extends MY_Model {
 			}
 			
 			
-		}else if($start){
+		}else if($start){//只設定起始時間者，會強制開啟
 			$row = array();
 			$row["date_time"] = date("Y-m-d H:i:s",$start);
 			$row["fun"] = "Add";
 			$row["card_num"] = $user_profile['card_num'];
 			$row["ctrl_no"] = $facility['ctrl_no'];
 			$data[] = $row;
-		}else if($end){
+		}else if($end){//只設定結束時間者，會強制關閉
 			$row = array();
 			$row["date_time"] = date("Y-m-d H:i:s",$end);
 			$row["fun"] = "Del";
@@ -138,7 +135,9 @@ class Access_ctrl_model extends MY_Model {
   * 
   * @return
   */
-  public function add_by_card_num($f_IDs,$card_num,$start,$end){
+  public function add_by_card_num($f_IDs,$card_num,$start,$end,$door_only = FALSE){
+  	
+  	$f_IDs = $this->facility_model->get_vertical_group_facilities($f_IDs,array("no_child"=>TRUE,"door_only"=>$door_only));
   	//寫入卡機(關聯的父儀器都要開)
 	$data = array();
 	foreach((array)$f_IDs as $f_ID){
