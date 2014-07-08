@@ -275,7 +275,11 @@ class Access_model extends MY_Model {
 		}
 		if(isset($options['state']))
 		{
-			$this->access_db->where("$sTable.Status",$options['state']);
+			if(is_array($options['state'])&&empty($options['state']))
+			{
+				$options['state'] = array("");
+			}
+			$this->access_db->where_in("$sTable.Status",$options['state']);
 		}
 		
 		$this->access_db->order_by("FDateTime","DESC");

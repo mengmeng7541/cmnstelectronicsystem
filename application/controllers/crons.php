@@ -112,7 +112,7 @@ class Crons extends MY_Controller {
 				"start_time"=>date("Y-m-d H:i:s",strtotime("-20minutes")),
 				"end_time"=>date("Y-m-d H:i:s",strtotime("-10minutes")),
 				"ctrl_no"=>$ctrl_no,
-				"state"=>"00"//有通行權且是進入的狀態
+				"state"=>array("00","01")//有通行權且是進入與離開的狀態
 			))->result_array();
 			
 			//取出卡號
@@ -125,37 +125,40 @@ class Crons extends MY_Controller {
 					return $card_log['log_card_num'] == $card_num;
 				});
 				
-				$pre_log_time = NULL;//清空，已便偵測下個卡片
+				$pre_log = NULL;//清空，已便偵測下個卡片
 				foreach($logs as $log){
-					$log_time = $log['log_time'];
-					if(isset($pre_log_time))
+					if(isset($pre_log))
 					{
-						$diff_secs = strtotime($log_time)-strtotime($pre_log_time);
-						if($diff_secs < 60)//一分鐘內連續刷卡
+						if($log['log_state']==$pre_log['log_state'])//都是00或01
 						{
-							//太相近，發出警報
-							if(isset($log['user_name']))
+							$diff_secs = strtotime($log['log_time'])-strtotime($pre_log['log_time']);
+							if($diff_secs < 60)//一分鐘內連續刷卡
 							{
-								
-								if(in_array($log['log_card_num'],$all_admin_card_nums))
+								//太相近，發出警報
+								if(isset($log['user_name']))
 								{
-									//是中心人員卡片
+									
+									if(in_array($log['log_card_num'],$all_admin_card_nums))
+									{
+										//是中心人員卡片
+									}else{
+										//一般使用者卡片
+										$state = $log['log_state']=="00"?"進入":($log['log_state']=="01"?"離開":"未知動作");
+										$this->email->to($admin_emails);
+										$this->email->subject("成大微奈米科技研究中心 -重複刷卡通知-");
+										$this->email->message("
+											使用者 {$log['user_name']}(卡號{$log['log_card_num']}) {$state} {$log['facility_cht_name']} 時，分別於 {$pre_log['log_time']} 與 {$log['log_time']} 短時間內連續刷卡，系統特此通知，請留意。
+										");
+										$this->email->send();
+									}
+									
 								}else{
-									//一般使用者卡片
-									$this->email->to($admin_emails);
-									$this->email->subject("成大微奈米科技研究中心 -重複刷卡通知-");
-									$this->email->message("
-										使用者 {$log['user_name']}(卡號{$log['log_card_num']}) 進入 {$log['facility_cht_name']} 時，分別於 {$pre_log_time} 與 {$log_time} 短時間內連續刷卡，系統特此通知，請留意。
-									");
-									$this->email->send();
+									//可能是臨時卡
 								}
-								
-							}else{
-								//可能是臨時卡
 							}
 						}
 					}
-					$pre_log_time = $log_time;
+					$pre_log = $log;
 				}
 			}
 		}
