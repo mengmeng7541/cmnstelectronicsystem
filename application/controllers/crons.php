@@ -78,9 +78,87 @@ class Crons extends MY_Controller {
 			}
 		}
 	}
-	//偵測使用者是否短時間內連續刷卡
+	//偵測使用者是否短時間內連續刷卡(每十分鐘執行一次)
 	public function send_user_access_duplicately_notification()
 	{
+		//取得門禁管制人員資料
+		$this->load->model('access_model');
+		$admins = $this->access_model->get_privilege_list(array(
+			"privilege"=>"access_super_admin"
+		))->result_array();
+		$admin_emails = sql_column_to_key_value_array($admins,"admin_email");
+		
+		//取得中心人員資料
+		$this->load->model('admin_model');
+		$all_admins = $this->admin_model->get_admin_profile_list(array("suspended"=>FALSE))->result_array();
+		$all_admin_card_nums = sql_column_to_key_value_array($all_admins,"card_num");
+		
+		//只要在主要入口偵測就好
+		$this->load->model('facility_model');
+		$doors = $this->facility_model->get_facility_list(array("type"=>"door"))->result_array();
+		$filtered_doors = array_filter($doors,function($door) use($doors){
+			$parent_door_ID = $door['parent_ID'];
+			$parent_door = array_filter($doors,function($parent_door) use($parent_door_ID){
+				return $parent_door['ID'] == $parent_door_ID;
+			});
+			$parent_door = reset($parent_door);
+			return empty($parent_door) || $door['location_ID']!=$parent_door['location_ID'];
+		});
+		$ctrl_nos = sql_column_to_key_value_array($filtered_doors,"ctrl_no");
+		foreach($ctrl_nos as $ctrl_no)
+		{
+			//取出前十分鐘~前二十分的狀態，因為卡機接收軟體是pulling，會比較慢收到資料
+			$card_logs = $this->access_model->get_access_card_log_list(array(
+				"start_time"=>date("Y-m-d H:i:s",strtotime("-20minutes")),
+				"end_time"=>date("Y-m-d H:i:s",strtotime("-10minutes")),
+				"ctrl_no"=>$ctrl_no,
+				"state"=>"00"//有通行權且是進入的狀態
+			))->result_array();
+			
+			//取出卡號
+			$card_nums = sql_column_to_key_value_array($card_logs,"log_card_num");
+			$card_nums = array_unique($card_nums);
+			foreach($card_nums as $card_num)
+			{
+				//取出同一張卡的所有記錄
+				$logs = array_filter($card_logs,function($card_log) use($card_num){
+					return $card_log['log_card_num'] == $card_num;
+				});
+				
+				$pre_log_time = NULL;//清空，已便偵測下個卡片
+				foreach($logs as $log){
+					$log_time = $log['log_time'];
+					if(isset($pre_log_time))
+					{
+						$diff_secs = strtotime($log_time)-strtotime($pre_log_time);
+						if($diff_secs < 60)//一分鐘內連續刷卡
+						{
+							//太相近，發出警報
+							if(isset($log['user_name']))
+							{
+								
+								if(in_array($log['log_card_num'],$all_admin_card_nums))
+								{
+									//是中心人員卡片
+								}else{
+									//一般使用者卡片
+									$this->email->to($admin_emails);
+									$this->email->subject("成大微奈米科技研究中心 -重複刷卡通知-");
+									$this->email->message("
+										使用者 {$log['user_name']}(卡號{$log['log_card_num']}) 進入 {$log['facility_cht_name']} 時，分別於 {$pre_log_time} 與 {$log_time} 短時間內連續刷卡，系統特此通知，請留意。
+									");
+									$this->email->send();
+								}
+								
+							}else{
+								//可能是臨時卡
+							}
+						}
+					}
+					$pre_log_time = $log_time;
+				}
+			}
+		}
 		
 	}
 	//偵測使用者是否在同一地方待超過十二小時
@@ -89,8 +167,8 @@ class Crons extends MY_Controller {
 	//corntab中設定每分鐘同步舊資料庫的刷卡紀錄到新資料庫一次
 	public function sync_card_access()
 	{
-		$this->load->model('facility_model');
-		$this->facility_model->sync_access_card_list();
+		$this->load->model('access_model');
+		$this->access_model->sync_access_card_log_list();
 
 		echo "DONE".PHP_EOL;
 	}

@@ -12,7 +12,6 @@ class Unittest extends MY_Controller {
 	{
 		$this->output->enable_profiler(TRUE);
   		
-  		
 		$this->benchmark->mark('code_start');
 		
 		$this->benchmark->mark('code_end');

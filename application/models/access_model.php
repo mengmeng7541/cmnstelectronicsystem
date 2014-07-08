@@ -7,6 +7,7 @@ class Access_model extends MY_Model {
 		parent::__construct();
 		$this->access_db = $this->load->database("access",TRUE);
 		$this->facility_db = $this->load->database("facility",TRUE);
+		$this->mssql_old_db = $this->load->database('order_machine',TRUE);
 	}
 	//--------------------SYSTEM PRIVILEGE-----------------------
 	public function get_privilege_list($options = array())
@@ -205,10 +206,81 @@ class Access_model extends MY_Model {
 		$this->access_db->delete("access_card_temp_application");
 	}
 	//---------------------------ACCESS LOG----------------------------
+	public function sync_access_card_log_list()
+	{
+		$this->facility_db->select("SerNo");
+		$this->facility_db->order_by("SerNo","DESC");
+		$this->facility_db->limit(1);
+		$result = $this->facility_db->get("Card")->row_array();
+		
+		$this->mssql_old_db->where("SerNo >",$result['SerNo']);
+		$results = $this->mssql_old_db->get("Card")->result_array();
+		foreach($results as $row)
+		{
+			//好醜的寫法..............卡機廠商做不到只好自己來
+			if($row['CtrlNo']=="11")//無塵室刷出門禁
+			{
+				$row['CtrlNo'] = "54";//無塵室門禁
+				$row['Status'] = "01";//用01代表刷出
+			}else if($row['CtrlNo']=="12")//B1實驗室刷出門禁
+			{
+				$row['CtrlNo'] = "71";//B1實驗室門禁
+				$row['Status'] = "01";
+			}
+			$row['FDateTime'] = $row['FDate'].' '.$row['FTime'];
+			$this->facility_db->insert("Card",$row);
+		}
+	}
 	public function get_access_card_log_list($options = array())
 	{
 		$sTable = "cmnst_facility.Card";
-		$sJoinTable = array("user"=>"cmnst_common.user_profile");
+		$sJoinTable = array(
+			"user"=>"cmnst_common.user_profile",
+			"facility"=>"cmnst_facility.facility_list"
+		);
+		
+		$this->access_db->select("
+			$sTable.SerNo AS log_serial_no,
+			$sTable.CtrlNo AS log_ctrl_no,
+			$sTable.Status AS log_state,
+			$sTable.CardNo AS log_card_num,
+			$sTable.FDateTime AS log_time,
+			{$sJoinTable['user']}.name AS user_name,
+			{$sJoinTable['facility']}.cht_name AS facility_cht_name,
+			{$sJoinTable['facility']}.eng_name AS facility_eng_name
+		");
+		
+		$this->access_db->join($sJoinTable['user'],"$sTable.CardNo = {$sJoinTable['user']}.card_num","LEFT");
+		$this->access_db->join($sJoinTable['facility'],"{$sJoinTable['facility']}.ID = (SELECT ID from {$sJoinTable['facility']} WHERE ctrl_no = $sTable.CtrlNo LIMIT 1)","LEFT",FALSE);
+		
+		if(isset($options['start_time']))
+		{
+			$this->access_db->where("$sTable.FDateTime >=",$options['start_time']);
+		}
+		if(isset($options['end_time']))
+		{
+			$this->access_db->where("$sTable.FDateTime <=",$options['end_time']);
+		}
+		if(isset($options['card_num']))
+		{
+			$this->access_db->where("$sTable.CardNo",$options['card_num']);
+		}
+		if(isset($options['ctrl_no']))
+		{
+			if(is_array($options['ctrl_no'])&&empty($options['ctrl_no']))
+			{
+				$options['ctrl_no'] = array("");
+			}
+			$this->access_db->where_in("$sTable.CtrlNo",$options['ctrl_no']);
+		}
+		if(isset($options['state']))
+		{
+			$this->access_db->where("$sTable.Status",$options['state']);
+		}
+		
+		$this->access_db->order_by("FDateTime","DESC");
+		
+		$result = $this->access_db->get($sTable);
 		
 		return $result;
 	}

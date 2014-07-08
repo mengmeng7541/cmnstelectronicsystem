@@ -652,31 +652,7 @@ class Facility_model extends MY_Model {
 		
 		return $result;
 	}
-	public function sync_access_card_list()
-	{
-		$this->facility_db->select("SerNo");
-		$this->facility_db->order_by("SerNo","DESC");
-		$this->facility_db->limit(1);
-		$result = $this->facility_db->get("Card")->row_array();
-		
-		$this->mssql_old_db->where("SerNo >",$result['SerNo']);
-		$results = $this->mssql_old_db->get("Card")->result_array();
-		foreach($results as $row)
-		{
-			//好醜的寫法..............卡機廠商做不到只好自己來
-			if($row['CtrlNo']=="11")//無塵室刷出門禁
-			{
-				$row['CtrlNo'] = "54";//無塵室門禁
-				$row['Status'] = "01";//用01代表刷出
-			}else if($row['CtrlNo']=="12")//B1實驗室刷出門禁
-			{
-				$row['CtrlNo'] = "71";//B1實驗室門禁
-				$row['Status'] = "01";
-			}
-			$row['FDateTime'] = $row['FDate'].' '.$row['FTime'];
-			$this->facility_db->insert("Card",$row);
-		}
-	}
+	
 	public function get_access_ctrl_list($input_data)
 	{
 		$sTable = "RunList";
