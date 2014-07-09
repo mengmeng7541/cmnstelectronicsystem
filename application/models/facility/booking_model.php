@@ -280,7 +280,7 @@ class Booking_model extends MY_Model {
 			}
 		}
 		//確認選擇了整點時段
-		if($min_time%$unit_sec!=0 || $max_time%$unit_sec!=0){
+		if(!is_int_multiple_unit_time($min_time,$unit_sec)||!is_int_multiple_unit_time($max_time,$unit_sec)){
 			throw new Exception("非整點時段！",ERROR_CODE);
 		}
 		
