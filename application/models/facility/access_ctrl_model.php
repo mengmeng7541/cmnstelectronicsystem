@@ -48,17 +48,21 @@ class Access_ctrl_model extends MY_Model {
 		$this->add_by_card_num($facility_ID,$temp_app['guest_access_card_num'],$start,$end,$door_only);
 	}
   	
-	$f_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("no_child"=>TRUE,"facility_only"=>$user_profile['group']=="admin","door_only"=>$door_only));
-  	//寫入卡機(關聯的父儀器都要開)
-	$data = array();
-	foreach($f_IDs as $f_ID){
-		//取得儀器資訊
-		$facility = $this->facility_model->get_facility_list(array("ID"=>$f_ID))->row_array();
-		if(!$facility)	continue;
-		if(empty($facility['ctrl_no'])) continue;
+	
+	
+	//有起迄時間
+	if($start && $end)
+	{
+		$f_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("no_child"=>TRUE,"facility_only"=>$user_profile['group']=="admin","door_only"=>$door_only));
 		
-		if($start && $end)
-		{
+		//寫入卡機(關聯的父儀器都要開)
+		$data = array();
+		foreach($f_IDs as $f_ID){
+			//取得儀器資訊
+			$facility = $this->facility_model->get_facility_list(array("ID"=>$f_ID))->row_array();
+			if(!$facility)	continue;
+			if(empty($facility['ctrl_no'])) continue;
+			
 			//檢查該儀器在預開到關閉之時段是否有開關紀錄，有就刪掉避開BUG
 			$options = array(
 				"start_time"=>date("Y-m-d H:i:s",$start-$facility['pre_open_sec']),
@@ -106,25 +110,40 @@ class Access_ctrl_model extends MY_Model {
 				$row["ctrl_no"] = $facility['ctrl_no'];
 				$data[] = $row;
 			}
-			
-			
-		}else if($start){//只設定起始時間者，會強制開啟
-			$row = array();
-			$row["date_time"] = date("Y-m-d H:i:s",$start);
-			$row["fun"] = "Add";
-			$row["card_num"] = $user_profile['card_num'];
-			$row["ctrl_no"] = $facility['ctrl_no'];
-			$data[] = $row;
-		}else if($end){//只設定結束時間者，會強制關閉
-			$row = array();
-			$row["date_time"] = date("Y-m-d H:i:s",$end);
-			$row["fun"] = "Del";
-			$row["card_num"] = $user_profile['card_num'];
-			$row["ctrl_no"] = $facility['ctrl_no'];
-			$data[] = $row;
 		}
+		
+	}else{
+		$f_IDs = $this->facility_model->get_vertical_group_facilities($facility_ID,array("no_child"=>TRUE,"door_only"=>$door_only));
+		
+		//寫入卡機(關聯的父儀器都要開)
+		$data = array();
+		foreach($f_IDs as $f_ID){
+			//取得儀器資訊
+			$facility = $this->facility_model->get_facility_list(array("ID"=>$f_ID))->row_array();
+			if(!$facility)	continue;
+			if(empty($facility['ctrl_no'])) continue;
+			
+			
+			if($start){//只設定起始時間者，會強制開啟
+				$row = array();
+				$row["date_time"] = date("Y-m-d H:i:s",$start);
+				$row["fun"] = "Add";
+				$row["card_num"] = $user_profile['card_num'];
+				$row["ctrl_no"] = $facility['ctrl_no'];
+				$data[] = $row;
+			}else if($end){//只設定結束時間者，會強制關閉
+				$row = array();
+				$row["date_time"] = date("Y-m-d H:i:s",$end);
+				$row["fun"] = "Del";
+				$row["card_num"] = $user_profile['card_num'];
+				$row["ctrl_no"] = $facility['ctrl_no'];
+				$data[] = $row;
+			}
+		}
+		
 	}
 	$this->facility_model->add_access_ctrl($data);
+  	
   }
   /**
   * 
