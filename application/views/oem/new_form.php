@@ -26,17 +26,17 @@
                      	<form method="POST" class="form-horizontal" ng-submit="submit()">
 <!-- BEGIN ACCORDION PORTLET-->
 <div class="accordion" id="accordion1" >
-  <div class="accordion-group" ng-repeat="(key,form) in forms">
+  <div class="accordion-group" ng-repeat="(form_idx,form) in forms">
      <div class="accordion-heading">
      	
      	
-        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#collapse_{{key}}">
+        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#collapse_{{form_idx}}">
         <i class=" icon-plus"></i>
-        <button ng-click="del_form(key)" class="btn btn-danger btn-small">刪除</button> {{form.form_cht_name + ' (' + form.form_eng_name + ')'}} 
+        {{form.form_cht_name + ' (' + form.form_eng_name + ')'}} 
         </a>
         
      </div>
-     <div id="collapse_{{key}}" class="accordion-body collapse in">
+     <div id="collapse_{{form_idx}}" class="accordion-body collapse in">
         <div class="accordion-inner">
         	<div class="row-fluid">
 				<div class="control-group span6">
@@ -48,8 +48,8 @@
 				<div class="control-group span6">
 		            <label class="control-label">開放代工服務</label>
 		            <div class="controls">
-		            	<label class="radio"><input uniform type="radio" name="form_enable" ng-model="form.form_enable" value="1"/>開放</label>
-		            	<label class="radio"><input uniform type="radio" name="form_enable" ng-model="form.form_enable" value="0"/>關閉</label>
+		            	<label class="radio"><input uniform type="radio" name="form_enable[{{form_idx}}]" ng-model="form.form_enable" value="1"/>開放</label>
+		            	<label class="radio"><input uniform type="radio" name="form_enable[{{form_idx}}]" ng-model="form.form_enable" value="0"/>關閉</label>
 					</div>
 				</div>
 			</div>
@@ -80,6 +80,17 @@
 	            	<textarea name="form_note" class="span12" rows="10" ng-model="form.form_note"></textarea>
 				</div>
 			</div>
+			
+			<div class="control-group">
+				<label class="control-label">表單欄位 <button type="button" class="btn btn-small btn-primary" ng-click="new_column(form_idx)">新增</button></label>
+				<div class="controls">
+					<div class="row-fluid" ng-repeat="(col_idx,col) in form.form_cols">
+						<label class="inline">中文名稱 <input type="text" name="" ng-model="col.col_cht_name"/></label><label  class="inline">英文名稱 <input type="text" name="" ng-model="col.col_eng_name"/></label>
+					</div>
+					
+				</div>
+			</div>
+			
 			<div class="control-group">
 	            <label class="control-label">預設描述(客戶填寫)</label>
 	            <div class="controls">
@@ -102,9 +113,9 @@
                      		
                      	
 	                     	<div class="form-actions">
-	                     		<button type="button" class="btn btn-warning" ng-click="new_form()">新增服務</button>
-	                     		<button type="button" ng-click="submit()" class="btn btn-warning">儲存</button>
-	                     		<a href="<?=site_url('oem/form/list');?>" class="btn btn-primary">取消</a>
+	                     		<button type="button" class="btn btn-danger" ng-click="new_form()">新增服務</button>
+	                     		<button type="button" ng-click="submit()" class="btn btn-primary">儲存</button>
+	                     		<a href="<?=site_url('oem/form/list');?>" class="btn btn-warning">取消</a>
 	                     	</div>
 	                    </form>
                      </div>

@@ -276,7 +276,21 @@ class Oem extends MY_Controller {
 			$input_data = $this->input->get(NULL,TRUE);
 			$forms = $this->oem_model->get_form_list($input_data)->result_array();
 			
-			//TEST
+			//下參數
+			if(isset($input_data['only_parent'])&&$input_data['only_parent']==TRUE)
+			{
+				//只留下父代
+				foreach($forms as $key => $form)
+				{
+					if($form['form_parent_SN']!==NULL)
+					{
+						unset($forms[$key]);
+					}
+				}
+				$forms = array_values($forms);
+			}
+			
+			//取得對應的儀器代碼
 			foreach($forms as $key => $form)
 			{
 				$facilities = $this->oem_model->get_form_facility_map_list(array("form_SN"=>$form['form_SN']))->result_array();
@@ -380,10 +394,10 @@ class Oem extends MY_Controller {
 			foreach($forms as $form)
 			{
 				$_POST = $form;//HACK for CI form_validation
-				$this->form_validation->set_rules("form_SN","表單編號","required");
+//				$this->form_validation->set_rules("form_SN","表單編號","required");
 				$this->form_validation->set_rules("form_cht_name","代工單中文名稱","required");
 				$this->form_validation->set_rules("form_eng_name","代工單英文名稱","required");
-				$this->form_validation->set_rules("facility_SN[]","代工單對應儀器","required");
+				$this->form_validation->set_rules("form_facility_SN[]","代工單對應儀器","required");
 				$this->form_validation->set_rules("form_note","注意事項","required");
 				$this->form_validation->set_rules("form_description","預設描述(客戶填寫)","required");
 				$this->form_validation->set_rules("form_enable","是否開放代工","required");
@@ -394,11 +408,11 @@ class Oem extends MY_Controller {
 				}
 			}
 			$this->load->model('oem/form_model');
-			$this->form_model->update($input_data);
+			$this->form_model->update($forms);
 			
-			echo json_encode($this->info_modal("更新成功","oem/form/list"));
+			echo json_encode($this->get_info_modal_array("更新成功","oem/form/list"));
 		}catch(Exception $e){
-			echo json_encode($this->info_modal($e->getMessage(),"",$e->getCode()));
+			echo json_encode($this->get_info_modal_array($e->getMessage(),"",$e->getCode()));
 		}
 	}
 	public function del_form()

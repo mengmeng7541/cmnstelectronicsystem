@@ -2962,7 +2962,7 @@ var App = function () {
 	{
 		var table_oem_form_list = $("#table_oem_form_list");
 		var datatable_oem_form_list = table_oem_form_list.dataTable({
-            "sAjaxSource": site_url+"oem/form/query",
+            "sAjaxSource": site_url+"oem/form/query?only_parent=1",
             "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
             "sPaginationType": "bootstrap",
             "oLanguage": {

@@ -145,8 +145,24 @@ cmnstApp
 	
 })
 .controller("oem_form_edit",function($scope,$http,bootstrap_modal_service){
+	//data structure
+	var col_data_structure = {
+		form_col_SN: '',
+		form_SN: '',
+		col_cht_name: '',
+		col_eng_name: '',
+		col_type: '',
+		col_length: '',
+		col_rule: '',
+		col_enable: ''
+	};
+	var form_data_structure = {
+		form_facility_SN: [],
+		form_cols: [],
+		form_remark: ''
+	};
 	//initial
-	$scope.forms = [{form_facility_SN:[]}];
+	$scope.forms = [angular.copy(form_data_structure)];
 	
 	$http.get(site_url+'facility/facility/query',{params:{type:'facility'}})
 	.success(function(data){
@@ -173,14 +189,16 @@ cmnstApp
 		});
 	};
 	
-	$scope.del_form = function(SN){
-		$scope.forms.splice(SN,1);
+	$scope.del_form = function(form_idx){
+		$scope.forms.splice(form_idx,1);
 	}
 	
 	$scope.new_form = function(){
-		$scope.forms.push({form_facility_SN:[]});
+		$scope.forms.push(angular.copy(form_data_structure));
 	}
-	
+	$scope.new_column = function(form_idx){console.log(form_idx);
+		$scope.forms[form_idx].form_cols.push(angular.copy(col_data_structure));
+	}
 	$scope.submit = function(){
 		bootstrap_modal_service.reset_info_modal();
 		if(!$scope.forms[0].form_SN)

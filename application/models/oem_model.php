@@ -51,9 +51,8 @@ class Oem_model extends MY_Model {
 		if(isset($options['form_parent_SN']))
 		{
 			$this->oem_db->where("form_parent_SN",$options['form_parent_SN']);
-		}else{
-			$this->oem_db->where("form_parent_SN",NULL);
 		}
+		
 		
 		return $this->oem_db->get($sTable);
 	}
@@ -67,7 +66,7 @@ class Oem_model extends MY_Model {
 		$this->oem_db->set("form_eng_name",$data['form_eng_name']);
 		$this->oem_db->set("form_note",$data['form_note']);
 		$this->oem_db->set("form_description",$data['form_description']);
-//		$this->oem_db->set("form_remark",$data['form_remark']);
+		$this->oem_db->set("form_remark",$data['form_remark']);
 		$this->oem_db->set("form_enable",$data['form_enable']);
 		$this->oem_db->set("form_add_time",date("Y-m-d H:i:s"));
 		$this->oem_db->set("form_update_time",date("Y-m-d H:i:s"));
