@@ -84,10 +84,45 @@
 			<div class="control-group">
 				<label class="control-label">表單欄位 <button type="button" class="btn btn-small btn-primary" ng-click="new_column(form_idx)">新增</button></label>
 				<div class="controls">
-					<div class="row-fluid" ng-repeat="(col_idx,col) in form.form_cols">
-						<label class="inline">中文名稱 <input type="text" name="" ng-model="col.col_cht_name"/></label><label  class="inline">英文名稱 <input type="text" name="" ng-model="col.col_eng_name"/></label>
+					<!--<div class="row-fluid" ng-repeat="(col_idx,col) in form.form_cols">
+						<div class="control-group span6">
+							<label class="control-label">中文名稱</label>
+							<div class="controls">
+								<input type="text" ng-model="col.col_cht_name" class="input-medium"/>
+							</div>
+						</div>
+						<div class="control-group span6">
+							<label class="control-label">英文名稱</label>
+							<div class="controls">
+								<input type="text" ng-model="col.col_eng_name" class="input-medium"/>
+							</div>
+						</div>
+					</div>-->
+<!--BEGIN TABS-->
+<div class="tabbable tabbable-custom">
+	<ul class="nav nav-tabs">
+	   <li ng-repeat="(col_idx,col) in form.form_cols" class=""><a tab href="#tab_1_{{col_idx}}">Section 1</a></li>
+	</ul>
+	<div class="tab-content">
+	   <div ng-repeat="(col_idx,col) in form.form_cols" class="tab-pane active" id="tab_1_{{col_idx}}">
+			<div class="row-fluid">
+				<div class="control-group span6">
+					<label class="control-label">中文名稱</label>
+					<div class="controls">
+						<input type="text" ng-model="col.col_cht_name" class="input-medium"/>
 					</div>
-					
+				</div>
+				<div class="control-group span6">
+					<label class="control-label">英文名稱</label>
+					<div class="controls">
+						<input type="text" ng-model="col.col_eng_name" class="input-medium"/>
+					</div>
+				</div>
+			</div>
+	   </div>
+	</div>
+</div>
+<!--END TABS-->
 				</div>
 			</div>
 			

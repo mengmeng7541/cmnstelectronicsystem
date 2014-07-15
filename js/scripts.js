@@ -4441,7 +4441,7 @@ var App = function () {
 //            handleScrollers(); // handles slim scrolling contents
             handleUniform(); // handles uniform elements
 //            handleClockfaceTimePickers(); //handles form clockface timepickers
-            handleTagsInput() // handles tag input elements
+            handleTagsInput(); // handles tag input elements
             
 //            handleCharts(); // handles plot charts
             handleWidgetTools(); // handles portlet action bar functionality(refresh, configure, toggle, remove)

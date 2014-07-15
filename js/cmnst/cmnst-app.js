@@ -109,6 +109,19 @@ cmnstApp
 		link: linker
 	}
 })
+.directive('tab',function(){
+	var linker = function(scope,element,attrs){
+
+		element.tab('show');
+//		scope.$watch(attrs.watch, function () {
+//    		jQuery.uniform.update(element);
+//        });
+	}
+	return {
+		restrict: 'A',
+		link: linker
+	}
+})
 //---------------------BOOTSTRAP MODAL CONTROLLER--------------------------
 .controller("bootstrap_modal_controller",function($scope,$http){
 	
