@@ -54,6 +54,8 @@
    <!-- Load javascripts at bottom, this will reduce page load time -->
    <script src="<?=base_url();?>assets/angular-1.2.17/angular.min.js"></script>
    <script src="<?=base_url();?>assets/angular-1.2.17/angular-sanitize.min.js"></script>
+   <script src="<?=base_url();?>assets/angular-strap-2.0.2/angular-strap.js"></script>
+   <script src="<?=base_url();?>assets/angular-strap-2.0.2/angular-strap.tpl.js"></script>
    
    <script src="<?=base_url();?>js/jquery.validate.js"></script>
    <script src="<?=base_url();?>assets/jquery-slimscroll/jquery-ui-1.9.2.custom.min.js"></script>

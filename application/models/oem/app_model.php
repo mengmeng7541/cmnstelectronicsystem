@@ -9,20 +9,48 @@ class App_model extends Oem_Model {
 	
 	
 	//---------------------APP-------------------------------
-	public function add($form_SN,$description,$app_type = 'normal')
+	public function add($form_SN,$description,$app_cols,$app_type = 'normal')
 	{
 		$form = $this->oem_model->get_form_list(array("form_SN"=>$form_SN))->row_array();
 		if(!$form)
 		{
 			throw new Exception("無此表單",ERROR_CODE);
 		}
+		$form_cols = $this->oem_model->get_form_col_list(array("form_SN"=>$form_SN,"col_enable"=>1))->result_array();
+		//檢查欄位是否都已填
+		foreach($form_cols as $form_col)
+		{
+			if($form_col['col_rule']=="required")
+			{
+				$app_col = array_filter($app_cols,function($app_col) use($form_col){
+					return $app_col['form_col_SN']==$form_col['form_col_SN'];
+				});
+				$_POST = reset($app_col);
+				$this->form_validation->set_rules("col_value",$form_col['col_cht_name'],$form_col['col_rule']);
+				if(!$this->form_validation->run())
+				{
+					throw new Exception(validation_errors(),WARNING_CODE);
+				}
+			}
+		}
+		return;
 		
-		return $this->oem_model->add_app(array(
+		$app_SN = $this->oem_model->add_app(array(
 			"form_SN"=>$form_SN,
 			"app_type"=>$app_type,
 			"app_description"=>$description
-			
 		));
+		
+		foreach((array)$app_cols as $app_col)
+		{
+			$this->oem_model->add_app_col(array(
+				"app_SN"=>$app_SN,
+				"form_col_SN"=>$app_col['form_col_SN'],
+				"col_value"=>$app_col['col_value']
+			));
+		}
+		
+		return $app_SN;
 	}
 	public function save($app_SN,$description)
 	{

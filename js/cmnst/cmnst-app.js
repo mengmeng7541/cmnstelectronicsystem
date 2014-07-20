@@ -1,4 +1,4 @@
-var cmnstApp = angular.module('cmnstApp',['ngSanitize']);
+var cmnstApp = angular.module('cmnstApp',['ngSanitize','mgcrea.ngStrap']);
 
 cmnstApp
 .factory("user_profile_service",function($http){
@@ -109,13 +109,14 @@ cmnstApp
 		link: linker
 	}
 })
-.directive('tab',function(){
+.directive('tab',function($timeout){
 	var linker = function(scope,element,attrs){
-
-		element.tab('show');
-//		scope.$watch(attrs.watch, function () {
-//    		jQuery.uniform.update(element);
-//        });
+//		if(scope.$last===true)
+//		{
+			$timeout(function(){
+				element.tab('show');
+			});
+//		}
 	}
 	return {
 		restrict: 'A',
@@ -127,47 +128,109 @@ cmnstApp
 	
 })
 //-----------------------------OEM CONTROLLER------------------------------
-.controller("oem_application_edit",function($scope,$http,user_profile_service){
+	/*----------------APP EDIT----------------*/
+.controller("oem_application_edit",function($scope,$http,user_profile_service,bootstrap_modal_service){
 	//initial
+	$scope.forms = [];
+	$scope.app = {
+		form_idx: 0,
+		app_SN: 0,
+		form_SN: 0,
+		app_ID: 0,
+		app_type: 'normal',
+		app_user_ID: '',
+		app_description: '',
+		app_time: '',
+		app_estimated_hour: '',
+		app_checkpoint: '',
+		app_checkpoints: [],
+		app_cols: []
+	};
+	//WATCH
+	$scope.$watch("app.form_idx",function(new_value,old_value){
+		if(new_value===old_value){
+			
+		}else{
+			//先移除舊的
+			if(old_value>0)
+			{
+				$scope.app.app_cols.splice($scope.forms[0].form_cols.length);
+			}
+			if(new_value>0)
+			{
+				$scope.app.app_cols = $scope.app.app_cols.concat($scope.forms[new_value].form_cols);
+			}
+		}
+	});
+	
 	$scope.get_app = function(SN){
 		$http
 		.get(site_url+'oem/app/query',{params:{app_SN:SN}})
 		.success(function(data){
-			data.aaData[0].guests = [];
 			$scope.app = data.aaData[0];
 		});
 	};
 	$scope.get_form = function(SN){
-		$scope.app = [];
 		user_profile_service.get_my_profile()
 		.success(function(data){
-			$.extend($scope.app,data.aaData[0]);
+			$scope.user = data.aaData[0];
 		});
 		
 		$http
 		.get(site_url+'oem/form/query',{params:{form_SN:SN}})
 		.success(function(data){
-			data.aaData[0].guests = [];
-			$.extend($scope.app,data.aaData[0]);
+			$scope.forms[0] = data.aaData[0];
+			$scope.get_sub_form(SN);
+			
+			$scope.app = {
+				form_idx: 0,
+				app_SN: 0,
+				form_SN: $scope.forms[0].form_SN,
+				app_ID: 0,
+				app_type: 'normal',
+				app_user_ID: '',
+				app_description: '',
+				app_time: '',
+				app_estimated_hour: '',
+				app_checkpoint: '',
+				app_checkpoints: [],
+				app_cols: $scope.forms[0].form_cols
+			};
 		});
 	};
-	
-	$scope.new_guest = function(){
-		$scope.app.guests.push({name:'',mobile:''});
+	$scope.get_sub_form = function(form_SN){
+		$http.get(site_url+'oem/form/query',{params:{form_parent_SN:form_SN}})
+		.success(function(data){
+			for(var key in data.aaData)
+			{
+				$scope.forms.push(data.aaData[key]);	
+			}
+		});
 	}
 	
+	$scope.submit = function()
+	{
+		bootstrap_modal_service.reset_info_modal();
+		console.log($scope.app);
+		$http.post(site_url+'oem/app/add',$scope.app)
+		.success(function(data){
+			console.log(data);
+			bootstrap_modal_service.set_info_modal(data);
+		});
+	}
 })
+	/*----------------FORM EDIT----------------*/
 .controller("oem_form_edit",function($scope,$http,bootstrap_modal_service){
 	//data structure
 	var col_data_structure = {
-		form_col_SN: '',
+		form_col_SN: 0,
 		form_SN: '',
 		col_cht_name: '',
 		col_eng_name: '',
-		col_type: '',
-		col_length: '',
-		col_rule: '',
-		col_enable: ''
+		col_type: 'string',
+		col_length: 256,
+		col_rule: 'required',
+		col_enable: 0
 	};
 	var form_data_structure = {
 		form_facility_SN: [],
@@ -209,8 +272,11 @@ cmnstApp
 	$scope.new_form = function(){
 		$scope.forms.push(angular.copy(form_data_structure));
 	}
-	$scope.new_column = function(form_idx){console.log(form_idx);
+	$scope.new_column = function(form_idx){
 		$scope.forms[form_idx].form_cols.push(angular.copy(col_data_structure));
+	}
+	$scope.del_column = function(form_idx,col_idx){
+		$scope.forms[form_idx].form_cols.splice(col_idx,1);
 	}
 	$scope.submit = function(){
 		bootstrap_modal_service.reset_info_modal();

@@ -87,22 +87,8 @@ class Oem extends MY_Controller {
 			
 			$input_data = $this->input->get(NULL,TRUE);
 			
-			
 			$apps = $this->oem_model->get_app_list($input_data)->result_array();
 			$output['aaData'] = $apps;
-//			foreach($apps as $app)
-//			{
-//				$row = array();
-//				$row[] = $app['app_SN'];
-//				$row[] = "{$app['form_cht_name']} ({$app['form_eng_name']})";
-//				$row[] = $app['user_name'];
-//				$row[] = $app['org_name'];
-//				$row[] = $app['app_SN'];
-//				$display = array();
-//				$display[] = anchor("oem/app/edit/{$app['app_SN']}","審核","class='btn btn-primary'");
-//				$row[] = implode(' ',$display);
-//				$output['aaData'][] = $row;
-//			}
 			echo json_encode($output);
 		}catch(Exception $e){
 			echo json_encode($output);
@@ -125,16 +111,6 @@ class Oem extends MY_Controller {
 				}
 				
 				$this->data = $form;
-				
-				//取得申請人資料
-				$this->load->model('user_model');
-				$user_profile = $this->user_model->get_user_profile_list(array("user_ID"=>$this->session->userdata('ID')))->row_array();
-				$this->data['user_name'] = $user_profile['name'];
-				$this->data['user_email'] = $user_profile['email'];
-				$this->data['user_mobile'] = $user_profile['mobile'];
-				$this->data['user_department'] = $user_profile['department'];
-				$this->data['org_name'] = $user_profile['org_name'];
-				$this->data['boss_name'] = $user_profile['boss_name'];
 				
 				$this->load->view('templates/header');
 				$this->load->view('templates/sidebar');
@@ -179,21 +155,22 @@ class Oem extends MY_Controller {
 		try{
 			$this->is_user_login();
 			
+			$input = file_get_contents('php://input');
+			$app = json_decode($input,TRUE);
+			
+			$_POST = $app;
 			$this->form_validation->set_rules("form_SN","表單編號","required");
-			$this->form_validation->set_rules("app_description","代工需求","required");
 			if(!$this->form_validation->run())
 			{
 				throw new Exception(validation_errors(),WARNING_CODE);
 			}
 			
-			$input_data = $this->input->post(NULL,TRUE);
-			
 			$this->load->model('oem/app_model');
-			$this->app_model->add($input_data['form_SN'],$input_data['app_description']);
+			$this->app_model->add($app['form_SN'],$app['app_description'],$app['app_cols'],$app['app_type']);
 			
-			echo $this->info_modal("申請成功","oem/app/list");
+			echo json_encode($this->get_info_modal_array("申請成功","oem/app/list"));
 		}catch(Exception $e){
-			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+			echo json_encode($this->get_info_modal_array($e->getMessage(),"",$e->getCode()));
 		}
 	}
 	public function update_app()
@@ -297,6 +274,13 @@ class Oem extends MY_Controller {
 				$forms[$key]['form_facility_SN'] = sql_column_to_key_value_array($facilities,"facility_SN");
 			}
 			
+			//取得對應的欄位資訊
+			foreach($forms as $key => $form)
+			{
+				$cols = $this->oem_model->get_form_col_list(array("form_SN"=>$form['form_SN']))->result_array();
+				$forms[$key]['form_cols'] = $cols;
+			}
+			
 			$output['aaData'] = $forms;
 			
 			echo json_encode($output);
@@ -374,6 +358,18 @@ class Oem extends MY_Controller {
 				{
 					throw new Exception(validation_errors(),WARNING_CODE);
 				}
+//				foreach($form['form_cols'] as $col)
+//				{
+//					$_POST = $col;
+//					$this->form_validation->set_rules("col_cht_name","欄位中文名稱","required");
+//					$this->form_validation->set_rules("col_eng_name","欄位英文名稱","required");
+//					$this->form_validation->set_rules("col_rule","欄位規則","required");
+//					$this->form_validation->set_rules("col_enable","欄位是否啟用","required");
+//					if(!$this->form_validation->run())
+//					{
+//						throw new Exception(validation_errors(),WARNING_CODE);
+//					}
+//				}
 			}
 			$this->load->model('oem/form_model');
 			$this->form_model->add($forms);
@@ -394,7 +390,6 @@ class Oem extends MY_Controller {
 			foreach($forms as $form)
 			{
 				$_POST = $form;//HACK for CI form_validation
-//				$this->form_validation->set_rules("form_SN","表單編號","required");
 				$this->form_validation->set_rules("form_cht_name","代工單中文名稱","required");
 				$this->form_validation->set_rules("form_eng_name","代工單英文名稱","required");
 				$this->form_validation->set_rules("form_facility_SN[]","代工單對應儀器","required");
@@ -406,6 +401,18 @@ class Oem extends MY_Controller {
 				{
 					throw new Exception(validation_errors(),WARNING_CODE);
 				}
+//				foreach($form['form_cols'] as $col)
+//				{
+//					$_POST = $col;
+//					$this->form_validation->set_rules("col_cht_name","欄位中文名稱","required");
+//					$this->form_validation->set_rules("col_eng_name","欄位英文名稱","required");
+//					$this->form_validation->set_rules("col_rule","欄位規則","required");
+//					$this->form_validation->set_rules("col_enable","欄位是否啟用","required");
+//					if(!$this->form_validation->run())
+//					{
+//						throw new Exception(validation_errors(),WARNING_CODE);
+//					}
+//				}
 			}
 			$this->load->model('oem/form_model');
 			$this->form_model->update($forms);

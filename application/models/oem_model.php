@@ -92,6 +92,85 @@ class Oem_model extends MY_Model {
 		$this->oem_db->where("form_SN",$data['form_SN']);
 		$this->oem_db->delete("oem_form");
 	}
+	//-------------------FORM COLUMN-----------------------------------
+	public function get_form_col_list($options = array())
+	{
+		if(isset($options['form_SN']))
+		{
+			$this->oem_db->where("form_SN",$options['form_SN']);
+		}
+		if(isset($options['form_col_SN']))
+		{
+			$this->oem_db->where("form_col_SN",$options['form_col_SN']);
+		}
+		if(isset($options['col_enable']))
+		{
+			$this->oem_db->where("col_enable",$options['col_enable']);
+		}
+		return $this->oem_db->get("oem_form_col");
+	}
+	public function add_form_col($data)
+	{
+		$this->oem_db->set("form_SN",$data['form_SN']);
+		$this->oem_db->set("col_cht_name",$data['col_cht_name']);
+		$this->oem_db->set("col_eng_name",$data['col_eng_name']);
+		$this->oem_db->set("col_type",$data['col_type']);
+		$this->oem_db->set("col_length",$data['col_length']);
+		$this->oem_db->set("col_rule",$data['col_rule']);
+		$this->oem_db->set("col_enable",$data['col_enable']);
+		$this->oem_db->insert("oem_form_col");
+		return $this->oem_db->insert_id();
+	}
+	public function update_form_col($data)
+	{
+		$this->oem_db->set("form_SN",$data['form_SN']);
+		$this->oem_db->set("col_cht_name",$data['col_cht_name']);
+		$this->oem_db->set("col_eng_name",$data['col_eng_name']);
+		$this->oem_db->set("col_type",$data['col_type']);
+		$this->oem_db->set("col_length",$data['col_length']);
+		$this->oem_db->set("col_rule",$data['col_rule']);
+		$this->oem_db->set("col_enable",$data['col_enable']);
+		$this->oem_db->where("form_col_SN",$data['form_col_SN']);
+		$this->oem_db->update("oem_form_col");
+		return ;
+	}
+	public function del_form_col()
+	{
+		
+	}
+	//---------------------APP COLUMN-----------------------------
+	public function get_app_col_list($options = array())
+	{
+		if(isset($options['app_SN']))
+		{
+			$this->oem_db->where("app_SN",$options['app_SN']);
+		}
+		if(isset($options['app_col_SN']))
+		{
+			$this->oem_db->where("app_col_SN",$options['app_col_SN']);
+		}
+		return $this->oem_db->get("oem_application_col");
+	}
+	public function add_app_col($data)
+	{
+		$this->oem_db->set("app_SN",$data['app_SN']);
+		$this->oem_db->set("form_col_SN",$data['form_col_SN']);
+		$this->oem_db->set("col_value",$data['col_value']);
+		$this->oem_db->insert("oem_application_col");
+		return $this->oem_db->insert_id();
+	}
+	public function update_app_col($data)
+	{
+		$this->oem_db->set("app_SN",$data['app_SN']);
+		$this->oem_db->set("form_col_SN",$data['form_col_SN']);
+		$this->oem_db->set("col_value",$data['col_value']);
+		$this->oem_db->where("app_col_SN",$data['app_col_SN']);
+		$this->oem_db->update("oem_application_col");
+	}
+	public function del_app_col()
+	{
+		
+	}
 	//--------------------FORM FACILITY MAP-----------------------
 	public function get_form_facility_map_list($options = array())
 	{

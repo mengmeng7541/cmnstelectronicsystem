@@ -33,6 +33,12 @@ class Form_model extends Oem_Model {
 					"form_SN"=>$form_SN
 				));
 			}
+			
+			foreach((array)$data['form_cols'] as $col)
+			{
+				$col['form_SN'] = $form_SN;
+				$this->oem_model->add_form_col($col);
+			}
 		}
 		return $form_parent_SN;
 	}
@@ -55,10 +61,9 @@ class Form_model extends Oem_Model {
 			$form = $this->oem_model->get_form_list(array("form_SN"=>isset($data['form_SN'])?$data['form_SN']:""))->row_array();
 			if(!$form)
 			{
-				var_dump(array("form_SN"=>isset($data['form_SN'])?$data['form_SN']:""));return;
 				//代表新增的，非修改
 				$data['form_parent_SN'] = $inputs[0]['form_SN'];
-				$this->oem_model->add_form($data);
+				$form_SN = $this->oem_model->add_form($data);
 				
 				foreach((array)$data['form_facility_SN'] as $facility_SN)
 				{
@@ -66,6 +71,12 @@ class Form_model extends Oem_Model {
 						"facility_SN"=>$facility_SN,
 						"form_SN"=>$form_SN
 					));
+				}
+				
+				foreach((array)$data['form_cols'] as $col)
+				{
+					$col['form_SN'] = $form_SN;
+					$this->oem_model->add_form_col($col);
 				}
 			}else{
 				//確認權限
@@ -76,16 +87,28 @@ class Form_model extends Oem_Model {
 				
 				$this->oem_model->update_form($data);
 			
-				$this->oem_model->del_form_facility_map(array("form_SN"=>$data['form_SN']));
+				$this->oem_model->del_form_facility_map(array("form_SN"=>$form['form_SN']));
 				foreach((array)$data['form_facility_SN'] as $facility_SN)
 				{
 					$this->oem_model->add_form_facility_map(array(
 						"facility_SN"=>$facility_SN,
-						"form_SN"=>$data['form_SN']
+						"form_SN"=>$form['form_SN']
 					));
 				}
+				
+				foreach((array)$data['form_cols'] as $col)
+				{
+					if(empty($col['form_col_SN']))
+					{
+						//新增的欄位
+						$col['form_SN'] = $form['form_SN'];
+						$this->oem_model->add_form_col($col);
+					}else{
+						//變更的欄位
+						$this->oem_model->update_form_col($col);
+					}
+				}
 			}
-			
 		}
 	}
 	public function del($data)

@@ -30,9 +30,10 @@
      <div class="accordion-heading">
      	
      	
-        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#collapse_{{form_idx}}">
+        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" ng-href="#collapse_{{form_idx}}">
         <i class=" icon-plus"></i>
         {{form.form_cht_name + ' (' + form.form_eng_name + ')'}} 
+        
         </a>
         
      </div>
@@ -71,7 +72,6 @@
 	            	<!--<select chosen watch="facilities" ng-model="form.form_facility_SN" ng-options="facility.facility_SN as (facility.facility_cht_name + ' (' + facility.facility_eng_name + ')') for facility in facilities" class="span12" multiple="multiple">
 	            	</select>-->
 	            	<?=form_multiselect("form_facility_SN[]",isset($facility_SN_select_options)?$facility_SN_select_options:array(),"","ng-model='form.form_facility_SN' chosen class='span12'")?>
-	            	{{form.form_facility_SN}}
 				</div>
 			</div>
 			<div class="control-group">
@@ -99,29 +99,49 @@
 						</div>
 					</div>-->
 <!--BEGIN TABS-->
-<div class="tabbable tabbable-custom">
-	<ul class="nav nav-tabs">
-	   <li ng-repeat="(col_idx,col) in form.form_cols" class=""><a tab href="#tab_1_{{col_idx}}">Section 1</a></li>
-	</ul>
-	<div class="tab-content">
-	   <div ng-repeat="(col_idx,col) in form.form_cols" class="tab-pane active" id="tab_1_{{col_idx}}">
-			<div class="row-fluid">
-				<div class="control-group span6">
-					<label class="control-label">中文名稱</label>
-					<div class="controls">
-						<input type="text" ng-model="col.col_cht_name" class="input-medium"/>
+<div class="tabbable tabbable-custom" >
+		<ul class="nav nav-tabs">
+		   <li class="" ng-repeat="(col_idx,col) in form.form_cols"><a tab data-toggle="tab" ng-href="#tab_{{form_idx}}_{{col_idx}}">{{col.col_cht_name}} <i class="icon-remove" ng-click="del_column(form_idx,col_idx)" ng-show="!col.form_col_SN"></i></a></li>
+		</ul>
+		<div class="tab-content">
+		   <div ng-repeat="(col_idx,col) in form.form_cols" class="tab-pane active" id="tab_{{form_idx}}_{{col_idx}}">
+				<div class="row-fluid">
+					<div class="control-group span6">
+						<label class="control-label">中文名稱</label>
+						<div class="controls">
+							<input type="text" ng-model="col.col_cht_name" class="input-medium"/>
+						</div>
+					</div>
+					<div class="control-group span6">
+						<label class="control-label">英文名稱</label>
+						<div class="controls">
+							<input type="text" ng-model="col.col_eng_name" class="input-medium"/>
+						</div>
 					</div>
 				</div>
-				<div class="control-group span6">
-					<label class="control-label">英文名稱</label>
-					<div class="controls">
-						<input type="text" ng-model="col.col_eng_name" class="input-medium"/>
+				<div class="row-fluid">
+					<div class="control-group span6">
+						<label class="control-label">規則</label>
+						<div class="controls">
+							<select ng-model="col.col_rule" class="input-small">
+								<option value="optional">選填</option>
+								<option value="required">必填</option>
+							</select>
+						</div>
+					</div>
+					<div class="control-group span6">
+						<label class="control-label">是否啟用</label>
+						<div class="controls">
+							<label class="radio"><input uniform type="radio" name="form_col_enable[{{form_idx}}]" ng-model="col.col_enable" value="1"/>開放</label>
+		            		<label class="radio"><input uniform type="radio" name="form_col_enable[{{form_idx}}]" ng-model="col.col_enable" value="0"/>關閉</label>
+						</div>
 					</div>
 				</div>
-			</div>
-	   </div>
-	</div>
+		   </div>
+		</div>
 </div>
+<!--<div bs-tabs="form.form_cols">
+</div>-->
 <!--END TABS-->
 				</div>
 			</div>
