@@ -149,13 +149,7 @@ class User extends MY_Controller {
 			foreach($user_profiles as $user_profile)
 			{
 				$row = array();
-				$row['user_ID'] = $user_profile['ID'];
-				$row['user_name'] = $user_profile['name'];
-				$row['user_mobile'] = $user_profile['mobile'];
-				$row['user_email'] = $user_profile['email'];
-				$row['user_boss_name'] = $user_profile['boss_name'];
-				$row['user_org_name'] = $user_profile['org_name'];
-				$row['user_department'] = $user_profile['department'];
+				$row = $user_profile;
 				$output['aaData'][] = $row;
 			}
 			

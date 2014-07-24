@@ -7,15 +7,16 @@ class User_privilege_model extends MY_Model {
     $this->load->model("facility_model");
     $this->load->model("user_model");
   }
-  public function get_available_users($facility_ID,$privilege)
-  {
-	$user_privileges = $this->facility_model->get_user_privilege_list(array("facility_ID"=>$facility_ID,"privilege"=>$privilege))->result_array();
-	foreach($user_privileges as $up)
-	{
-		$select_options[$up['user_ID']] = $up['user_name'];
-	}
-	return $select_options;
-  }
+//  public function get_available_user_profiles($facility_ID,$privilege)
+//  {
+//	$user_privileges = $this->facility_model->get_user_privilege_list(array("facility_ID"=>$facility_ID,"privilege"=>$privilege))->result_array();
+//	return $user_privileges;
+//	foreach($user_privileges as $up)
+//	{
+//		$select_options[$up['user_ID']] = $up['user_name'];
+//	}
+//	return $select_options;
+//  }
   /**
   * 新增使用者儀器使用權限，自動判定該儀器的延長權限，不用設定到期日
   * @param undefined $facilities_ID

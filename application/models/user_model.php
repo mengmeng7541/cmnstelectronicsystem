@@ -67,10 +67,27 @@ class User_model extends MY_Model {
   	$sTable = "user_profile";
   	$sJoinTable = array("org"=>"organization","boss"=>"boss_profile");
   	$this->common_db->select("
-  		{$sTable}.*,
+  		{$sTable}.serial_no AS serial_no,
+  		{$sTable}.ID AS ID,
+  		{$sTable}.name AS name,
+  		{$sTable}.tel AS tel,
+  		{$sTable}.mobile AS mobile,
+  		{$sTable}.address AS address,
+  		{$sTable}.email AS email,
+  		{$sTable}.sex AS sex,
+  		{$sTable}.status AS status,
+  		{$sTable}.boss_no AS boss_no,
+  		{$sTable}.organization AS organization,
+  		{$sTable}.department AS department,
+  		{$sTable}.card_num AS card_num,
+  		{$sTable}.group AS `group`,
+  		{$sTable}.security_verified AS security_verified,
+  		{$sTable}.is_deny AS is_deny,
+  		{$sTable}.last_update_time AS last_update_time,
+  		{$sTable}.enable_date AS enable_date,
 		{$sJoinTable['org']}.name AS org_name,
 		{$sJoinTable['boss']}.name AS boss_name,
-		{$sJoinTable['boss']}.email AS boss_email,
+		{$sJoinTable['boss']}.email AS boss_email
 	")
   					->from($sTable)
   					->join($sJoinTable['org'],"{$sJoinTable['org']}.serial_no = {$sTable}.organization","LEFT")

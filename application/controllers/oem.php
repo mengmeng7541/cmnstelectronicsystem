@@ -81,14 +81,87 @@ class Oem extends MY_Controller {
 	public function query_app()
 	{
 		try{
-			$this->is_user_login();
 			
 			$output['aaData'] = array();
 			
 			$input_data = $this->input->get(NULL,TRUE);
 			
+			if(isset($input_data['app_token']))
+			{
+				$this->query_app_no_login();
+				return;
+			}
+			
+			$this->is_user_login();
+			
+			if(!$this->is_admin_login(FALSE)){
+				//只能看自己的
+				$input_data['app_user_ID'] = $this->session->userdata('ID');
+			}
+			
 			$apps = $this->oem_model->get_app_list($input_data)->result_array();
+			
+			
+			//get column
+			foreach($apps as $key => $app){
+				$cols = $this->oem_model->get_app_col_list(array("app_SN"=>$app['app_SN']))->result_array();
+				$apps[$key]['app_cols'] = $cols;
+			}
+			
+			//get checkpoint
+			foreach($apps as $key => $app){
+				$checkpoints = $this->oem_model->get_app_checkpoint_list(array("app_SN"=>$app['app_SN']))->result_array();
+				$apps[$key]['app_checkpoints'] = $checkpoints;
+			}
+			
 			$output['aaData'] = $apps;
+			echo json_encode($output);
+		}catch(Exception $e){
+			echo json_encode($output);
+		}
+	}
+	public function query_app_no_login()
+	{
+		try{
+			$output['aaData'] = array();
+			
+			$input_data = $this->input->get(NULL,TRUE);
+			
+			if(!isset($input_data['app_SN']))
+			{
+				return;
+			}
+			if(!isset($input_data['app_token']))
+			{
+				return;
+			}
+			
+			$app = $this->oem_model->get_app_list($input_data)->row_array();
+			if(!$app)
+			{
+				return;
+			}
+			if($app['app_token']!=$input_data['app_token'])
+			{
+				return;
+			}
+			$this->load->model('oem/form_model');
+			$forms = $this->form_model->get_vertical_group_forms($app['form_SN']);
+			$this->load->model('user_model');
+			$user = $this->user_model->get_user_profile_list(array("user_ID"=>$app['app_user_ID']))->row_array();
+			//get column
+			$cols = $this->oem_model->get_app_col_list(array("app_SN"=>$app['app_SN']))->result_array();
+			$app['app_cols'] = $cols;
+			
+			//get checkpoint
+			$checkpoints = $this->oem_model->get_app_checkpoint_list(array("app_SN"=>$app['app_SN']))->result_array();
+			$app['app_checkpoints'] = $checkpoints;
+			
+			$output['aaData'] = array(
+				"app"=>$app,
+				"forms"=>$forms,
+				"user"=>$user
+			);
 			echo json_encode($output);
 		}catch(Exception $e){
 			echo json_encode($output);
@@ -132,20 +205,42 @@ class Oem extends MY_Controller {
 	public function edit_app($SN = "")
 	{
 		try{
-			$this->is_user_login();
-			
 			$SN = $this->security->xss_clean($SN);
 			
 			$app = $this->oem_model->get_app_list(array("app_SN"=>$SN))->row_array();
-			if(!$app){
+			if(!$app)
+			{
 				throw new Exception();
 			}
+			if(!$this->is_user_login(FALSE))
+			{
+				$token = $this->input->get("app_token",TRUE);
+				if($app['app_token']!=$token)
+				{
+					throw new Exception();
+				}
+			}else{
+				unset($app['app_token']);
+			}
 			$this->data = $app;
+			
+			//取得儀器列表
+			$this->load->model('facility_model');
+			$this->data['facility_SN_select_options'] = $this->facility_model->get_facility_select_options();
 			
 			$this->load->view('templates/header');
 			$this->load->view('templates/sidebar');
 			$this->load->view('oem/new_app',$this->data);
 			$this->load->view('templates/footer');
+		}catch(Exception $e){
+			$this->show_error_page();
+		}
+	}
+	public function view_app($SN = "")
+	{
+		try{
+			$this->is_user_login();
+			
 		}catch(Exception $e){
 			$this->show_error_page();
 		}
@@ -156,9 +251,14 @@ class Oem extends MY_Controller {
 			$this->is_user_login();
 			
 			$input = file_get_contents('php://input');
-			$app = json_decode($input,TRUE);
+			$input = json_decode($input,TRUE);
 			
-			$_POST = $app;
+			if(!isset($input['action']))
+			{
+				throw new Exception("未知的動作",ERROR_CODE);
+			}
+			
+			$_POST = $input['data'];
 			$this->form_validation->set_rules("form_SN","表單編號","required");
 			if(!$this->form_validation->run())
 			{
@@ -166,9 +266,15 @@ class Oem extends MY_Controller {
 			}
 			
 			$this->load->model('oem/app_model');
-			$this->app_model->add($app['form_SN'],$app['app_description'],$app['app_cols'],$app['app_type']);
-			
-			echo json_encode($this->get_info_modal_array("申請成功","oem/app/list"));
+			$app_SN = $this->app_model->add($input['data']['form_SN'],$input['data']['app_description'],$input['data']['app_cols'],$input['data']['app_type']);
+			if($input['action']=="submit")
+			{
+				$this->oem_model->update_app(array("app_checkpoint"=>"facility_admin_init","app_SN"=>$app_SN));
+				$this->app_model->send_email($app_SN);
+				echo json_encode($this->get_info_modal_array("申請成功","oem/app/list"));
+			}else{
+				echo json_encode($this->get_info_modal_array("儲存成功","oem/app/list"));
+			}
 		}catch(Exception $e){
 			echo json_encode($this->get_info_modal_array($e->getMessage(),"",$e->getCode()));
 		}
@@ -176,53 +282,63 @@ class Oem extends MY_Controller {
 	public function update_app()
 	{
 		try{
-			$this->is_user_login();
 			
-			$input_data = $this->input->post(NULL,TRUE);
+			$input = file_get_contents('php://input');
+			$input = json_decode($input,TRUE);
 			
+			if(!isset($input['action']))
+			{
+				throw new Exception("未知的動作",ERROR_CODE);
+			}
+			$_POST = $input['data'];
 			$this->form_validation->set_rules("app_SN","代工單號","required");
-			$this->form_validation->set_rules("action_btn","動作","required");
 			if(!$this->form_validation->run())
 			{
 				throw new Exception(validation_errors(),ERROR_CODE);
 			}
-			$app = $this->oem_model->get_app_list(array("app_SN"))->row_array();
+			$app = $this->oem_model->get_app_list(array("app_SN"=>$input['data']['app_SN']))->row_array();
 			if(!$app)
 			{
 				throw new Exception("無此代工單",ERROR_CODE);
 			}
 			
 			$this->load->model('oem/app_model');
-			switch($app['app_checkpoint'])
+			switch($input['action'])
 			{
-				case 'user_init':
-					if($input_data['action_btn']=='save')
+				case 'accept':
+				case 'reject':
+					if(!isset($input['data']['app_checkpoints']) && !is_array($input['data']['app_checkpoints']))
 					{
-						$this->app_model->save($app['app_SN'],$input_data['app_description']);
-					}else if($input_data['action_btn']=='submit'){
-						$this->app_model->submit($app['app_SN'],$input_data['app_description']);
+						throw new Exception("未知的錯誤",ERROR_CODE);
+					}
+					$app_checkpoint = end($input['data']['app_checkpoints']);
+					if(!$app_checkpoint || !isset($app_checkpoint['checkpoint_comment']))
+					{
+						throw new Exception("未知的錯誤",ERROR_CODE);
+					}
+					if($app['app_checkpoint']=="user_boss")
+					{
+						//special case
+						if($app['app_token']!=$input['data']['app_token'])
+						{
+							throw new Exception("權限不足",ERROR_CODE);
+						}
+						$this->app_model->confirm($input['data']['app_SN'],NULL,$app_checkpoint['checkpoint_comment'],$input['action']);
+					}else{
+						$this->is_user_login();
+						$this->app_model->confirm($input['data']['app_SN'],$this->session->userdata('ID'),$app_checkpoint['checkpoint_comment'],$input['action'],$input['data']['app_estimated_hour']);
 					}
 					break;
-				case 'facility_admin_init':
-				case 'common_lab_section_chief':
-				case 'user_boss':
-					$this->app_model->confirm($app['app_SN'],$this->session->userdata('ID'),$input_data['checkpoint_comment'],$input_data['action_btn']);
-					break;
-				case 'common_lab_deputy_section_chief':
-					break;
-				case 'facility_admin_final':
-					break;
-				case 'user_final':
-					break;
-				case 'completed':
+				case 'submit':
 					break;
 				default:
-					throw new Exception("未知的狀態",ERROR_CODE);
+					throw new Exception("未知的動作",ERROR_CODE);
 			}
 			
-			echo $this->info_modal("審核成功","oem/app/list");
+			
+			echo json_encode($this->get_info_modal_array("審核成功","oem/app/list"));
 		}catch(Exception $e){
-			echo $this->info_modal($e->getMessage(),"",$e->getCode());
+			echo json_encode($this->get_info_modal_array($e->getMessage(),"",$e->getCode()));
 		}
 	}
 	public function del_app()
@@ -272,6 +388,17 @@ class Oem extends MY_Controller {
 			{
 				$facilities = $this->oem_model->get_form_facility_map_list(array("form_SN"=>$form['form_SN']))->result_array();
 				$forms[$key]['form_facility_SN'] = sql_column_to_key_value_array($facilities,"facility_SN");
+				
+				$forms[$key]['form_facilities'] = $facilities;
+				$this->load->model('facility_model');
+				foreach($facilities as $idx => $facility)
+				{
+					$user_privileges = $this->facility_model->get_user_privilege_list(array(
+						"facility_ID"=>$facility['facility_SN'],
+						"privilege"=>array('super','admin')
+					))->result_array();
+					$forms[$key]['form_facilities'][$idx]['engineers'] = $user_privileges;
+				}
 			}
 			
 			//取得對應的欄位資訊
@@ -280,6 +407,18 @@ class Oem extends MY_Controller {
 				$cols = $this->oem_model->get_form_col_list(array("form_SN"=>$form['form_SN']))->result_array();
 				$forms[$key]['form_cols'] = $cols;
 			}
+			
+			//取得對應的工程師
+//			$this->load->model('facility_model');
+//			foreach($forms as $key=>$form)
+//			{
+//				$user_privileges = $this->facility_model->get_user_privilege_list(array(
+//					"facility_ID"=>$form['form_facility_SN'],
+//					"privilege"=>array("admin","super")
+//				))->result_array();
+//				$forms[$key]['facility_super_user_SN'] = sql_column_to_key_value_array($user_privileges,"user_ID");	
+//			}
+			
 			
 			$output['aaData'] = $forms;
 			

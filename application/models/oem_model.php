@@ -141,6 +141,9 @@ class Oem_model extends MY_Model {
 	//---------------------APP COLUMN-----------------------------
 	public function get_app_col_list($options = array())
 	{
+		$sTable = "oem_application_col";
+		$sJoinTable = array("form_col"=>"oem_form_col");
+		$this->oem_db->join($sJoinTable['form_col'],"{$sJoinTable['form_col']}.form_col_SN = $sTable.form_col_SN","LEFT");
 		if(isset($options['app_SN']))
 		{
 			$this->oem_db->where("app_SN",$options['app_SN']);
@@ -149,7 +152,7 @@ class Oem_model extends MY_Model {
 		{
 			$this->oem_db->where("app_col_SN",$options['app_col_SN']);
 		}
-		return $this->oem_db->get("oem_application_col");
+		return $this->oem_db->get($sTable);
 	}
 	public function add_app_col($data)
 	{
@@ -175,20 +178,26 @@ class Oem_model extends MY_Model {
 	public function get_form_facility_map_list($options = array())
 	{
 		$sTable = "oem_form_facility_map";
-		$sJoinTable = array();
+		$sJoinTable = array(
+			"facility"=>"cmnst_facility.facility_list"
+		);
 		
 		$this->oem_db->select("
-			$sTable.*
+			$sTable.*,
+			{$sJoinTable['facility']}.cht_name AS facility_cht_name,
+			{$sJoinTable['facility']}.eng_name AS facility_eng_name
 		");
+		$this->oem_db->from($sTable);
+		$this->oem_db->join($sJoinTable['facility'],"{$sJoinTable['facility']}.ID = $sTable.facility_SN");
 		if(isset($options['form_SN']))
 		{
-			$this->oem_db->where("form_SN",$options['form_SN']);
+			$this->oem_db->where("$sTable.form_SN",$options['form_SN']);
 		}
 		if(isset($options['facility_SN']))
 		{
-			$this->oem_db->where("facility_SN",$options['facility_SN']);
+			$this->oem_db->where("$sTable.facility_SN",$options['facility_SN']);
 		}
-		return $this->oem_db->get($sTable);
+		return $this->oem_db->get();
 	}
 	public function add_form_facility_map($data)
 	{
@@ -234,6 +243,14 @@ class Oem_model extends MY_Model {
 		{
 			$this->oem_db->where("$sTable.app_SN",$options['app_SN']);
 		}
+		if(isset($options['app_token']))
+		{
+			$this->oem_db->where("$sTable.app_token",$options['app_token']);
+		}
+		if(isset($options['app_user_ID']))
+		{
+			$this->oem_db->where("$sTable.app_user_ID",$options['app_user_ID']);
+		}
 		
 		return $this->oem_db->get($sTable);
 	}
@@ -245,7 +262,8 @@ class Oem_model extends MY_Model {
 		$this->oem_db->set("app_user_ID",isset($data['app_user_ID'])?$data['app_user_ID']:$this->session->userdata('ID'));
 		$this->oem_db->set("app_description",$data['app_description']);
 		$this->oem_db->set("app_time",date("Y-m-d H:i:s"));
-		$this->oem_db->set("app_checkpoint",'facility_admin_init');
+		$this->oem_db->set("app_checkpoint",$data['app_checkpoint']);
+		$this->oem_db->set("app_token",sha1(rand()));
 		$this->oem_db->insert("oem_application");
 		return $this->oem_db->insert_id();
 	}
@@ -259,7 +277,11 @@ class Oem_model extends MY_Model {
 		{
 			$this->oem_db->set("app_description",$data['app_description']);
 		}
-		if(isset($data['add_checkpoint']))
+		if(isset($data['app_estimated_hour']))
+		{
+			$this->oem_db->set("app_estimated_hour",$data['app_estimated_hour']);
+		}
+		if(isset($data['app_checkpoint']))
 		{
 			$this->oem_db->set("app_checkpoint",$data['app_checkpoint']);
 		}
@@ -274,12 +296,14 @@ class Oem_model extends MY_Model {
 	public function get_app_checkpoint_list($options = array())
 	{
 		$sTable = "oem_application_checkpoint";
-		$sJoinTable = array("app"=>"oem_application");
+		$sJoinTable = array("app"=>"oem_application","admin"=>"cmnst_common.admin_profile");
 		
 		$this->oem_db->select("
-			$sTable.*
+			$sTable.*,
+			{$sJoinTable['admin']}.stamp
 		");
-		$this->oem_db->join($sJoinTable['app'],"{$sJoinTable['app']}.app_SN = $sTable.app_SN","LEFT");
+		$this->oem_db->join($sJoinTable['admin'],"{$sJoinTable['admin']}.ID = $sTable.checkpoint_admin_ID","LEFT");
+//		$this->oem_db->join($sJoinTable['app'],"{$sJoinTable['app']}.app_SN = $sTable.app_SN","LEFT");
 		
 		if(isset($options['app_SN']))
 		{

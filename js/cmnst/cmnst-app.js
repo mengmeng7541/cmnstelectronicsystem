@@ -1,11 +1,82 @@
 var cmnstApp = angular.module('cmnstApp',['ngSanitize','mgcrea.ngStrap']);
 
 cmnstApp
-.factory("user_profile_service",function($http){
+.factory("user_service",function($http){
+	var get_profiles = function(user_ID){
+		user_ID = user_ID || '';
+		return $http.get(site_url+'user/query',{params:{user_ID:user_ID}});
+	}
 	return {
-		get_my_profile: function(){
-			return $http.get(site_url+'user/query',{params:{user_ID:''}});
-		}
+		get_profiles: get_profiles
+	}
+})
+.factory("facility_service",function($http){
+	var get_facilities = function(facility_SN)
+	{
+		return $http.get(site_url+'facility/facility/query',{params:{facility_SN:facility_SN}});
+	}
+	return {
+		get_facilities : get_facilities
+	}
+})
+.factory("oem_service",function($http,$q){
+	var get_form = function(SN){
+//		var deferred = $q.defer();
+		
+		return $http.get(site_url+'oem/form/query',{params:{form_SN:SN}})
+//		.success(function(data){
+//			deferred.resolve(data);
+//		});
+		
+//		return deferred.promise;
+	}
+	var get_sub_form = function(SN){
+//		var deferred = $q.defer();
+		return $http.get(site_url+'oem/form/query',{params:{form_parent_SN:SN}})
+//		.success(function(data){
+//			deferred.resolve(data);
+//		});
+//		
+//		return deferred.promise;
+	}
+	var get_forms = function(SN){
+		var deferred = $q.defer();
+		var forms = [];
+		get_form(SN)
+		.success(function(data){
+			forms[0] = data.aaData[0];
+			if(forms[0].form_parent_SN)
+			{
+				get_form(forms[0].form_parent_SN)
+				.success(function(data2){
+					forms[0] = data2.aaData[0];
+					get_sub_form(forms[0].form_SN)
+					.success(function(data){
+						for(var key in data.aaData)
+						{
+							forms.push(data.aaData[key]);	
+						}
+						deferred.resolve(forms);
+					});
+				})
+			}else{
+				get_sub_form(forms[0].form_SN)
+				.success(function(data){
+					for(var key in data.aaData)
+					{
+						forms.push(data.aaData[key]);	
+					}
+					deferred.resolve(forms);
+				});
+			}
+		});
+		return deferred.promise;
+	}
+	return {
+		//---------------get------------------
+		get_form: get_form,
+		get_sub_form: get_sub_form,
+		get_forms: get_forms
 	}
 })
 .factory("bootstrap_modal_service",function($rootScope){
@@ -62,6 +133,9 @@ cmnstApp
 .directive('chosen',function(){
 	var linker = function(scope,element,attrs){
 		scope.$watch(attrs.watch, function () {
+            element.trigger('chosen:updated');
+        });
+		scope.$watch(attrs.ngModel, function () {
             element.trigger('chosen:updated');
         });
 		element.chosen();
@@ -129,11 +203,26 @@ cmnstApp
 })
 //-----------------------------OEM CONTROLLER------------------------------
 	/*----------------APP EDIT----------------*/
-.controller("oem_application_edit",function($scope,$http,user_profile_service,bootstrap_modal_service){
-	//initial
+.controller("oem_application_edit",function($scope,$http,user_service,oem_service,bootstrap_modal_service){
+	//initial variable
+	var app_col = {
+		app_col_SN: 0,
+		app_SN: 0,
+		form_col_SN: 0,
+		form_SN: 0,
+		col_value: '',
+	};
+	$scope.app_checkpoint = {
+		checkpoint_SN: 0,
+		app_SN: 0,
+		checkpoint_ID: 0,
+		checkpoint_admin_ID: '',
+		checkpoint_comment: '',
+		checkpoint_timestamp: '',
+	}
+//	$scope.form_idx = 0;
 	$scope.forms = [];
 	$scope.app = {
-		form_idx: 0,
 		app_SN: 0,
 		form_SN: 0,
 		app_ID: 0,
@@ -146,75 +235,170 @@ cmnstApp
 		app_checkpoints: [],
 		app_cols: []
 	};
-	//WATCH
-	$scope.$watch("app.form_idx",function(new_value,old_value){
+	$scope.booking = {
+		booking_user_SN: 0,
+		booking_facility_SN: []	
+	};
+	//---------common function-------------------
+	var get_form_cols = function(form_idx){
+		var cols = [];
+		for(var key in $scope.forms[form_idx].form_cols)
+		{
+			if($scope.forms[form_idx].form_cols[key].col_enable==1)
+			{
+				var tmp = angular.copy(app_col);
+				$.extend(tmp,$scope.forms[form_idx].form_cols[key]);
+				cols.push(tmp);
+			}
+		}
+		return cols;
+	}
+	//-------------------WATCH--------------------
+	$scope.$watch("form_idx",function(new_value,old_value){
 		if(new_value===old_value){
-			
-		}else{
+			return;
+		}
+		if(old_value!==undefined){
 			//先移除舊的
 			if(old_value>0)
 			{
-				$scope.app.app_cols.splice($scope.forms[0].form_cols.length);
+				$scope.app.app_cols = $scope.app.app_cols.filter(function(app_col){
+					return app_col.form_SN == $scope.forms[0].form_SN;
+				});
 			}
 			if(new_value>0)
 			{
-				$scope.app.app_cols = $scope.app.app_cols.concat($scope.forms[new_value].form_cols);
+				$scope.app.app_cols = $scope.app.app_cols.concat(get_form_cols(new_value));
 			}
+			$scope.app.form_SN = $scope.forms[new_value].form_SN;
 		}
+		$scope.available_facilities = (new_value>0)?$scope.forms[0].form_facilities.concat($scope.forms[new_value].form_facilities):$scope.forms[0].form_facilities;
+		$scope.available_facilities = $scope.available_facilities.filter(function(ele,idx,arr){
+			for(var idx2 in arr){
+				if(arr[idx2].facility_SN == ele.facility_SN){
+					return idx2 == idx;
+				}
+			}
+		});
+	});
+	$scope.$watch("booking.booking_facility_SN",function(new_value,old_value){
+		if(new_value===old_value){
+			return;
+		}
+		$scope.available_users = [];
+		$scope.available_facilities.filter(function(ele){
+			return $scope.booking.booking_facility_SN.indexOf(ele.facility_SN)!==-1; 
+		}).forEach(function(ele,idx){
+			$scope.available_users = $scope.available_users.concat(ele.engineers);
+		});
+		$scope.available_users = $scope.available_users.filter(function(ele,idx,arr){
+			for(var idx2 in arr){
+				if(arr[idx2].user_ID == ele.user_ID){
+					return idx2 == idx;
+				}
+			}
+		});
 	});
 	
-	$scope.get_app = function(SN){
-		$http
-		.get(site_url+'oem/app/query',{params:{app_SN:SN}})
-		.success(function(data){
-			$scope.app = data.aaData[0];
-		});
+	//initial function
+	$scope.init_app = function(SN,token){
+		token = token || '';
+		
+		if(token)
+		{
+			$http.get(site_url+'oem/app/query',{params:{app_SN:SN,app_token:token}})
+			.success(function(data){
+				$.extend($scope,data.aaData);
+				
+				for(var idx in data.aaData.forms){
+					if(data.aaData.forms[idx].form_SN == data.aaData.app.form_SN)
+					{
+						$scope.form_idx = idx;
+					}
+				}
+			});
+		}else{
+			//initial
+			$http.get(site_url+'oem/app/query',{params:{app_SN:SN}})
+			.success(function(data){
+				$scope.app = data.aaData[0];
+				oem_service.get_forms(data.aaData[0].form_SN)
+				.then(function(data2){
+					$scope.forms = data2;
+					for(var idx in data2){
+						if(data2[idx].form_SN == data.aaData[0].form_SN)
+						{
+							$scope.form_idx = idx;
+						}
+					}
+				});
+				
+			});
+			
+			user_service.get_profiles($scope.app.app_user_ID)
+			.success(function(data){
+				$scope.user = data.aaData[0];
+			});
+		}
 	};
-	$scope.get_form = function(SN){
-		user_profile_service.get_my_profile()
+	
+	$scope.init_new_app = function(form_SN){
+		user_service.get_profiles()
 		.success(function(data){
 			$scope.user = data.aaData[0];
 		});
 		
-		$http
-		.get(site_url+'oem/form/query',{params:{form_SN:SN}})
-		.success(function(data){
-			$scope.forms[0] = data.aaData[0];
-			$scope.get_sub_form(SN);
-			
-			$scope.app = {
-				form_idx: 0,
-				app_SN: 0,
-				form_SN: $scope.forms[0].form_SN,
-				app_ID: 0,
-				app_type: 'normal',
-				app_user_ID: '',
-				app_description: '',
-				app_time: '',
-				app_estimated_hour: '',
-				app_checkpoint: '',
-				app_checkpoints: [],
-				app_cols: $scope.forms[0].form_cols
-			};
+		oem_service.get_forms(form_SN).then(function(data){
+			$scope.forms = data;
+			//initial
+			$.extend($scope.app,$scope.forms[0]);
+			$scope.app.app_cols = get_form_cols(0);
+			$scope.form_idx = 0;
 		});
-	};
-	$scope.get_sub_form = function(form_SN){
-		$http.get(site_url+'oem/form/query',{params:{form_parent_SN:form_SN}})
+
+	}
+	
+	//---------------post-----------------
+	$scope.save = function()
+	{
+		bootstrap_modal_service.reset_info_modal();
+		$http.post(site_url+'oem/app/add',{data:$scope.app,action:'save'})
 		.success(function(data){
-			for(var key in data.aaData)
-			{
-				$scope.forms.push(data.aaData[key]);	
-			}
+			bootstrap_modal_service.set_info_modal(data);
 		});
 	}
 	
 	$scope.submit = function()
 	{
 		bootstrap_modal_service.reset_info_modal();
-		console.log($scope.app);
-		$http.post(site_url+'oem/app/add',$scope.app)
+		if($scope.app.app_SN){
+			//已有資料
+			$http.post(site_url+'oem/app/update',{data:$scope.app,action:'submit'})
+			.success(function(data){
+				bootstrap_modal_service.set_info_modal(data);
+			});
+		}else{
+			//未有資料
+			$http.post(site_url+'oem/app/add',{data:$scope.app,action:'submit'})
+			.success(function(data){
+				bootstrap_modal_service.set_info_modal(data);
+			});
+		}
+	}
+	
+	$scope.accept = function(){
+		bootstrap_modal_service.reset_info_modal();
+		$scope.app.app_checkpoints.push($scope.app_checkpoint);
+		$http.post(site_url+'oem/app/update',{data:$scope.app,action:'accept'})
 		.success(function(data){
-			console.log(data);
+			bootstrap_modal_service.set_info_modal(data);
+		});
+	}
+	$scope.reject = function(){
+		bootstrap_modal_service.reset_info_modal();
+		$scope.app.app_checkpoints.push($scope.app_checkpoint);
+		$http.post(site_url+'oem/app/update',{data:$scope.app,action:'reject'})
+		.success(function(data){
 			bootstrap_modal_service.set_info_modal(data);
 		});
 	}

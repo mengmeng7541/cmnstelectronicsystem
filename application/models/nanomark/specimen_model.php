@@ -14,9 +14,12 @@ class Specimen_model extends MY_Model {
 		$output = array();
 		$test_item = $this->nanomark_model->get_test_item_list(array("serial_no"=>$test_item_SN))->row_array();
 		if(!$test_item) return $output;
-		$this->load->model('facility/user_privilege_model');
-		$output = $this->user_privilege_model->get_available_users($test_item['facility_ID'],array("admin","super"));
-		return $output;
+		$this->load->model('facility_model');
+		$output = $this->facility_model->get_user_privilege_list(array(
+			"facility_ID"=>$test_item['facility_ID'],
+			"privilege"=>array("admin","super")
+		))->result_array();
+		return sql_column_to_key_value_array($output,"user_name","user_ID");
 	}
 	
 	public function get_test_item_select_options()
