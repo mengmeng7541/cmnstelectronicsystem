@@ -197,6 +197,113 @@ cmnstApp
 		link: linker
 	}
 })
+.directive('facilityTimeDatatable',function($http,$sce,$compile){
+	var get_data = function(scope,ele,attrs){
+		return $http.get(site_url+'facility/time',{params:{query_date:scope.data_dst.query_date,facility_ID:scope.data_dst.booking_facility_SN}});
+	}
+	var get_tpl = function(scope,data,query_date,unit_sec){
+		//initial
+		var timetable = [];
+		var start = parseInt(moment(query_date).add('days', -2).startOf('day').format('X'));
+		var end = parseInt(moment(query_date).add('days', 3).startOf('day').format('X'));
+		for(
+			var i=start;
+			i<end;
+			i+=unit_sec
+		)
+		{
+			timetable[i] = {
+				blocked:false,
+				checked:false
+			};
+		}
+		
+		
+		angular.forEach(data,function(val,key){
+			for(var i=val.start_time;i<val.end_time;i+=unit_sec)
+			{
+				timetable[i].blocked = true;
+			}
+		});
+		
+		var body = [];
+		for(var i=0;i<86400/unit_sec;i++)
+		{
+			var base_unixtime = parseInt(moment(query_date).add('days', -2).startOf('day').add('s',i*unit_sec).format('X'));
+			body.push([
+				moment().startOf('day').add('s',i*unit_sec).format('HH:mm')+'~'+moment().startOf('day').add('s',(i+1)*unit_sec).format('HH:mm'),
+				timetable[base_unixtime].blocked?'X':"<input type='checkbox' uniform ng-model='scope.timetable["+base_unixtime+"].checked' value='"+base_unixtime+"'/>",
+				timetable[base_unixtime=base_unixtime+86400].blocked?'X':"<input type='checkbox' ng-model='scope.timetable["+base_unixtime+"].checked' uniform value='"+base_unixtime+"'/>",
+				timetable[base_unixtime=base_unixtime+86400].blocked?'X':"<input type='checkbox' ng-model='scope.timetable["+base_unixtime+"].checked' uniform value='"+base_unixtime+"'/>",
+				timetable[base_unixtime=base_unixtime+86400].blocked?'X':"<input type='checkbox' ng-model='scope.timetable["+base_unixtime+"].checked' uniform value='"+base_unixtime+"'/>",
+				timetable[base_unixtime=base_unixtime+86400].blocked?'X':"<input type='checkbox' ng-model='scope.timetable["+base_unixtime+"].checked' uniform value='"+base_unixtime+"'/>"
+			]);
+		}
+		
+		var header = [
+			'',
+			moment(query_date).add('days', -2).format("YYYY年MM月Dodddd"),
+			moment(query_date).add('days', -1).format("YYYY年MM月Dodddd"),
+			moment(query_date).add('days', 0).format("YYYY年MM月Dodddd"),
+			moment(query_date).add('days', 1).format("YYYY年MM月Dodddd"),
+			moment(query_date).add('days', 2).format("YYYY年MM月Dodddd"),
+		];
+		header = '<thead><tr><td>'+header.join('</td><td>')+'</td></tr></thead>';
+		
+		for(var key in body){
+			body[key] = '<td>'+body[key].join('</td><td>')+'</td>';
+		}
+		body = '<tbody><tr>'+body.join('</tr><tr>')+'</tr></tbody>';
+		
+		return $sce.trustAsHtml(header+body);
+	}
+	var linker = function(scope,ele,attrs){
+		//initial
+		scope.data_dst.query_date = moment().add('days', 2).format('YYYY-MM-DD');
+		
+		var datatable = ele.dataTable({
+			"bPaginate": false,
+			"bSort": false,
+			"bFilter": false,
+			"sDom": "<'row-fluid'r>t<'row-fluid'>",
+			"sPaginationType": "bootstrap",
+			"aaSorting": []
+		});
+		var fixedheader = new $.fn.dataTable.FixedHeader( datatable );//固定DATATABLE頭部
+		
+		//watch
+		scope.$watch("data_dst.booking_facility_SN",function(new_val,old_val){
+			get_data(scope,ele,attrs)
+			.success(function(data){
+				scope.data_dst.tpl = get_tpl(scope,data.aaData,scope.data_dst.query_date,data.unit_sec);
+				
+			});
+		});
+		scope.$watch("data_dst.query_date",function(new_val,old_val){
+			get_data(scope,ele,attrs)
+			.success(function(data){
+				scope.data_dst.tpl = get_tpl(scope,data.aaData,scope.data_dst.query_date,data.unit_sec);
+			});
+		});
+		scope.$watch("data_dst.tpl",function(new_val,old_val){
+//			if(typeof fixedHeader != "undefined")
+//		    {
+		    	//for temporary fixed!!
+				fixedheader._fnUpdateClones(true);
+				fixedheader._fnUpdatePositions();
+				$compile(ele.contents())(scope);
+//			}
+		});
+        
+	}
+	return {
+		restrict: 'A',
+		scope:{
+			data_dst: '=facilityTimeDatatable'
+		},
+		link: linker
+	}
+})
 //---------------------BOOTSTRAP MODAL CONTROLLER--------------------------
 .controller("bootstrap_modal_controller",function($scope,$http){
 	
@@ -204,6 +311,7 @@ cmnstApp
 //-----------------------------OEM CONTROLLER------------------------------
 	/*----------------APP EDIT----------------*/
 .controller("oem_application_edit",function($scope,$http,user_service,oem_service,bootstrap_modal_service){
+//	$scope.test = {query_date:"123"};//預設為今天
 	//initial variable
 	var app_col = {
 		app_col_SN: 0,
@@ -236,6 +344,7 @@ cmnstApp
 		app_cols: []
 	};
 	$scope.booking = {
+		query_date: '',
 		booking_user_SN: 0,
 		booking_facility_SN: []	
 	};
@@ -247,7 +356,7 @@ cmnstApp
 			if($scope.forms[form_idx].form_cols[key].col_enable==1)
 			{
 				var tmp = angular.copy(app_col);
-				$.extend(tmp,$scope.forms[form_idx].form_cols[key]);
+				angular.extend(tmp,$scope.forms[form_idx].form_cols[key]);
 				cols.push(tmp);
 			}
 		}
@@ -308,7 +417,7 @@ cmnstApp
 		{
 			$http.get(site_url+'oem/app/query',{params:{app_SN:SN,app_token:token}})
 			.success(function(data){
-				$.extend($scope,data.aaData);
+				angular.extend($scope,data.aaData);
 				
 				for(var idx in data.aaData.forms){
 					if(data.aaData.forms[idx].form_SN == data.aaData.app.form_SN)
@@ -351,7 +460,7 @@ cmnstApp
 		oem_service.get_forms(form_SN).then(function(data){
 			$scope.forms = data;
 			//initial
-			$.extend($scope.app,$scope.forms[0]);
+			angular.extend($scope.app,$scope.forms[0]);
 			$scope.app.app_cols = get_form_cols(0);
 			$scope.form_idx = 0;
 		});

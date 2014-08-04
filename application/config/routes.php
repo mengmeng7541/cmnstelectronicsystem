@@ -136,7 +136,10 @@ $route['facility/user/booking/edit/(:num)'] = 'facility/edit_booking/$1';
 $route['facility/user/booking/add'] = 'facility/add_booking';
 $route['facility/user/booking/update/(:num)'] = 'facility/update_booking/$1';
 $route['facility/user/booking/del/(:num)'] = 'facility/del_booking/$1';
+
+$route['facility/time'] = 'facility/query_facility_time';
 $route['facility/time/query'] = 'facility/query_time';
+
 
 $route['facility/admin/maintenance/list'] = 'facility/list_maintenance';
 $route['facility/admin/maintenance/query'] = 'facility/query_maintenance';

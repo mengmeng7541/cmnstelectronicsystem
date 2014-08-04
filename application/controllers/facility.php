@@ -848,6 +848,117 @@ class Facility extends MY_Controller {
 		$this->load->view('templates/footer');
 	}
 	//START----------------------------可預約時間----------------------------
+	public function query_facility_time()
+	{
+		try{
+			$this->is_user_login();
+			
+			$input_data = $this->input->get(NULL,TRUE);
+			
+			if(empty($input_data['query_date']))
+				$input_data['query_date'] = date("Y-m-d");
+			else
+				$input_data['query_date'] = date("Y-m-d",strtotime($input_data['query_date']."-2 days"));
+			
+			$output['aaData'] = array();
+			
+			if(empty($input_data['facility_ID']))
+			{
+				throw new Exception();
+			}
+			
+			$facilities = $this->facility_model->get_facility_list(array(
+				"ID"=>$input_data['facility_ID'],
+				"type"=>"facility")
+			)->result_array();
+			if(!$facilities)
+			{
+				throw new Exception();
+			}
+			
+			//取得所有關聯的儀器
+			$f_IDs = sql_column_to_key_value_array($facilities,"ID");
+			$facilities_ID = $this->facility_model->get_vertical_group_facilities($f_IDs,array("facility_only"=>TRUE));
+			$facilities = $this->facility_model->get_facility_list(array(
+				"ID"=>$facilities_ID
+			))->result_array();
+			//取得所有的可預約時間
+			foreach($facilities as $val)//把沒有受限的儀器排除
+			{
+				if(!$val['enable_occupation'])
+				{
+					$facilities_ID = array_diff($facilities_ID,array($val['ID']));
+				}
+			}
+			$data = array(
+				"start_time"=>date("Y-m-d H:i:s", strtotime($input_data['query_date'])),
+				"end_time"=>date("Y-m-d H:i:s", strtotime($input_data['query_date']." +5 days")),
+				"facility_ID"=>$facilities_ID
+			);
+			$bookings = $this->facility_model->get_facility_booking_list($data)->result_array();
+			
+			//分析被佔領的時間
+			foreach($bookings as $booking)
+			{
+				$row = array();
+				$row['start_time'] = strtotime($booking['start_time']);
+				$row['end_time'] = strtotime($booking['end_time']);
+				$row['type'] = 'occupied';
+				$output['aaData'][] = $row;
+			}
+			
+			//儀器暫時停止預約時段亦要標註(非管理員適用)
+			foreach($facilities as $facility){
+				if(!$this->facility_model->is_facility_super_admin() && !$this->facility_model->is_facility_admin($facility['ID']))
+				{
+					//取得暫停時間
+					$outages = $this->facility_model->get_outage_list(array(
+						"facility_SN"=>$facility['ID'],
+						"outage_start_time"=>$data['start_time'],
+						"outage_end_time"=>$data['end_time']
+					))->result_array();
+					foreach($outages as $outage)
+					{
+						$row = array();
+						$row['start_time'] = strtotime($outage['outage_start_time']);
+						$row['end_time'] = strtotime(isset($outage['outage_end_time'])?$outage['outage_end_time']:$data['end_time']);
+						$row['type'] = 'outaged';
+						$output['aaData'][] = $row;
+					}
+				}
+			}
+			
+			
+			//輸出
+//			$max_unit_sec = max(sql_result_to_column($facilities,"unit_sec"));
+//			for($i=strtotime($input_data['query_date']);$i<strtotime($input_data['query_date']." +1 days");$i+=$max_unit_sec)
+//        	{
+//         		$row = array(date("H:i",$i)." ~ ".date("H:i",$i+$max_unit_sec));
+//         		for($j=$i;$j<strtotime($input_data['query_date']." +5 days");$j+=(24*60*60))
+//         		{
+//         			if($max_unit_sec==$min_unit_sec){
+//						$row[] = empty($occupied_time[$j])?form_checkbox("booking_time[]",$j,FALSE):"X";
+//					}else{
+//						
+//						$occupied = FALSE;
+//						for($k=$j;$k<$j+$max_unit_sec;$k+=$min_unit_sec){
+//							if(isset($occupied_time[$k]) && $occupied_time[$k]==TRUE){
+//								$occupied = TRUE;
+//							}
+//						}
+//						$row[] = $occupied?"X":form_checkbox("booking_time[]",$j,FALSE);
+//					}
+//					
+//				}
+//				$output['aaData'][] = $row;
+//			}
+
+			$output['unit_sec'] = max(sql_result_to_column($facilities,"unit_sec"));
+			echo json_encode($output);
+		}catch(Exception $e){
+			echo json_encode($output);
+		}
+	}
 	public function query_time()
 	{
 		try{
@@ -951,9 +1062,9 @@ class Facility extends MY_Controller {
 								if($occupied_time[$j])
 									$row[] = "X";
 								else
-									$row[] = form_checkbox("booking_time[]",$j,TRUE);
+									$row[] = form_checkbox("booking_time[]",$j,TRUE,"uniform");
 							}else{
-								$row[] = form_checkbox("booking_time[]",$j,FALSE);
+								$row[] = form_checkbox("booking_time[]",$j,FALSE,"uniform");
 							}
 						}else{
 							
@@ -971,9 +1082,9 @@ class Facility extends MY_Controller {
 							{
 								$row[] = "X";
 							}else if($occupied_myself){
-								$row[] = form_checkbox("booking_time[]",$j,TRUE);
+								$row[] = form_checkbox("booking_time[]",$j,TRUE,"uniform");
 							}else{
-								$row[] = form_checkbox("booking_time[]",$j,FALSE);
+								$row[] = form_checkbox("booking_time[]",$j,FALSE,"uniform");
 							}
 						}
 					}
@@ -1055,7 +1166,7 @@ class Facility extends MY_Controller {
 	         		for($j=$i;$j<strtotime($input_data['query_date']." +5 days");$j+=(24*60*60))
 	         		{
 	         			if($max_unit_sec==$min_unit_sec){
-							$row[] = empty($occupied_time[$j])?form_checkbox("booking_time[]",$j,FALSE):"X";
+							$row[] = empty($occupied_time[$j])?form_checkbox("booking_time[]",$j,FALSE,"uniform"):"X";
 						}else{
 							
 							$occupied = FALSE;
@@ -1064,7 +1175,7 @@ class Facility extends MY_Controller {
 									$occupied = TRUE;
 								}
 							}
-							$row[] = $occupied?"X":form_checkbox("booking_time[]",$j,FALSE);
+							$row[] = $occupied?"X":form_checkbox("booking_time[]",$j,FALSE,"uniform");
 						}
 						
 					}

@@ -3065,6 +3065,8 @@ var App = function () {
 			    }, 
 		    ]
         });
+        
+        
 	}
 	
 	var handleClock = function(){

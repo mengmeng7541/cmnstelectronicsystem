@@ -23,7 +23,7 @@
                         <h4><i class="icon-reorder"></i>代工表單</h4>
                      </div>
                      <div class="widget-body form" ng-controller="oem_application_edit" ng-init="<?=isset($app_SN)?(isset($app_token)?"init_app($app_SN,'$app_token')":"init_app($app_SN)"):(isset($form_SN)?"init_new_app($form_SN)":"");?>">
-                     	<form method="POST" class="form-horizontal">
+                     	<form method="POST" class="form-horizontal" id="form_oem_app">
                      		<div class="row-fluid">
                      			<div class="control-group span6">
 						            <label class="control-label">代工單編號</label>
@@ -164,7 +164,7 @@
                  			<div class="control-group">
 					            <label class="control-label">使用儀器</label>
 					            <div class="controls">
-					            	<select name="facility_ID[]" chosen watch="available_facilities" ng-options="facility.facility_SN as facility.facility_cht_name for (idx,facility) in available_facilities" ng-model="booking.booking_facility_SN" multiple="multiple" class="span12"></select>
+					            	<select chosen watch="available_facilities" ng-options="facility.facility_SN as facility.facility_cht_name for (idx,facility) in available_facilities" ng-model="booking.booking_facility_SN" multiple="multiple" class="span12"></select>
 								</div>
 							</div>
 							<div class="control-group">
@@ -185,18 +185,12 @@
 							<div class="control-group">
 					            <label class="control-label">新增預約</label>
 					            <div class="controls">
-									<input type="text" id="query_facility_booking_date" value="<?=date("Y-m-d",strtotime("+2days"));?>" class="date-picker"/>
+									<input ng-model="booking.query_date" type="text" class="date-picker"/>
 								</div>
-								<table id="table_facility_booking_available_time" class="table table-striped table-bordered">
-	                     			<thead>
-	                     				<th></th>
-	                     				<th></th>
-	                     				<th></th>
-	                     				<th></th>
-	                     				<th></th>
-	                     				<th></th>
-	                     			</thead>
-	                     		</table>
+								
+								<table facility-time-datatable="booking" id="" class="table table-striped table-bordered" ng-bind-html="booking.tpl">
+									
+								</table>
 							</div>
 							
 	                     	<div class="form-actions">
