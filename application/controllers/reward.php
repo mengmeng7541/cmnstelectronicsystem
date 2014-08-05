@@ -68,19 +68,23 @@ class Reward extends MY_Controller {
     	
 		
 		//send email
-		$reviewer = $this->reward_model->get_admin_by_privilege("reward_reviewer");
-		$reviewer = $this->admin_model->get_admin_profile_by_ID($reviewer['admin_ID']);
-		
-  
-		$this->email->to($reviewer['email']); 
+		$reviewers = $this->reward_model->get_admin_privilege_list(array(
+			"privilege"=>"reward_super_admin"
+		))->result_array();
+		foreach($reviewers as $reviewer)
+		{
+			$reviewer = $this->admin_model->get_admin_profile_by_ID($reviewer['admin_ID']);
+			
+			$this->email->to($reviewer['email']); 
 
-		$this->email->subject('成大微奈米科技研究中心 -論文獎勵系統通知-');
-		$this->email->message("
-                        <p>您好： </p>
-                        <p>有人投稿中心的論文</p>
-                        <p>請點選此<a href='http://140.116.176.44/index.php'>連結</a>登入審核</p>
-                        <p>帳號{$reviewer['ID']}</p>"); 
-		$this->email->send();
+			$this->email->subject('成大微奈米科技研究中心 -論文獎勵系統通知-');
+			$this->email->message("
+	            您好： <br>
+	            有人投稿中心的論文<br>
+	            請點選此<a href='".site_url()."'>連結</a>登入審核"); 
+			$this->email->send();
+		}
+		
   
 		//顯示申請完成頁面
 		echo $this->info_modal("您已申請完成，請待本中心審核後通知結果，謝謝！");
@@ -92,13 +96,6 @@ class Reward extends MY_Controller {
   {
   	$this->is_admin_login();
   	
-  	//檢查有否權限
-    if(!$this->reward_model->get_privilege('reward_reviewer'))
-    {
-      redirect('/admin/main');
-      return;
-    }
-    
     //display
 	$this->load->view('templates/header');
 	$this->load->view('templates/sidebar');
@@ -110,9 +107,8 @@ class Reward extends MY_Controller {
   {
   	$this->is_admin_login();
   	
-  	if(!$this->reward_model->get_privilege('reward_reviewer'))
+  	if(!$this->reward_model->is_super_admin())
     {
-      redirect('/admin/main');
       return;
     }
     
@@ -147,7 +143,7 @@ class Reward extends MY_Controller {
   	try{
 		$this->is_admin_login();
 	    //檢查有否權限
-	    if(!$this->reward_model->get_privilege('reward_reviewer'))
+	    if(!$this->reward_model->is_super_admin())
 	    {
 			throw new Exception();
 	    }
@@ -244,9 +240,8 @@ class Reward extends MY_Controller {
 		//email
 	    $reward_data = $this->reward_model->get_application_list(array("serial_no",$input_data['serial_no']))->row_array();
 	    
-	    $this->email->from($reviewer['email'], $reviewer['name']);
 		$this->email->to($reward_data['email']); 
-
+		$this->email->cc($reviewer['email']);
 		$this->email->subject('成大微奈米中心論文獎勵系統審核結果通知');
 		$plan = $this->reward_model->get_plan_by_SN($reward_data['accept_plan_no']);
 		if(empty($plan['name']))
@@ -267,8 +262,6 @@ class Reward extends MY_Controller {
 	}catch(Exception $e){
 		echo $this->info_modal($e->getMessage(),"",$e->getCode());
 	}
-  	
-	
   }
   
   public function delete($SN)
