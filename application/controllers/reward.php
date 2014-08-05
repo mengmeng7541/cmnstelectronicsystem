@@ -105,37 +105,44 @@ class Reward extends MY_Controller {
   
   public function query_application()
   {
-  	$this->is_admin_login();
+  	try{
+		$this->is_admin_login();
   	
-  	if(!$this->reward_model->is_super_admin())
-    {
-      return;
-    }
-    
-  	//取得申請的基本資料列表
-	$applications = $this->reward_model->get_application_list()->result_array();
-	
-	$output['aaData'] = array();
-	foreach($applications as $app)
-	{
-		$row = array();
+	  	$output['aaData'] = array();
+	  	
+	  	if(!$this->reward_model->is_super_admin())
+	    {
+	    	throw new Exception();
+	    }
+	    
+	  	//取得申請的基本資料列表
+		$applications = $this->reward_model->get_application_list()->result_array();
 		
-		if($app['is_review'])
-			$row[] = form_button("","刪除","class='btn btn-small disabled'");
-		else
-			$row[] = form_button("del_row","刪除","class='btn btn-small btn-danger' value='{$app['serial_no']}'");
-		$row[] = $app['serial_no'];
-		$row[] = $app['applicant_name'];
-		$row[] = $app['paper_title'];
-		if($app['is_review'])
-			$row[] = anchor("reward/view/{$app['serial_no']}","結案","class='btn btn-small btn-inverse'");
-		else
-			$row[] = anchor("reward/edit/{$app['serial_no']}","審核","class='btn btn-small btn-success'");
 		
-		$output['aaData'][] = $row;
+		foreach($applications as $app)
+		{
+			$row = array();
+			
+			if($app['is_review'])
+				$row[] = form_button("","刪除","class='btn btn-small disabled'");
+			else
+				$row[] = form_button("del_row","刪除","class='btn btn-small btn-danger' value='{$app['serial_no']}'");
+			$row[] = $app['serial_no'];
+			$row[] = $app['applicant_name'];
+			$row[] = $app['paper_title'];
+			if($app['is_review'])
+				$row[] = anchor("reward/view/{$app['serial_no']}","結案","class='btn btn-small btn-inverse'");
+			else
+				$row[] = anchor("reward/edit/{$app['serial_no']}","審核","class='btn btn-small btn-success'");
+			
+			$output['aaData'][] = $row;
+		}
+		
+		echo json_encode($output);
+	}catch(Exception $e){
+		echo json_encode($output);
 	}
-	
-	echo json_encode($output);
+  	
   }
   
   public function edit($serial_no)
