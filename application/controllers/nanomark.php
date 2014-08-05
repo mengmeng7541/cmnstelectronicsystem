@@ -1451,7 +1451,7 @@ class Nanomark extends MY_Controller {
 			}else{
 				//確認是否為自己的外包單		
 				if($outsourcing['applicant_ID'] != $this->session->userdata('ID')){
-					throw new Exception("權限不足",ERROR_CODEs);
+					throw new Exception("權限不足",ERROR_CODE);
 				}
 				$data['specimen_SN'] = $outsourcing['specimen_SN'];
 				$data['client_signature'] = $outsourcing['contact_name'];
@@ -1530,7 +1530,7 @@ class Nanomark extends MY_Controller {
 		foreach($outsourcings as $row)
 		{
 			if(empty($row['client_signature'])){
-				$this->table->add_row($row['application_ID'],$row['specimen_ID'],anchor("nanomark/view_outsourcing/{$row['specimen_SN']}","請點我","class='btn btn-info'"));
+				$this->table->add_row($row['application_ID'],$row['specimen_ID'],anchor("nanomark/edit_outsourcing/{$row['specimen_SN']}","請點我","class='btn btn-info'"));
 			}else{
 				$this->table->add_row($row['application_ID'],$row['specimen_ID'],anchor("nanomark/view_outsourcing/{$row['specimen_SN']}","已完成","class='btn btn-success'"));
 			}
