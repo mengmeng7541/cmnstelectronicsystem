@@ -1530,7 +1530,7 @@ class Nanomark extends MY_Controller {
 		foreach($outsourcings as $row)
 		{
 			if(empty($row['client_signature'])){
-				$this->table->add_row($row['application_ID'],$row['specimen_ID'],anchor("nanomark/edit_outsourcing/{$row['specimen_SN']}","請點我","class='btn btn-info'"));
+				$this->table->add_row($row['application_ID'],$row['specimen_ID'],anchor("nanomark/edit_outsourcing/{$row['specimen_SN']}","請點我","class='btn btn-warning'"));
 			}else{
 				$this->table->add_row($row['application_ID'],$row['specimen_ID'],anchor("nanomark/view_outsourcing/{$row['specimen_SN']}","已完成","class='btn btn-success'"));
 			}
