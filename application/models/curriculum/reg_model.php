@@ -30,6 +30,7 @@ class Reg_model extends MY_Model {
 		if($reg) throw new Exception("請勿重複報名！",ERROR_CODE);
 		
 		//課程管理者不受限制
+		$this->load->model('curriculum/class_model');
 		if(!$this->curriculum_model->is_super_admin())
 		{
 			//檢查是否選其他同課程(還在可報名的狀態)
@@ -41,8 +42,22 @@ class Reg_model extends MY_Model {
 			))->result_array();
 			foreach($regs as $r)//這樣做是為了只選認證時可以直接換成選整套課程
 			{
-				if($r['class_code'] != $class['class_code'])
-					throw new Exception("您已選其他時段之同課程，請勿重複報名！",ERROR_CODE);
+				//若只是因認證課還在可報名狀態，非只選認證，需開放讓學生可選下一期課程
+				$temp_reg = $this->curriculum_model->get_reg_list(array(
+					"user_ID"=>$r['user_ID'],
+					"course_ID"=>$r['course_ID'],
+					"class_code"=>$r['class_code'],
+					"group_class_suite"=>TRUE
+				))->row_array();
+				if($temp_reg && $this->class_model->is_certification_class_only($temp_reg['class_type']))
+				{
+					//這是只選認證的，要檢查
+					if($r['class_code'] != $class['class_code'])
+					{
+						throw new Exception("您已選其他時段之同課程，請勿重複報名！",ERROR_CODE);
+					}
+				}
+				
 			}
 			//先檢查是否在可選課日期內
 			if(time()<strtotime($class['class_reg_start_time'])){
@@ -68,7 +83,6 @@ class Reg_model extends MY_Model {
 		}
 		
 		//判斷是否只選認證
-		$this->load->model('curriculum/class_model');
 		if($this->class_model->is_certification_class_only($class['class_type']))
 		{
 			
