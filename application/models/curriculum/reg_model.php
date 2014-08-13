@@ -33,7 +33,12 @@ class Reg_model extends MY_Model {
 		if(!$this->curriculum_model->is_super_admin())
 		{
 			//檢查是否選其他同課程(還在可報名的狀態)
-			$regs = $this->curriculum_model->get_reg_list(array("user_ID"=>$user_ID,"course_ID"=>$class['course_ID'],"class_reg_start_time"=>date("Y-m-d H:i:s")))->result_array();
+			$regs = $this->curriculum_model->get_reg_list(array(
+				"user_ID"=>$user_ID,
+				"course_ID"=>$class['course_ID'],
+				"class_reg_start_time"=>date("Y-m-d H:i:s"),
+				"class_state"=>array("normal","additional")
+			))->result_array();
 			foreach($regs as $r)//這樣做是為了只選認證時可以直接換成選整套課程
 			{
 				if($r['class_code'] != $class['class_code'])

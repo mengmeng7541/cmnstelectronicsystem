@@ -507,7 +507,11 @@ class Curriculum_model extends MY_Model {
 		}
 		if(isset($options['class_state']))
 		{
-			$this->curriculum_db->where("{$sJoinTable['class']}.class_state",$options['class_state']);
+			if(is_array($options['class_state'])&&empty($options['class_state']))
+			{
+				$options['class_state'] = array("");
+			}
+			$this->curriculum_db->where_in("{$sJoinTable['class']}.class_state",$options['class_state']);
 		}
 		if(isset($options['reg_rank_start']))
 		{

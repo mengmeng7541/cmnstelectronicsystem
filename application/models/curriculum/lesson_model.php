@@ -85,6 +85,10 @@ class Lesson_model extends MY_Model {
 	}
 	public function del($lesson_ID)
 	{
+		if(empty($lesson_ID))
+		{
+			return;
+		}
 		//取得課堂資訊
 		$lessons = $this->curriculum_model->get_lesson_list(array("lesson_ID"=>$lesson_ID))->result_array();
 		if(!$lessons){
