@@ -51,7 +51,7 @@ class Reg_model extends MY_Model {
 				))->row_array();
 				if($temp_reg && $this->class_model->is_certification_class_only($temp_reg['class_type']))
 				{
-					//這是只選認證的，要檢查
+					//表示這是只選認證的，要檢查
 					if($r['class_code'] != $class['class_code'])
 					{
 						throw new Exception("您已選其他時段之同課程，請勿重複報名！",ERROR_CODE);

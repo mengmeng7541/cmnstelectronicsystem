@@ -276,7 +276,7 @@ class Reward extends MY_Controller {
   	try{
 		$this->is_admin_login();
 		
-		if($this->reward_model->is_super_admin())
+		if(!$this->reward_model->is_super_admin())
 		{
 			throw new Exception("沒有權限",ERROR_CODE);
 		}
