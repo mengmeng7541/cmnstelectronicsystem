@@ -203,6 +203,7 @@ cmnstApp
 	}
 	var get_tpl = function(scope,data,query_date,unit_sec){
 		//initial
+		unit_sec = parseInt(unit_sec);
 		var timetable = [];
 		var start = parseInt(moment(query_date).add('days', -2).startOf('day').format('X'));
 		var end = parseInt(moment(query_date).add('days', 3).startOf('day').format('X'));
@@ -217,7 +218,6 @@ cmnstApp
 				checked:false
 			};
 		}
-		
 		
 		angular.forEach(data,function(val,key){
 			for(var i=val.start_time;i<val.end_time;i+=unit_sec)
@@ -301,6 +301,9 @@ cmnstApp
 		scope:{
 			data_dst: '=facilityTimeDatatable'
 		},
+//		template: function(tElement, tAttrs) {
+//		    return get_tpl(scope,data.aaData,scope.data_dst.query_date,data.unit_sec);
+//		},
 		link: linker
 	}
 })
