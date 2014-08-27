@@ -565,6 +565,34 @@ class Oem extends MY_Controller {
 	{
 		
 	}
+	//------------------------BOOKING-------------------------------
+	public function add_booking()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$input = file_get_contents('php://input');
+			$booking = json_decode($input,TRUE);
+			
+			$result = $this->get_info_modal_array("預約成功");
+			
+			ob_start();
+			var_dump($booking);
+			$result['body']['message'] = ob_get_clean();
+			
+			echo json_encode($result);
+		}catch(Exception $e){
+			echo json_encode($this->get_info_modal_array($e->getMessage(),"",$e->getCode()));
+		}
+	}
+	public function update_booking()
+	{
+		
+	}
+	public function del_booking()
+	{
+		
+	}
 	//--------------------FORM FACILITY MAP-------------------------
 //	public function query_form_facility_map()
 //	{

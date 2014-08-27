@@ -149,7 +149,7 @@ cmnstApp
 	var linker = function(scope,element,attrs){
 
 		element.uniform();
-		scope.$watch(attrs.watch, function () {
+		scope.$watch(attrs.ngModel, function () {
     		jQuery.uniform.update(element);
         });
 	}
@@ -204,7 +204,8 @@ cmnstApp
 	var get_tpl = function(scope,data,query_date,unit_sec){
 		//initial
 		unit_sec = parseInt(unit_sec);
-		var timetable = [];
+		scope.unit_sec = unit_sec;//for temp, not good!!
+		scope.timetable = [];
 		var start = parseInt(moment(query_date).add('days', -2).startOf('day').format('X'));
 		var end = parseInt(moment(query_date).add('days', 3).startOf('day').format('X'));
 		for(
@@ -213,16 +214,15 @@ cmnstApp
 			i+=unit_sec
 		)
 		{
-			timetable[i] = {
-				blocked:false,
-				checked:false
-			};
+			scope.timetable.push({time:i,state:"available"});
 		}
 		
 		angular.forEach(data,function(val,key){
 			for(var i=val.start_time;i<val.end_time;i+=unit_sec)
 			{
-				timetable[i].blocked = true;
+				scope.timetable.filter(function(ele){
+					return ele.time==i;
+				})[0].state='blocked';
 			}
 		});
 		
@@ -232,11 +232,11 @@ cmnstApp
 			var base_unixtime = parseInt(moment(query_date).add('days', -2).startOf('day').add('s',i*unit_sec).format('X'));
 			body.push([
 				moment().startOf('day').add('s',i*unit_sec).format('HH:mm')+'~'+moment().startOf('day').add('s',(i+1)*unit_sec).format('HH:mm'),
-				timetable[base_unixtime].blocked?'X':"<input type='checkbox' uniform ng-model='scope.timetable["+base_unixtime+"].checked' value='"+base_unixtime+"'/>",
-				timetable[base_unixtime=base_unixtime+86400].blocked?'X':"<input type='checkbox' ng-model='scope.timetable["+base_unixtime+"].checked' uniform value='"+base_unixtime+"'/>",
-				timetable[base_unixtime=base_unixtime+86400].blocked?'X':"<input type='checkbox' ng-model='scope.timetable["+base_unixtime+"].checked' uniform value='"+base_unixtime+"'/>",
-				timetable[base_unixtime=base_unixtime+86400].blocked?'X':"<input type='checkbox' ng-model='scope.timetable["+base_unixtime+"].checked' uniform value='"+base_unixtime+"'/>",
-				timetable[base_unixtime=base_unixtime+86400].blocked?'X':"<input type='checkbox' ng-model='scope.timetable["+base_unixtime+"].checked' uniform value='"+base_unixtime+"'/>"
+				scope.timetable[i].state=="blocked"?'X':"<input type='checkbox' uniform ng-model='timetable["+i+"].state' ng-true-value='selected' ng-false-value='available'/>",
+				scope.timetable[i+86400/unit_sec*1].state=="blocked"?'X':"<input type='checkbox' ng-model='timetable["+(i+86400/unit_sec*1)+"].state' uniform ng-true-value='selected' ng-false-value='available'/>",
+				scope.timetable[i+86400/unit_sec*2].state=="blocked"?'X':"<input type='checkbox' ng-model='timetable["+(i+86400/unit_sec*2)+"].state' uniform ng-true-value='selected' ng-false-value='available'/>",
+				scope.timetable[i+86400/unit_sec*3].state=="blocked"?'X':"<input type='checkbox' ng-model='timetable["+(i+86400/unit_sec*3)+"].state' uniform ng-true-value='selected' ng-false-value='available'/>",
+				scope.timetable[i+86400/unit_sec*4].state=="blocked"?'X':"<input type='checkbox' ng-model='timetable["+(i+86400/unit_sec*4)+"].state' uniform ng-true-value='selected' ng-false-value='available'/>"
 			]);
 		}
 		
@@ -294,6 +294,15 @@ cmnstApp
 				$compile(ele.contents())(scope);
 //			}
 		});
+		scope.$watch("timetable|filter:{state:'selected'}",function(new_val,old_val){
+			console.log(new_val);
+			var tmp = new_val.map(function(ele){
+				return ele.time;
+			});
+			scope.data_dst.booking_start_time = Math.min.apply(null,tmp);
+			scope.data_dst.booking_end_time = Math.max.apply(null,tmp)+scope.unit_sec;
+		});
+		
         
 	}
 	return {
@@ -349,7 +358,9 @@ cmnstApp
 	$scope.booking = {
 		query_date: '',
 		booking_user_SN: 0,
-		booking_facility_SN: []	
+		booking_facility_SN: [],
+		booking_start_time: 0,
+		booking_end_time: 0
 	};
 	//---------common function-------------------
 	var get_form_cols = function(form_idx){
@@ -497,7 +508,14 @@ cmnstApp
 			});
 		}
 	}
-	
+	$scope.book = function(){
+		bootstrap_modal_service.reset_info_modal();
+		console.log($scope.booking);
+		$http.post(site_url+'oem/booking/add',{data:$scope.booking,action:'book'})
+		.success(function(data){
+			bootstrap_modal_service.set_info_modal(data);
+		});
+	}
 	$scope.accept = function(){
 		bootstrap_modal_service.reset_info_modal();
 		$scope.app.app_checkpoints.push($scope.app_checkpoint);

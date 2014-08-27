@@ -200,10 +200,18 @@
 									$display[] = form_button("save","儲存","class='btn btn-primary' ng-click='save()'");
 	                     			$display[] = form_button("submit","送出","class='btn btn-warning' ng-click='submit()'");
 								}else{
-									$display[] = form_button("accept","接受","class='btn btn-warning' ng-click='accept()'");
+									if($app_checkpoint=='facility_admin_final')
+									{
+										$display[] = form_button("book","預約","class='btn btn-primary' ng-click='book()'");
+									}else{
+										$display[] = form_button("accept","接受","class='btn btn-warning' ng-click='accept()'");
+									}
+									
 	                     			$display[] = form_button("reject","退件","class='btn btn-danger' ng-click='reject()'");
 	                     			$display[] = anchor("oem/app/list","回上一頁","class='btn btn-primary'");
+	                     			
 								}
+								
 								echo implode(' ',$display);
 	                     		?>
 	                     	</div>
