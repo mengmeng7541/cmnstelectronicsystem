@@ -130,7 +130,7 @@
 						<div class="control-group">
                            <label class="control-label">* 聯絡電話</label>
                            <div class="controls">
-                              <input type="text" class="span6" name="boss_tel" value="<?=isset($boss['tel'])?:"";?>"/>
+                              <input type="text" class="span6" name="boss_tel" value="<?=isset($boss['tel'])?$boss['tel']:"";?>"/>
                               <span class="help-inline"></span>
                            </div>
                         </div>
