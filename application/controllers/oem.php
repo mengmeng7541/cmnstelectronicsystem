@@ -574,6 +574,21 @@ class Oem extends MY_Controller {
 			$input = file_get_contents('php://input');
 			$booking = json_decode($input,TRUE);
 			
+			$_POST = $booking['data'];
+			$this->form_validation->set_rules("booking_start_time","預約起始時間","required");
+			$this->form_validation->set_rules("booking_end_time","預約結束時間","required");
+			$this->form_validation->set_rules("booking_user_SN","操作人員","required");
+			$this->form_validation->set_rules("booking_facility_SN","使用儀器","required");
+			if(!$this->form_validation->run())
+			{
+				throw new Exception(validation_errors(),WARNING_CODE);
+			}
+			
+			//記錄是由哪張單子預約，還有預約的理由
+			
+			$this->load->model('facility/booking_model');
+//			$this->booking_model->add($booking['data']['booking_facility_SN'],$booking['data']['booking_user_SN'],$booking['data']['booking_start_time'],$booking['data']['booking_end_time'],"OEM");
+			
 			$result = $this->get_info_modal_array("預約成功");
 			
 			ob_start();

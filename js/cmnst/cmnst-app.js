@@ -295,7 +295,6 @@ cmnstApp
 //			}
 		});
 		scope.$watch("timetable|filter:{state:'selected'}",function(new_val,old_val){
-			console.log(new_val);
 			var tmp = new_val.map(function(ele){
 				return ele.time;
 			});
@@ -310,7 +309,7 @@ cmnstApp
 		scope:{
 			data_dst: '=facilityTimeDatatable'
 		},
-//		template: function(tElement, tAttrs) {
+//		template: function(ele, attrs) {
 //		    return get_tpl(scope,data.aaData,scope.data_dst.query_date,data.unit_sec);
 //		},
 		link: linker
@@ -357,6 +356,7 @@ cmnstApp
 	};
 	$scope.booking = {
 		query_date: '',
+		app_SN: 0,
 		booking_user_SN: 0,
 		booking_facility_SN: [],
 		booking_start_time: 0,
@@ -510,7 +510,9 @@ cmnstApp
 	}
 	$scope.book = function(){
 		bootstrap_modal_service.reset_info_modal();
-		console.log($scope.booking);
+		
+		$scope.booking.app_SN = $scope.app.app_SN;//prepare for data
+		
 		$http.post(site_url+'oem/booking/add',{data:$scope.booking,action:'book'})
 		.success(function(data){
 			bootstrap_modal_service.set_info_modal(data);
