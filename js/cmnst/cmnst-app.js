@@ -129,6 +129,34 @@ cmnstApp
 		get_info_modal: get_info_modal
 	}
 })
+.factory("booking_service",function($http){
+	return {
+		booking_data: [],
+		unit_sec: 0,
+		user_SN: 0,
+		facility_SN: 0,
+		query_date: 0,
+		
+		book: function(){
+			
+		},
+		set_facility: function(f_SN){
+			this.facility_SN = f_SN;
+			this.refresh(this);
+		},
+		set_query_date: function(q_date){
+			this.query_date = q_date;
+			this.refresh(this);
+		},
+		refresh: function(self){
+			$http.get(site_url+'facility/time',{params:{query_date:this.query_date,facility_ID:this.facility_SN}})
+			.success(function(data){
+				self.unit_sec = parseInt(data.unit_sec);
+				self.booking_data = data.aaData;
+			});
+		}
+	}
+})
 //-----------------------------DIRECTIVE-----------------------------------
 .directive('chosen',function(){
 	var linker = function(scope,element,attrs){
@@ -197,14 +225,20 @@ cmnstApp
 		link: linker
 	}
 })
-.directive('facilityTimeDatatable',function($http,$sce,$compile){
-	var get_data = function(scope,ele,attrs){
-		return $http.get(site_url+'facility/time',{params:{query_date:scope.data_dst.query_date,facility_ID:scope.data_dst.booking_facility_SN}});
-	}
+.directive('facilityTimeDatatable',function($http,$compile){
+//	var get_data = function(query_date,booking_facility_SN){
+//		return $http.get(site_url+'facility/time',{params:{query_date:query_date,facility_ID:booking_facility_SN}});
+//	}
+//	var set_data = function(data){
+//		scope.unit_sec = parseInt(data.unit_sec);
+//		scope.data = data.aaData;
+//	}
 	var get_tpl = function(scope,data,query_date,unit_sec){
+		if(!unit_sec)
+		{
+			return;
+		}
 		//initial
-		unit_sec = parseInt(unit_sec);
-		scope.unit_sec = unit_sec;//for temp, not good!!
 		scope.timetable = [];
 		var start = parseInt(moment(query_date).add('days', -2).startOf('day').format('X'));
 		var end = parseInt(moment(query_date).add('days', 3).startOf('day').format('X'));
@@ -255,60 +289,106 @@ cmnstApp
 		}
 		body = '<tbody><tr>'+body.join('</tr><tr>')+'</tr></tbody>';
 		
-		return $sce.trustAsHtml(header+body);
+		return header+body;
 	}
 	var linker = function(scope,ele,attrs){
 		//initial
 		scope.data_dst.query_date = moment().add('days', 2).format('YYYY-MM-DD');
 		
-		var datatable = ele.dataTable({
-			"bPaginate": false,
-			"bSort": false,
-			"bFilter": false,
-			"sDom": "<'row-fluid'r>t<'row-fluid'>",
-			"sPaginationType": "bootstrap",
-			"aaSorting": []
-		});
-		var fixedheader = new $.fn.dataTable.FixedHeader( datatable );//固定DATATABLE頭部
+//		var datatable = ele.dataTable({
+//			"bPaginate": false,
+//			"bSort": false,
+//			"bFilter": false,
+//			"sDom": "<'row-fluid'r>t<'row-fluid'>",
+//			"sPaginationType": "bootstrap",
+//			"aaSorting": []
+//		});
+//		var fixedheader = new $.fn.dataTable.FixedHeader( datatable );//固定DATATABLE頭部
 		
 		//watch
-		scope.$watch("data_dst.booking_facility_SN",function(new_val,old_val){
-			get_data(scope,ele,attrs)
-			.success(function(data){
-				scope.data_dst.tpl = get_tpl(scope,data.aaData,scope.data_dst.query_date,data.unit_sec);
-				
-			});
-		});
-		scope.$watch("data_dst.query_date",function(new_val,old_val){
-			get_data(scope,ele,attrs)
-			.success(function(data){
-				scope.data_dst.tpl = get_tpl(scope,data.aaData,scope.data_dst.query_date,data.unit_sec);
-			});
-		});
-		scope.$watch("data_dst.tpl",function(new_val,old_val){
-//			if(typeof fixedHeader != "undefined")
-//		    {
-		    	//for temporary fixed!!
-				fixedheader._fnUpdateClones(true);
-				fixedheader._fnUpdatePositions();
-				$compile(ele.contents())(scope);
-//			}
-		});
+//		scope.$watch("booking_service.booking_data",function(){
+//			console.log(booking_service.booking_data);
+////			scope.data_dst.tpl = get_tpl(
+////				scope,
+////				booking_service.get_data.booking_data,
+////				booking_service.get_data.query_date,
+////				booking_service.get_data.unit_sec
+////			);	
+//		});
+//		scope.$watch("data_dst.booking_facility_SN",function(new_val,old_val){
+//			get_data(scope.data_dst.query_date,scope.data_dst.booking_facility_SN)
+//			.success(function(data){
+//				scope.data_dst.tpl = get_tpl(scope,data.aaData,scope.data_dst.query_date,data.unit_sec);
+//				
+//			});
+//		});
+//		scope.$watch("data_dst.query_date",function(new_val,old_val){
+//			get_data(scope.data_dst.query_date,scope.data_dst.booking_facility_SN)
+//			.success(function(data){
+//				scope.data_dst.tpl = get_tpl(scope,data.aaData,scope.data_dst.query_date,data.unit_sec);
+//			});
+//		});
+//		scope.$watch("data_dst.tpl",function(new_val,old_val){
+////			if(typeof fixedHeader != "undefined")
+////		    {
+//		    	//for temporary fixed!!
+//				fixedheader._fnUpdateClones(true);
+//				fixedheader._fnUpdatePositions();
+//				$compile(ele.contents())(scope);
+////			}
+//		});
 		scope.$watch("timetable|filter:{state:'selected'}",function(new_val,old_val){
+			if(new_val===old_val)
+			{
+				return;
+			}
 			var tmp = new_val.map(function(ele){
 				return ele.time;
 			});
 			scope.data_dst.booking_start_time = Math.min.apply(null,tmp);
 			scope.data_dst.booking_end_time = Math.max.apply(null,tmp)+scope.unit_sec;
 		});
-		
         
+	}
+	var control = function($scope,$element,booking_service){
+		$scope.b_service = booking_service;
+		$scope.$watch("b_service.booking_data",function(){
+			$element.html(get_tpl(
+				$scope,
+				$scope.b_service.booking_data,
+				$scope.b_service.query_date,
+				$scope.b_service.unit_sec
+			));
+		});
+		
+//		$scope.$watch("timetable|filter:{state:'selected'}",function(new_val,old_val){
+//			if(new_val===old_val)
+//			{
+//				return;
+//			}
+//			var tmp = new_val.map(function(ele){
+//				return ele.time;
+//			});
+//			scope.data_dst.booking_start_time = Math.min.apply(null,tmp);
+//			scope.data_dst.booking_end_time = Math.max.apply(null,tmp)+scope.unit_sec;
+//		});
 	}
 	return {
 		restrict: 'A',
 		scope:{
 			data_dst: '=facilityTimeDatatable'
 		},
+		controller: control,
+//		template: '{{data_dst.tpl}}',
+//			$scope.$watch("b_service.booking_data",function(){
+//				console.log($scope.b_service.booking_data);
+//				$scope.data_dst.tpl = get_tpl(
+//					$scope,
+//					$scope.b_service.booking_data,
+//					$scope.b_service.query_date,
+//					$scope.b_service.unit_sec
+//				);
+//			});
 //		template: function(ele, attrs) {
 //		    return get_tpl(scope,data.aaData,scope.data_dst.query_date,data.unit_sec);
 //		},
@@ -321,7 +401,7 @@ cmnstApp
 })
 //-----------------------------OEM CONTROLLER------------------------------
 	/*----------------APP EDIT----------------*/
-.controller("oem_application_edit",function($scope,$http,user_service,oem_service,bootstrap_modal_service){
+.controller("oem_application_edit",function($scope,$http,user_service,oem_service,bootstrap_modal_service,booking_service){
 //	$scope.test = {query_date:"123"};//預設為今天
 	//initial variable
 	var app_col = {
@@ -421,7 +501,11 @@ cmnstApp
 				}
 			}
 		});
+		booking_service.set_facility(new_value);
 	});
+	$scope.$watch("booking.query_date",function(new_val,old_val){
+		booking_service.set_query_date(new_val);
+	})
 	
 	//initial function
 	$scope.init_app = function(SN,token){
@@ -516,6 +600,7 @@ cmnstApp
 		$http.post(site_url+'oem/booking/add',{data:$scope.booking,action:'book'})
 		.success(function(data){
 			bootstrap_modal_service.set_info_modal(data);
+			booking_service.update();
 		});
 	}
 	$scope.accept = function(){

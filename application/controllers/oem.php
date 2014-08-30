@@ -584,10 +584,16 @@ class Oem extends MY_Controller {
 				throw new Exception(validation_errors(),WARNING_CODE);
 			}
 			
-			//記錄是由哪張單子預約，還有預約的理由
 			
 			$this->load->model('facility/booking_model');
-//			$this->booking_model->add($booking['data']['booking_facility_SN'],$booking['data']['booking_user_SN'],$booking['data']['booking_start_time'],$booking['data']['booking_end_time'],"OEM");
+			$booking_ID = $this->booking_model->add($booking['data']['booking_facility_SN'],$booking['data']['booking_user_SN'],$booking['data']['booking_start_time'],$booking['data']['booking_end_time'],"OEM");
+			//記錄是由哪張單子預約，還有預約的理由
+			$this->oem_model->add_app_booking_map(array(
+				"app_SN"=>$booking['data']['app_SN'],
+				"booking_SN"=>$booking_ID,
+				"booking_state"=>"normal",
+				"booking_remark"=>""
+			));
 			
 			$result = $this->get_info_modal_array("預約成功");
 			

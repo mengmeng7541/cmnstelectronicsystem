@@ -321,4 +321,21 @@ class Oem_model extends MY_Model {
 		$this->oem_db->insert("oem_application_checkpoint");
 		return $this->oem_db->insert_id();
 	}
+	//-----------------------APP BOOKING-----------------------------
+	public function get_app_booking_map_list($options = array())
+	{
+		$table = "oem_application_booking_map";
+		$joinTable = array();
+		
+		return $this->oem_db->get($table);
+	}
+	public function add_app_booking_map($data)
+	{
+		$this->oem_db->set("app_SN",$data['app_SN']);
+		$this->oem_db->set("booking_SN",$data['booking_SN']);
+		$this->oem_db->set("booking_state",$data['booking_state']);
+		$this->oem_db->set("booking_remark",$data['booking_remark']);
+		$this->oem_db->insert("oem_application_booking_map");
+		return $this->oem_db->insert_id();
+	}
 }

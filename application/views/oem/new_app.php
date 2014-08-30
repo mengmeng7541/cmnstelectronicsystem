@@ -160,38 +160,41 @@
 									</div>
 								</div>
                      		</div>
-                     		<h4>時段排定</h4>
-                 			<div class="control-group">
-					            <label class="control-label">使用儀器</label>
-					            <div class="controls">
-					            	<select chosen watch="available_facilities" ng-options="facility.facility_SN as facility.facility_cht_name for (idx,facility) in available_facilities" ng-model="booking.booking_facility_SN" multiple="multiple" class="span12"></select>
+                     		<!--<div ng-if="app.app_checkpoint == 'facility_admin_final'">-->
+                     			<h4>時段排定</h4>
+	                 			<div class="control-group">
+						            <label class="control-label">使用儀器</label>
+						            <div class="controls">
+						            	<select chosen watch="available_facilities" ng-options="facility.facility_SN as facility.facility_cht_name for (idx,facility) in available_facilities" ng-model="booking.booking_facility_SN" multiple="multiple" class="span12"></select>
+									</div>
 								</div>
-							</div>
-							<div class="control-group">
-					            <label class="control-label">檢測人員</label>
-					            <div class="controls">
-					            	<select ng-options="user.user_ID as user.user_name for user in available_users" ng-model="booking.booking_user_SN"></select>
-								</div>
-								<table id="table_oem_app_booking_list" class="table table-striped table-bordered">
-									<thead>
-										<th>起始時間</th>
-										<th>結束時間</th>
-										<th></th>
-									</thead>
-									
-								</table>
-							</div>
-							
-							<div class="control-group">
-					            <label class="control-label">新增預約</label>
-					            <div class="controls">
-									<input ng-model="booking.query_date" type="text" class="date-picker"/>
+								<div class="control-group">
+						            <label class="control-label">檢測人員</label>
+						            <div class="controls">
+						            	<select ng-options="user.user_ID as user.user_name for user in available_users" ng-model="booking.booking_user_SN"></select>
+									</div>
+									<table id="table_oem_app_booking_list" class="table table-striped table-bordered">
+										<thead>
+											<th>起始時間</th>
+											<th>結束時間</th>
+											<th></th>
+										</thead>
+										
+									</table>
 								</div>
 								
-								<table facility-time-datatable="booking" id="" class="table table-striped table-bordered" ng-bind-html="booking.tpl">
+								<div class="control-group">
+						            <label class="control-label">新增預約</label>
+						            <div class="controls">
+										<input ng-model="booking.query_date" type="text" class="date-picker"/>
+									</div>
 									
-								</table>
-							</div>
+									<table facility-time-datatable="booking" id="" class="table table-striped table-bordered" >
+										
+									</table>
+								</div>
+                     		</div>
+                     		
 							
 	                     	<div class="form-actions">
 	                     		<?
@@ -203,6 +206,7 @@
 									if($app_checkpoint=='facility_admin_final')
 									{
 										$display[] = form_button("book","預約","class='btn btn-primary' ng-click='book()'");
+										$display[] = form_button("accept","完工","class='btn btn-warning' ng-click='accept()'");
 									}else{
 										$display[] = form_button("accept","接受","class='btn btn-warning' ng-click='accept()'");
 									}
