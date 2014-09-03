@@ -193,7 +193,7 @@
 										
 									</table>
 								</div>
-                     		</div>
+                     		<!--</div>-->
                      		
 							
 	                     	<div class="form-actions">
