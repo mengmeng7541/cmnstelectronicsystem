@@ -160,7 +160,7 @@
 									</div>
 								</div>
                      		</div>
-                     		<!--<div ng-if="app.app_checkpoint == 'facility_admin_final'">-->
+                     		<div ng-if="app.app_checkpoint == 'facility_admin_final'">
                      			<h4>時段排定</h4>
 	                 			<div class="control-group">
 						            <label class="control-label">使用儀器</label>
@@ -173,10 +173,12 @@
 						            <div class="controls">
 						            	<select ng-options="user.user_ID as user.user_name for user in available_users" ng-model="booking.booking_user_SN"></select>
 									</div>
-									<table id="table_oem_app_booking_list" class="table table-striped table-bordered">
+									
+									<table oem-booking-list-datatable id="table_oem_app_booking_list" class="table table-striped table-bordered">
 										<thead>
 											<th>起始時間</th>
 											<th>結束時間</th>
+											<th>檢測人員</th>
 											<th></th>
 										</thead>
 										
@@ -186,14 +188,14 @@
 								<div class="control-group">
 						            <label class="control-label">新增預約</label>
 						            <div class="controls">
-										<input ng-model="booking.query_date" type="text" class="date-picker"/>
+										<input datepicker ng-model="booking.query_date" type="text" class=""/>
 									</div>
 									
 									<table facility-time-datatable="booking" id="" class="table table-striped table-bordered" >
 										
 									</table>
 								</div>
-                     		<!--</div>-->
+                     		</div>
                      		
 							
 	                     	<div class="form-actions">

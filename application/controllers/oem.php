@@ -566,6 +566,20 @@ class Oem extends MY_Controller {
 		
 	}
 	//------------------------BOOKING-------------------------------
+	public function query_booking()
+	{
+		try{
+			$this->is_admin_login();
+			
+			$output['aaData'] = array();
+			
+			$input_data = $this->input->get(NULL,TRUE);
+			
+			echo json_encode($input_data);
+		}catch(Exception $e){
+			echo json_encode($output);
+		}
+	}
 	public function add_booking()
 	{
 		try{

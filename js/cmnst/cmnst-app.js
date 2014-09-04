@@ -72,11 +72,16 @@ cmnstApp
 		});
 		return deferred.promise;
 	}
+	//------------BOOKING----------------
+	var query_booking = function(SN){
+		return $http.get(site_url+'oem/booking/query',{params:{app_SN:SN}});
+	}
 	return {
 		//---------------get------------------
 		get_form: get_form,
 		get_sub_form: get_sub_form,
-		get_forms: get_forms
+		get_forms: get_forms,
+		query_booking: query_booking
 	}
 })
 .factory("bootstrap_modal_service",function($rootScope){
@@ -212,6 +217,29 @@ cmnstApp
 		link: linker
 	}
 })
+.directive('datepicker',function(){
+	var linker = function(scope,ele,attrs){
+		if(attrs.datepicker=="mm")
+		{
+			ele
+			.datepicker({	format: 'yyyy-mm',
+							viewMode: 'months',
+							minViewMode: 'months'})
+			.on("changeDate",function(){
+				$(this).trigger('change');
+			});
+		}else{
+			ele
+			.datepicker({ format: 'yyyy-mm-dd'})
+			.on("changeDate",function(){
+				$(this).trigger('change');
+			});
+		}
+	}
+	return {
+		link: linker
+	}
+})
 .directive('tab',function($timeout){
 	var linker = function(scope,element,attrs){
 //		if(scope.$last===true)
@@ -220,6 +248,20 @@ cmnstApp
 				element.tab('show');
 			});
 //		}
+	}
+	return {
+		restrict: 'A',
+		link: linker
+	}
+})
+.directive('oemBookingListDatatable',function(){
+	var linker = function(scope,ele,attrs)
+	{
+		ele.dataTable({
+			"sDom": "<'row-fluid'r>t<'row-fluid'>",
+			"sPaginationType": "bootstrap",
+			"aaSorting": []
+		});
 	}
 	return {
 		restrict: 'A',
@@ -286,11 +328,8 @@ cmnstApp
 		return header+body;
 	}
 	
-	var linker = function(scope,ele,attrs){
-		//initial
-		scope.data_dst.query_date = moment().add('days', 2).format('YYYY-MM-DD');
-		
-		var datatable = ele.dataTable({
+	var control = function($scope,$element,$compile,booking_service){
+		var datatable = $element.dataTable({
 			"bPaginate": false,
 			"bSort": false,
 			"bFilter": false,
@@ -298,12 +337,8 @@ cmnstApp
 			"sPaginationType": "bootstrap",
 			"aaSorting": []
 		});
-//		var fixedheader = new $.fn.dataTable.FixedHeader( datatable );//固定DATATABLE頭部
+		var fixedheader = new $.fn.dataTable.FixedHeader( datatable );//固定DATATABLE頭部
 		
-		
-        
-	}
-	var control = function($scope,$element,$compile,booking_service){
 		
 		$scope.b_service = booking_service;
 		$scope.$watch("b_service.booking_data",function(){
@@ -313,6 +348,8 @@ cmnstApp
 				$scope.b_service.query_date,
 				$scope.b_service.unit_sec
 			));
+			fixedheader._fnUpdateClones(true);
+			fixedheader._fnUpdatePositions();
 			$compile($element.contents())($scope);
 		});
 		
@@ -336,8 +373,7 @@ cmnstApp
 		scope:{
 			data_dst: '=facilityTimeDatatable'
 		},
-		controller: control,
-		link: linker
+		controller: control
 	}
 })
 //---------------------BOOTSTRAP MODAL CONTROLLER--------------------------
@@ -347,7 +383,6 @@ cmnstApp
 //-----------------------------OEM CONTROLLER------------------------------
 	/*----------------APP EDIT----------------*/
 .controller("oem_application_edit",function($scope,$http,user_service,oem_service,bootstrap_modal_service,booking_service){
-//	$scope.test = {query_date:"123"};//預設為今天
 	//initial variable
 	var app_col = {
 		app_col_SN: 0,
@@ -380,7 +415,7 @@ cmnstApp
 		app_cols: []
 	};
 	$scope.booking = {
-		query_date: '',
+		query_date: moment().add('days', 2).format('YYYY-MM-DD'),
 		app_SN: 0,
 		booking_user_SN: 0,
 		booking_facility_SN: [],
@@ -474,6 +509,7 @@ cmnstApp
 			$http.get(site_url+'oem/app/query',{params:{app_SN:SN}})
 			.success(function(data){
 				$scope.app = data.aaData[0];
+				
 				oem_service.get_forms(data.aaData[0].form_SN)
 				.then(function(data2){
 					$scope.forms = data2;
@@ -485,12 +521,18 @@ cmnstApp
 					}
 				});
 				
+				oem_service.query_booking($scope.app.app_SN)
+				.success(function(data){
+					console.log(data);
+				});
 			});
 			
 			user_service.get_profiles($scope.app.app_user_ID)
 			.success(function(data){
 				$scope.user = data.aaData[0];
 			});
+			
+			
 		}
 	};
 	

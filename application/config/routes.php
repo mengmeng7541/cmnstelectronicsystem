@@ -218,9 +218,11 @@ $route['oem/form/add'] = 'oem/add_form';
 $route['oem/form/update'] = 'oem/update_form';
 $route['oem/form/del'] = 'oem/del_form';
 
+$route['oem/booking/query'] = 'oem/query_booking';
 $route['oem/booking/add'] = 'oem/add_booking';
 $route['oem/booking/update'] = 'oem/update_booking';
 $route['oem/booking/del'] = 'oem/del_booking';
+
 
 //access_system
 $route['access/card/application/temp/list'] = 'access/list_card_temp_application';
