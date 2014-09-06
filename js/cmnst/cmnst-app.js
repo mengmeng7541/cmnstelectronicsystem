@@ -72,6 +72,10 @@ cmnstApp
 		});
 		return deferred.promise;
 	}
+	//------------------APP----------------
+	var set_app_SN = function(SN){
+		
+	}
 	//------------BOOKING----------------
 	var query_booking = function(SN){
 		return $http.get(site_url+'oem/booking/query',{params:{app_SN:SN}});
@@ -155,8 +159,9 @@ cmnstApp
 		},
 		refresh: function(){
 			var self = this;
-			$http.get(site_url+'facility/time',{params:{query_date:this.query_date,facility_ID:this.facility_SN}})
+			$http.get(site_url+'facility/time?'+$.param({query_date:this.query_date,facility_ID:this.facility_SN}))
 			.success(function(data){
+				console.log(self.facility_SN);
 				self.unit_sec = parseInt(data.unit_sec);
 				self.booking_data = data.aaData;
 			});
@@ -255,17 +260,58 @@ cmnstApp
 	}
 })
 .directive('oemBookingListDatatable',function(){
-	var linker = function(scope,ele,attrs)
-	{
-		ele.dataTable({
+	var control = function($scope,$element,booking_service){
+		var d_table = $element.dataTable({
+			"sAjaxSource": site_url+"oem/booking/query?app_SN="+$scope.app.app_SN,
 			"sDom": "<'row-fluid'r>t<'row-fluid'>",
 			"sPaginationType": "bootstrap",
-			"aaSorting": []
+			"aaSorting": [],
+			"aoColumnDefs": [ {
+		      "aTargets": [ 0 ],
+		      "mData": function ( source, type, val ) {
+		      	
+		        return source['map_SN'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 1 ],
+		      "mData": function ( source, type, val ) {
+		        return source['app_SN'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 2 ],
+		      "mData": function ( source, type, val ) {
+		        return source['booking_SN'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 3 ],
+		      "mData": function ( source, type, val ) {
+		        return "";
+		      }
+		    }],
+		});
+		$scope.$watch("app.app_SN",function(new_val,old_val){
+			if(new_val===old_val)
+			{
+				return;
+			}
+			d_table.fnReloadAjax();	
+		});
+		
+		$scope.b_service = booking_service;
+		$scope.$watch("b_service.booking_data",function(new_val,old_val){
+			if(new_val===old_val)
+			{
+				return;
+			}
+			d_table.fnReloadAjax();	
 		});
 	}
 	return {
 		restrict: 'A',
-		link: linker
+		controller: control
 	}
 })
 .directive('facilityTimeDatatable',function($http,$compile){
@@ -462,6 +508,10 @@ cmnstApp
 					return idx2 == idx;
 				}
 			}
+		});
+		//set default booking_facility_SN = available_facility_SN
+		$scope.booking.booking_facility_SN = $scope.available_facilities.map(function(ele){
+			return ele.facility_SN;
 		});
 	});
 	$scope.$watch("booking.booking_facility_SN",function(new_value,old_value){

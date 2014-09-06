@@ -327,6 +327,15 @@ class Oem_model extends MY_Model {
 		$table = "oem_application_booking_map";
 		$joinTable = array();
 		
+		if(isset($options['map_SN']))
+		{
+			$this->oem_db->where("$table.map_SN",$options['map_SN']);
+		}
+		if(isset($options['app_SN']))
+		{
+			$this->oem_db->where("$table.app_SN",$options['app_SN']);
+		}
+		
 		return $this->oem_db->get($table);
 	}
 	public function add_app_booking_map($data)

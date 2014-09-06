@@ -573,9 +573,19 @@ class Oem extends MY_Controller {
 			
 			$output['aaData'] = array();
 			
+//			$this->form_validation->set_rules("app_SN","表單編號","required");
+//			if(!$this->form_validation->run())
+//			{
+//				throw new Exception();
+//			}
+			
 			$input_data = $this->input->get(NULL,TRUE);
 			
-			echo json_encode($input_data);
+			$output['aaData'] = $this->oem_model->get_app_booking_map_list(array(
+				"app_SN"=>$input_data['app_SN']
+			))->result_array();
+			
+			echo json_encode($output);
 		}catch(Exception $e){
 			echo json_encode($output);
 		}

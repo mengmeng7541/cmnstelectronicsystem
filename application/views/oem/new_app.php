@@ -179,7 +179,7 @@
 											<th>起始時間</th>
 											<th>結束時間</th>
 											<th>檢測人員</th>
-											<th></th>
+											<th>動作</th>
 										</thead>
 										
 									</table>

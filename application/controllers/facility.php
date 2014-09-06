@@ -927,31 +927,6 @@ class Facility extends MY_Controller {
 					}
 				}
 			}
-			
-			
-			//輸出
-//			$max_unit_sec = max(sql_result_to_column($facilities,"unit_sec"));
-//			for($i=strtotime($input_data['query_date']);$i<strtotime($input_data['query_date']." +1 days");$i+=$max_unit_sec)
-//        	{
-//         		$row = array(date("H:i",$i)." ~ ".date("H:i",$i+$max_unit_sec));
-//         		for($j=$i;$j<strtotime($input_data['query_date']." +5 days");$j+=(24*60*60))
-//         		{
-//         			if($max_unit_sec==$min_unit_sec){
-//						$row[] = empty($occupied_time[$j])?form_checkbox("booking_time[]",$j,FALSE):"X";
-//					}else{
-//						
-//						$occupied = FALSE;
-//						for($k=$j;$k<$j+$max_unit_sec;$k+=$min_unit_sec){
-//							if(isset($occupied_time[$k]) && $occupied_time[$k]==TRUE){
-//								$occupied = TRUE;
-//							}
-//						}
-//						$row[] = $occupied?"X":form_checkbox("booking_time[]",$j,FALSE);
-//					}
-//					
-//				}
-//				$output['aaData'][] = $row;
-//			}
 
 			$output['unit_sec'] = max(sql_result_to_column($facilities,"unit_sec"));
 			echo json_encode($output);
