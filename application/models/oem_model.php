@@ -309,6 +309,10 @@ class Oem_model extends MY_Model {
 		{
 			$this->oem_db->where("$sTable.app_SN",$options['app_SN']);
 		}
+		if(isset($options['checkpoint_ID']))
+		{
+			$this->oem_db->where("$sTable.checkpoint_ID",$options['checkpoint_ID']);
+		}
 		
 		return $this->oem_db->get($sTable);
 	}
@@ -324,8 +328,26 @@ class Oem_model extends MY_Model {
 	//-----------------------APP BOOKING-----------------------------
 	public function get_app_booking_map_list($options = array())
 	{
-		$table = "oem_application_booking_map";
-		$joinTable = array();
+		$table = "cmnst_oem.oem_application_booking_map";
+		$joinTable = array(
+			"booking"=>"cmnst_facility.facility_booking",
+			"user"=>"cmnst_common.user_profile",
+			"state"=>"cmnst_oem.enum_oem_booking_state"
+		);
+		
+		$this->oem_db->select("
+			$table.*,
+			{$joinTable['booking']}.user_ID,
+			{$joinTable['booking']}.facility_ID AS facility_SN,
+			{$joinTable['booking']}.purpose,
+			{$joinTable['booking']}.start_time,
+			{$joinTable['booking']}.end_time,
+			{$joinTable['user']}.name AS user_name,
+			{$joinTable['state']}.state_name AS booking_state
+		",FALSE);
+		$this->oem_db->join($joinTable['booking'],"$table.booking_SN = {$joinTable['booking']}.serial_no","LEFT")
+					 ->join($joinTable['user'],"{$joinTable['booking']}.user_ID = {$joinTable['user']}.ID","LEFT")
+					 ->join($joinTable['state'],"$table.booking_state = {$joinTable['state']}.state_ID","LEFT");
 		
 		if(isset($options['map_SN']))
 		{
@@ -340,11 +362,13 @@ class Oem_model extends MY_Model {
 	}
 	public function add_app_booking_map($data)
 	{
-		$this->oem_db->set("app_SN",$data['app_SN']);
-		$this->oem_db->set("booking_SN",$data['booking_SN']);
-		$this->oem_db->set("booking_state",$data['booking_state']);
-		$this->oem_db->set("booking_remark",$data['booking_remark']);
-		$this->oem_db->insert("oem_application_booking_map");
+		foreach((array)$data['booking_SN'] as $booking_SN)
+		{
+			$this->oem_db->set("app_SN",$data['app_SN']);
+			$this->oem_db->set("booking_SN",$booking_SN);
+			$this->oem_db->set("booking_state",$data['booking_state']);
+			$this->oem_db->insert("oem_application_booking_map");
+		}
 		return $this->oem_db->insert_id();
 	}
 }

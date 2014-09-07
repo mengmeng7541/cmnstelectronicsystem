@@ -76,16 +76,11 @@ cmnstApp
 	var set_app_SN = function(SN){
 		
 	}
-	//------------BOOKING----------------
-	var query_booking = function(SN){
-		return $http.get(site_url+'oem/booking/query',{params:{app_SN:SN}});
-	}
 	return {
 		//---------------get------------------
 		get_form: get_form,
 		get_sub_form: get_sub_form,
-		get_forms: get_forms,
-		query_booking: query_booking
+		get_forms: get_forms
 	}
 })
 .factory("bootstrap_modal_service",function($rootScope){
@@ -108,8 +103,27 @@ cmnstApp
 					link_url: ''
 				}
 			}
+		},
+		form: {
+			header: {
+				title: ''
+			},
+			body: {
+				content: ''
+			},
+			footer: {
+				confirm: {
+					text: '',
+					link_url: ''
+				},
+				cancel: {
+					text: '',
+					link_url: ''
+				}
+			}
 		}
 	}
+	//-----------INFO MODAL---------------
 	var get_info_modal = function()
 	{
 		return $rootScope.modal.info;
@@ -131,11 +145,15 @@ cmnstApp
 	var set_info_modal = function(data){
 		$rootScope.modal.info = data;
 	}
-	
+	//------------FORM MODAL---------------
+	var set_form_modal = function(data){
+		$rootScope.modal.form = data;
+	}
 	return {
 		reset_info_modal: reset_info_modal,
 		set_info_modal: set_info_modal,
-		get_info_modal: get_info_modal
+		get_info_modal: get_info_modal,
+		set_form_modal: set_form_modal
 	}
 })
 .factory("booking_service",function($http){
@@ -161,7 +179,6 @@ cmnstApp
 			var self = this;
 			$http.get(site_url+'facility/time?'+$.param({query_date:this.query_date,facility_ID:this.facility_SN}))
 			.success(function(data){
-				console.log(self.facility_SN);
 				self.unit_sec = parseInt(data.unit_sec);
 				self.booking_data = data.aaData;
 			});
@@ -201,7 +218,7 @@ cmnstApp
 	var linker = function(scope,element,attrs){
 		element.modal({backdrop:'static',keyboard:true,show:false});
 		element.modal('hide');
-		scope.$watch(attrs.watch, function (new_val,old_val) {
+		scope.$watch(attrs.modal, function (new_val,old_val) {
 			if(new_val===old_val)
 			{
 				//initialization
@@ -270,23 +287,29 @@ cmnstApp
 		      "aTargets": [ 0 ],
 		      "mData": function ( source, type, val ) {
 		      	
-		        return source['map_SN'];
+		        return source['start_time'];
 		      }
 		    },
 		    {
 		      "aTargets": [ 1 ],
 		      "mData": function ( source, type, val ) {
-		        return source['app_SN'];
+		        return source['end_time'];
 		      }
 		    },
 		    {
 		      "aTargets": [ 2 ],
 		      "mData": function ( source, type, val ) {
-		        return source['booking_SN'];
+		        return source['user_name'];
 		      }
 		    },
 		    {
 		      "aTargets": [ 3 ],
+		      "mData": function ( source, type, val ) {
+		        return source['booking_state'];
+		      }
+		    },
+		    {
+		      "aTargets": [ 4 ],
 		      "mData": function ( source, type, val ) {
 		        return "";
 		      }
@@ -428,7 +451,7 @@ cmnstApp
 })
 //-----------------------------OEM CONTROLLER------------------------------
 	/*----------------APP EDIT----------------*/
-.controller("oem_application_edit",function($scope,$http,user_service,oem_service,bootstrap_modal_service,booking_service){
+.controller("oem_application_edit",function($scope,$http,$sce,user_service,oem_service,bootstrap_modal_service,booking_service){
 	//initial variable
 	var app_col = {
 		app_col_SN: 0,
@@ -463,6 +486,7 @@ cmnstApp
 	$scope.booking = {
 		query_date: moment().add('days', 2).format('YYYY-MM-DD'),
 		app_SN: 0,
+		booking_state: 'normal',
 		booking_user_SN: 0,
 		booking_facility_SN: [],
 		booking_start_time: 0,
@@ -571,10 +595,6 @@ cmnstApp
 					}
 				});
 				
-				oem_service.query_booking($scope.app.app_SN)
-				.success(function(data){
-					console.log(data);
-				});
 			});
 			
 			user_service.get_profiles($scope.app.app_user_ID)
@@ -644,7 +664,7 @@ cmnstApp
 		bootstrap_modal_service.reset_info_modal();
 		$scope.app.app_checkpoints.push($scope.app_checkpoint);
 		$http.post(site_url+'oem/app/update',{data:$scope.app,action:'accept'})
-		.success(function(data){
+		.success(function(data){console.log(data);
 			bootstrap_modal_service.set_info_modal(data);
 		});
 	}
@@ -655,6 +675,26 @@ cmnstApp
 		.success(function(data){
 			bootstrap_modal_service.set_info_modal(data);
 		});
+	}
+	$scope.apply_redo = function(){
+		bootstrap_modal_service.reset_info_modal();
+		$scope.app.app_checkpoints.push($scope.app_checkpoint);
+		$http.post(site_url+'oem/app/update',{data:$scope.app,action:'apply_redo'})
+		.success(function(data){
+			bootstrap_modal_service.set_info_modal(data);
+		});
+	}
+	$scope.is_redo_agreed = function(){
+		var result = $scope.app.app_checkpoints.filter(function(ele){
+			return ele.checkpoint_ID==='common_lab_section_chief';
+		});
+		
+		if(result.length===0)
+		{
+			return false;
+		}else{
+			return true;
+		}
 	}
 })
 	/*----------------FORM EDIT----------------*/

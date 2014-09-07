@@ -172,6 +172,23 @@ class App_model extends Oem_Model {
 			case 'user_boss':
 				//由controller控制權限
 				break;
+			case 'facility_admin_final':
+				//代工單管理員或其技術長
+				if($app['form_admin_ID']!=$admin_ID){
+					throw new Exception("權限不足",ERROR_CODE);
+				}
+				break;
+			case 'common_lab_section_chief':
+				$this->load->model('admin_model');
+				$privilege = $this->admin_model->get_org_chart_list(array(
+					"admin_ID"=>$this->session->userdata('ID'),
+					"team_ID"=>"common_lab",
+					"status_ID"=>"section_chief"
+				))->row_array();
+				if(!$privilege){
+					throw new Exception("權限不足",ERROR_CODE);
+				}
+				break;
 			default:
 				throw new Exception("未知的狀態",ERROR_CODE);
 		}
@@ -189,6 +206,7 @@ class App_model extends Oem_Model {
 				"facility_admin_init"=>"common_lab_deputy_section_chief",
 				"common_lab_deputy_section_chief"=>"user_boss",
 				"user_boss"=>"facility_admin_final",
+				"common_lab_section_chief"=>"facility_admin_final"
 //				"facility_admin_final"=>"customer_final",
 			);
 			$this->oem_model->update_app(array(
@@ -201,6 +219,13 @@ class App_model extends Oem_Model {
 		{
 			$this->oem_model->update_app(array(
 				"app_checkpoint"=>"rejected",
+				"app_SN"=>$app['app_SN']
+			));
+		}
+		else if($action=="apply_redo")
+		{
+			$this->oem_model->update_app(array(
+				"app_checkpoint"=>"common_lab_section_chief",
 				"app_SN"=>$app['app_SN']
 			));
 		}
@@ -290,6 +315,7 @@ class App_model extends Oem_Model {
 			");
 			$this->email->send();
 		}else if($app['app_checkpoint']=='common_lab_section_chief'){
+			//通知組長上去審核
 			
 		}else if($app['app_checkpoint']=='completed'){
 			//通知所有相關人員

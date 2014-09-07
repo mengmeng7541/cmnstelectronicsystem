@@ -303,6 +303,7 @@ class Oem extends MY_Controller {
 			}
 			
 			$this->load->model('oem/app_model');
+			$app_checkpoint = end($input['data']['app_checkpoints']);
 			switch($input['action'])
 			{
 				case 'accept':
@@ -311,7 +312,6 @@ class Oem extends MY_Controller {
 					{
 						throw new Exception("未知的錯誤",ERROR_CODE);
 					}
-					$app_checkpoint = end($input['data']['app_checkpoints']);
 					if(!$app_checkpoint || !isset($app_checkpoint['checkpoint_comment']))
 					{
 						throw new Exception("未知的錯誤",ERROR_CODE);
@@ -328,6 +328,18 @@ class Oem extends MY_Controller {
 						$this->is_user_login();
 						$this->app_model->confirm($input['data']['app_SN'],$this->session->userdata('ID'),$app_checkpoint['checkpoint_comment'],$input['action'],$input['data']['app_estimated_hour']);
 					}
+					break;
+				case 'apply_redo':
+					$this->is_admin_login();
+					
+					$_POST = $app_checkpoint;
+					$this->form_validation->set_rules("checkpoint_comment","原因","required");
+					if(!$this->form_validation->run())
+					{
+						throw new Exception(validation_errors(),WARNING_CODE);
+					}
+					
+					$this->app_model->confirm($input['data']['app_SN'],$this->session->userdata('ID'),$app_checkpoint['checkpoint_comment'],$input['action']);
 					break;
 				case 'submit':
 					break;
@@ -602,12 +614,26 @@ class Oem extends MY_Controller {
 			$this->form_validation->set_rules("booking_start_time","預約起始時間","required");
 			$this->form_validation->set_rules("booking_end_time","預約結束時間","required");
 			$this->form_validation->set_rules("booking_user_SN","操作人員","required");
+			$this->form_validation->set_rules("booking_state","預約原因","required");
 			$this->form_validation->set_rules("booking_facility_SN","使用儀器","required");
 			if(!$this->form_validation->run())
 			{
 				throw new Exception(validation_errors(),WARNING_CODE);
 			}
 			
+			//重做需得到組長同意
+			if($booking['data']['booking_state']=="redo")
+			{
+				//檢查組長是否有簽章 common_lab_section_chief
+				$check = $this->oem_model->get_app_checkpoint_list(array(
+					"app_SN"=>$booking['data']['app_SN'],
+					"checkpoint_ID"=>"common_lab_section_chief"
+				))->row_array();
+				if(empty($check))
+				{
+					throw new Exception("未經共同實驗室組組長同意，不可預約重做",ERROR_CODE);
+				}
+			}
 			
 			$this->load->model('facility/booking_model');
 			$booking_ID = $this->booking_model->add($booking['data']['booking_facility_SN'],$booking['data']['booking_user_SN'],$booking['data']['booking_start_time'],$booking['data']['booking_end_time'],"OEM");
@@ -615,8 +641,7 @@ class Oem extends MY_Controller {
 			$this->oem_model->add_app_booking_map(array(
 				"app_SN"=>$booking['data']['app_SN'],
 				"booking_SN"=>$booking_ID,
-				"booking_state"=>"normal",
-				"booking_remark"=>""
+				"booking_state"=>$booking['data']['booking_state']
 			));
 			
 			$result = $this->get_info_modal_array("預約成功");

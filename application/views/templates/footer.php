@@ -12,7 +12,7 @@
 		<button data-dismiss="modal" class="btn btn-primary hide">OK</button>
     </div>
 </div>
-<div modal watch="$root.modal.info" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div modal="$root.modal.info" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel">{{$root.modal.info.header.title}}</h3>
@@ -22,6 +22,18 @@
     </div>
     <div class="modal-footer" ng-show="$root.modal.info.footer">
 		<a ng-href="{{button.link_url}}" data-dismiss="{{button.dismiss}}" class="btn btn-primary" ng-repeat="button in $root.modal.info.footer" ng-show="button.text != ''">{{button.text}}</a>
+    </div>
+</div>
+<div modal="$root.modal.form" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">{{$root.modal.form.header.title}}</h3>
+    </div>
+    <div class="modal-body">
+        <p ng-bind-html="$root.modal.form.body.content"></p>
+    </div>
+    <div class="modal-footer" ng-show="$root.modal.form.footer">
+		<a ng-href="{{button.link_url}}" data-dismiss="{{button.dismiss}}" class="btn btn-primary" ng-repeat="button in $root.modal.form.footer" ng-show="button.text != ''">{{button.text}}</a>
     </div>
 </div>
 <div id="form_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:640px;margin-left:-320px">

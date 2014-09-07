@@ -179,14 +179,25 @@
 											<th>起始時間</th>
 											<th>結束時間</th>
 											<th>檢測人員</th>
+											<th>預約原因</th>
 											<th>動作</th>
 										</thead>
 										
 									</table>
 								</div>
-								
 								<div class="control-group">
-						            <label class="control-label">新增預約</label>
+						            <label class="control-label">預約原因</label>
+						            <div class="controls">
+										<select ng-model="booking.booking_state">
+											<option value="pre">代工前準備</option>
+											<option value="normal">正式代工</option>
+											<option value="post">後續處理</option>
+											<option value="redo">代工重做</option>
+										</select>
+									</div>
+								</div>
+								<div class="control-group">
+						            <label class="control-label">預約時段</label>
 						            <div class="controls">
 										<input datepicker ng-model="booking.query_date" type="text" class=""/>
 									</div>
@@ -195,8 +206,31 @@
 										
 									</table>
 								</div>
+								
                      		</div>
-                     		
+                     		<div ng-if="app.app_checkpoint == 'common_lab_section_chief'">
+                     			<div class="control-group">
+						            <label class="control-label">備註</label>
+						            <div class="controls">
+										<textarea class="span12" ng-model="app_checkpoint.checkpoint_comment"></textarea>
+									</div>
+									
+									
+										
+									</table>
+								</div>
+                     			<table oem-booking-list-datatable id="table_oem_app_booking_list" class="table table-striped table-bordered">
+									<thead>
+										<th>起始時間</th>
+										<th>結束時間</th>
+										<th>檢測人員</th>
+										<th>預約原因</th>
+										<th>動作</th>
+									</thead>
+									
+								</table>
+								
+                     		</div>
 							
 	                     	<div class="form-actions">
 	                     		<?
@@ -209,6 +243,7 @@
 									{
 										$display[] = form_button("book","預約","class='btn btn-primary' ng-click='book()'");
 										$display[] = form_button("accept","完工","class='btn btn-warning' ng-click='accept()'");
+										$display[] = form_button("apply_redo","申請重做","class='btn btn-danger' ng-show='!is_redo_agreed()' href='#form_oem_apply_redo_modal' data-toggle='modal'");
 									}else{
 										$display[] = form_button("accept","接受","class='btn btn-warning' ng-click='accept()'");
 									}
@@ -220,6 +255,22 @@
 								
 								echo implode(' ',$display);
 	                     		?>
+<div id="form_oem_apply_redo_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:640px;margin-left:-320px">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">表單</h3>
+    </div>
+    <div class="modal-body" style="max-height:none;">
+        申請重做原因
+        <div>
+        	<textarea ng-model="app_checkpoint.checkpoint_comment"></textarea>
+        </div>
+    </div>
+    <div class="modal-footer">
+		<button data-dismiss="modal" ng-click='apply_redo()' class="btn btn-primary">送出</button>
+		<button data-dismiss="modal" class="btn btn-primary">取消</button>
+    </div>
+</div>
 	                     	</div>
 	                    </form>
                      </div>

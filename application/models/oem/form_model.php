@@ -148,7 +148,8 @@ class Form_model extends Oem_Model {
 		}
 		$this->load->model('facility_model');
 		$admin_privileges = $this->facility_model->get_user_privilege_list(array(
-			"facility_ID"=>array_unique(sql_column_to_key_value_array($form_facility_map,"facility_SN"))
+			"facility_ID"=>array_unique(sql_column_to_key_value_array($form_facility_map,"facility_SN")),
+			"privilege"=>"admin"
 		))->result_array();
 		return $admin_privileges;
 	}
