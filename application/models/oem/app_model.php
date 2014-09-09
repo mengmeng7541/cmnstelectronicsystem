@@ -197,7 +197,8 @@ class App_model extends Oem_Model {
 			"app_SN"=>$app['app_SN'],
 			"checkpoint_ID"=>$app['app_checkpoint'],
 			"checkpoint_admin_ID"=>$admin_ID,
-			"checkpoint_comment"=>$comment
+			"checkpoint_comment"=>$comment,
+			"checkpoint_result"=>$action=="reject"?"0":"1"
 		));
 		
 		if($action=="accept")
@@ -217,10 +218,19 @@ class App_model extends Oem_Model {
 		}
 		else if($action=="reject")
 		{
-			$this->oem_model->update_app(array(
-				"app_checkpoint"=>"rejected",
-				"app_SN"=>$app['app_SN']
-			));
+			if($app['checkpoint_ID']=="common_lab_section_chief")
+			{
+				$this->oem_model->update_app(array(
+					"app_checkpoint"=>"facility_admin_final",
+					"app_SN"=>$app['app_SN']
+				));
+			}else{
+				$this->oem_model->update_app(array(
+					"app_checkpoint"=>"rejected",
+					"app_SN"=>$app['app_SN']
+				));
+			}
+			
 		}
 		else if($action=="apply_redo")
 		{
@@ -315,8 +325,38 @@ class App_model extends Oem_Model {
 			");
 			$this->email->send();
 		}else if($app['app_checkpoint']=='common_lab_section_chief'){
-			//通知組長上去審核
 			
+			//通知組長上去審核
+			$this->load->model('admin_model');
+			$chiefs = $this->admin_model->get_org_chart_list(array(
+				"team_ID"=>"common_lab",
+				"status_ID"=>"section_chief"
+			))->result_array();
+			
+			//取得理由
+			$checkpoints = $this->oem_model->get_app_checkpoint_list(array(
+				"app_SN"=>$app['app_SN'],
+				"checkpoint_ID"=>"facility_admin_final"
+			))->result_array();
+			if(empty($checkpoints))
+			{
+				return;
+			}
+			$checkpoint = end($checkpoints);
+			
+			foreach($chiefs as $chief)
+			{
+				$this->email->to($chief['admin_email']);
+				$this->email->subject("成大微奈米科技研究中心");
+				$this->email->message("
+					{$chief['admin_name']} 您好<br>
+					代工編號 {$app['app_SN']} {$app['form_cht_name']} ({$app['form_eng_name']}) 之代工服務被儀器管理員申請代工重做<br>
+					理由為：{$checkpoint['checkpoint_comment']}<br>
+					請上本系統審核，<br>
+					或<a href='".site_url('oem/app/edit/'.$app['app_SN'])."'>點此連結審核</a>，謝謝。
+				");
+				$this->email->send();
+			}
 		}else if($app['app_checkpoint']=='completed'){
 			//通知所有相關人員
 			

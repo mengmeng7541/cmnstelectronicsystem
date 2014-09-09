@@ -611,6 +611,7 @@ class Oem extends MY_Controller {
 			$booking = json_decode($input,TRUE);
 			
 			$_POST = $booking['data'];
+			$this->form_validation->set_rules("app_SN","代工單號","required");
 			$this->form_validation->set_rules("booking_start_time","預約起始時間","required");
 			$this->form_validation->set_rules("booking_end_time","預約結束時間","required");
 			$this->form_validation->set_rules("booking_user_SN","操作人員","required");
@@ -621,13 +622,51 @@ class Oem extends MY_Controller {
 				throw new Exception(validation_errors(),WARNING_CODE);
 			}
 			
+			//檢查必須再facility_admin_final狀態下才可預約
+			$app = $this->oem_model->get_app_list(array(
+				"app_SN"=>$booking['data']['app_SN']
+			))->row_array();
+			if(empty($app))
+			{
+				throw new Exception("無此代工單",ERROR_CODE);
+			}
+			if($app['app_checkpoint']!="facility_admin_final")
+			{
+				throw new Exception("此代工單目前不可預約",ERROR_CODE);
+			}
+			
+			//檢查代工單對應預約之儀器是否正確
+			$this->load->model('oem/form_model');
+			$forms = $this->form_model->get_vertical_group_forms($app['form_SN']);
+			if(empty($forms))
+			{
+				throw new Exception("找不到代工單群組",ERROR_CODE);
+			}
+			$form_SNs = sql_column_to_key_value_array($forms,"form_SN");
+			$maps = $this->oem_model->get_form_facility_map_list(array(
+				"form_SN"=>$form_SNs
+			))->result_array();
+			if(empty($maps))
+			{
+				throw new Exception("找不到對應之儀器",ERROR_CODE);
+			}
+			$available_facility_SNs = sql_column_to_key_value_array($maps,"facility_SN");
+			foreach($booking['data']['booking_facility_SN'] as $facility_SN)
+			{
+				if(!in_array($facility_SN,$available_facility_SNs))
+				{
+					throw new Exception("不合法的儀器",ERROR_CODE);
+				}
+			}
+			
 			//重做需得到組長同意
 			if($booking['data']['booking_state']=="redo")
 			{
 				//檢查組長是否有簽章 common_lab_section_chief
 				$check = $this->oem_model->get_app_checkpoint_list(array(
 					"app_SN"=>$booking['data']['app_SN'],
-					"checkpoint_ID"=>"common_lab_section_chief"
+					"checkpoint_ID"=>"common_lab_section_chief",
+					"checkpoint_result"=>"1"
 				))->row_array();
 				if(empty($check))
 				{

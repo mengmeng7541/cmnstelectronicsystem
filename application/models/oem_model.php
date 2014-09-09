@@ -191,7 +191,11 @@ class Oem_model extends MY_Model {
 		$this->oem_db->join($sJoinTable['facility'],"{$sJoinTable['facility']}.ID = $sTable.facility_SN");
 		if(isset($options['form_SN']))
 		{
-			$this->oem_db->where("$sTable.form_SN",$options['form_SN']);
+			if(empty($options['form_SN'])&&is_array($options['form_SN']))
+			{
+				$options['form_SN'] = array('');
+			}
+			$this->oem_db->where_in("$sTable.form_SN",(array)$options['form_SN']);
 		}
 		if(isset($options['facility_SN']))
 		{
@@ -313,6 +317,10 @@ class Oem_model extends MY_Model {
 		{
 			$this->oem_db->where("$sTable.checkpoint_ID",$options['checkpoint_ID']);
 		}
+		if(isset($options['checkpoint_result']))
+		{
+			$this->oem_db->where("$sTable.checkpoint_result",$options['checkpoint_result']);
+		}
 		
 		return $this->oem_db->get($sTable);
 	}
@@ -322,6 +330,7 @@ class Oem_model extends MY_Model {
 		$this->oem_db->set("checkpoint_ID",$data['checkpoint_ID']);
 		$this->oem_db->set("checkpoint_admin_ID",$data['checkpoint_admin_ID']);
 		$this->oem_db->set("checkpoint_comment",$data['checkpoint_comment']);
+		$this->oem_db->set("checkpoint_result",$data['checkpoint_result']);
 		$this->oem_db->insert("oem_application_checkpoint");
 		return $this->oem_db->insert_id();
 	}

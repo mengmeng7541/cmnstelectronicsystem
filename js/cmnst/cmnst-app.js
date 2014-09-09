@@ -283,6 +283,7 @@ cmnstApp
 			"sDom": "<'row-fluid'r>t<'row-fluid'>",
 			"sPaginationType": "bootstrap",
 			"aaSorting": [],
+			"bPaginate": false,
 			"aoColumnDefs": [ {
 		      "aTargets": [ 0 ],
 		      "mData": function ( source, type, val ) {
@@ -479,7 +480,7 @@ cmnstApp
 		app_description: '',
 		app_time: '',
 		app_estimated_hour: '',
-		app_checkpoint: '',
+		app_checkpoint: 'user_init',
 		app_checkpoints: [],
 		app_cols: []
 	};

@@ -91,7 +91,7 @@
 							<div class="control-group" ng-show="forms.length > 1">
 					            <label class="control-label">需要額外服務嗎?</label>
 					            <div class="controls">
-					            	<label class="radio" ng-repeat="form in forms track by $index"><input uniform type="radio" name="form_idx" ng-model="$parent.form_idx" value="{{$index}}"/>{{form.form_cht_name}}({{form.form_eng_name}})</label>
+					            	<label class="radio" ng-repeat="form in forms track by $index"><input uniform type="radio" name="form_idx" ng-model="$parent.form_idx" value="{{$index}}" ng-disabled="app.app_checkpoint!='user_init'"/>{{form.form_cht_name}}({{form.form_eng_name}})</label>
 								</div>
 							</div>
 							<div class="control-group">
@@ -104,20 +104,20 @@
 							<div class="control-group" ng-repeat="col in app.app_cols" ng-show="col.col_enable">
 								<label class="control-label">{{col.col_cht_name}}</label>
 								<div class="controls">
-									<input type="text" ng-model="col.col_value" value="{{col.col_value}}" class="span12"/>
+									<input type="text" ng-model="col.col_value" value="{{col.col_value}}" class="span12" ng-readonly="app.app_checkpoint!='user_init'"/>
 								</div>
 							</div>
 							<div class="control-group">
 					            <label class="control-label">其它事宜</label>
 					            <div class="controls" >
-					            	<textarea ng-model="app.app_description" rows="5" class="span12"></textarea>
+					            	<textarea ng-model="app.app_description" rows="5" class="span12" ng-readonly="app.app_checkpoint!='user_init'"></textarea>
 								</div>
 							</div>
 							<h4>簽核流程</h4>
 							<div class="control-group">
 					            <label class="control-label">預估代工時數</label>
 					            <div class="controls" >
-					            	<input type="text" ng-model="app.app_estimated_hour" value=""/>
+					            	<input type="text" ng-model="app.app_estimated_hour" value="" ng-readonly="app.app_checkpoint!='facility_admin_init'"/>
 								</div>
 							</div>
                      		<div class="row-fluid">
