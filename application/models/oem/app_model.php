@@ -9,7 +9,7 @@ class App_model extends Oem_Model {
 	
 	
 	//---------------------APP-------------------------------
-	public function add($form_SN,$description,$app_cols,$app_type = 'normal')
+	public function add($form_SN,$description,$app_cols,$app_type = 'normal',$app_SN = 0)
 	{
 		$form = $this->oem_model->get_form_list(array("form_SN"=>$form_SN))->row_array();
 		if(!$form)
@@ -20,6 +20,31 @@ class App_model extends Oem_Model {
 		if($form['form_parent_SN'])
 		{
 			$form_parent_cols = $this->oem_model->get_form_col_list(array("form_SN"=>$form['form_parent_SN'],"col_enable"=>1))->result_array();
+		}
+		
+		//檢查type是否符合權限
+		//研究代工：僅開放給技術長 for 技術深耕＆共同研究
+		//測試代工：審核為技術推廣組組長
+		if($app_type=="research")
+		{
+			//確認身分是否為技術長
+			$this->load->model("admin_model");
+			$privilege = $this->admin_model->get_org_chart_list(array(
+				"status_ID"=>"CTO",
+				"admin_ID"=>$this->session->userdata('ID')
+			))->row_array();
+			if(empty($privilege))
+			{
+				throw new Exception("研究代工只開放技術長申請",ERROR_CODE);
+			}
+		}
+		else if($app_type=="testing")
+		{
+			//確認身分是否為中心同仁
+			if(!$this->is_admin_login())
+			{
+				throw new Exception("非中心同仁不可申請測試代工",ERROR_CODE);
+			}
 		}
 		
 		//檢查欄位是否都已填
@@ -61,13 +86,50 @@ class App_model extends Oem_Model {
 			}
 		}
 		
+		//檢查app是否存在
+		if(empty($app_SN))
+		{
+			$app_SN = $this->oem_model->add_app(array(
+				"form_SN"=>$form_SN,
+				"app_type"=>$app_type,
+				"app_description"=>$description,
+				"app_checkpoint"=>"user_init"
+			));
+		}else{
+			//檢查申請人是否一樣
+			$app = $this->oem_model->get_app_list(array(
+				"app_SN"=>$app_SN,
+				"app_user_ID"=>$this->session->userdata('ID')
+			))->row_array();
+			if(empty($app))
+			{
+				throw new Exception("無此申請單",ERROR_CODE);
+			}
+			$this->oem_model->update_app(array(
+				"app_SN"=>$app_SN,
+				"form_SN"=>$form_SN,
+				"app_type"=>$app_type,
+				"app_description"=>$description,
+				"app_checkpoint"=>"user_init"
+			));
+		}
 		
-		$app_SN = $this->oem_model->add_app(array(
-			"form_SN"=>$form_SN,
-			"app_type"=>$app_type,
-			"app_description"=>$description,
-			"app_checkpoint"=>"user_init"
-		));
+		//把col取出來
+		$old_cols = $this->oem_model->get_app_col_list(array(
+			"app_SN"=>$app_SN
+		))->result_array();
+		//把變更後已經不存在的刪除
+		foreach($old_cols as $old_col)
+		{
+			$matched_col = array_filter($app_cols,function($app_col) use($old_col){
+				return $app_col['app_col_SN'] == $old_col['app_col_SN'];
+			});
+			if(empty($matched_col))
+			{
+				//刪除
+				$this->oem_model->del_app_col(array("app_col_SN"=>$old_col['app_col_SN']));
+			}
+		}
 		
 		if(isset($form_parent_cols))
 		{
@@ -79,11 +141,28 @@ class App_model extends Oem_Model {
 				if($app_col)
 				{
 					$app_col = reset($app_col);
-					$this->oem_model->add_app_col(array(
-						"app_SN"=>$app_SN,
-						"form_col_SN"=>$form_parent_col['form_col_SN'],
-						"col_value"=>$app_col['col_value']
-					));
+					//判斷是否存在old_cols內
+					if(
+						!empty($old_col)&&
+						array_filter($old_cols,function($old_col) use($app_col){
+							return $old_col['app_col_SN']==$app_col['app_col_SN'];
+						})
+					)
+					{
+						$this->oem_model->update_app_col(array(
+							"app_col_SN"=>$app_col['app_col_SN'],
+							"app_SN"=>$app_SN,
+							"form_col_SN"=>$form_parent_col['form_col_SN'],
+							"col_value"=>$app_col['col_value']
+						));
+					}else{
+						$this->oem_model->add_app_col(array(
+							"app_SN"=>$app_SN,
+							"form_col_SN"=>$form_parent_col['form_col_SN'],
+							"col_value"=>$app_col['col_value']
+						));
+					}
+					
 				}
 			}
 		}
@@ -95,20 +174,36 @@ class App_model extends Oem_Model {
 			if($app_col)
 			{
 				$app_col = reset($app_col);
-				$this->oem_model->add_app_col(array(
-					"app_SN"=>$app_SN,
-					"form_col_SN"=>$form_col['form_col_SN'],
-					"col_value"=>$app_col['col_value']
-				));
+				//判斷是否存在old_cols內
+				if(
+					!empty($old_col)&&
+					array_filter($old_cols,function($old_col) use($app_col){
+						return $old_col['app_col_SN']==$app_col['app_col_SN'];
+					})
+				)
+				{
+					$this->oem_model->update_app_col(array(
+						"app_col_SN"=>$app_col['app_col_SN'],
+						"app_SN"=>$app_SN,
+						"form_col_SN"=>$form_col['form_col_SN'],
+						"col_value"=>$app_col['col_value']
+					));
+				}else{
+					$this->oem_model->add_app_col(array(
+						"app_SN"=>$app_SN,
+						"form_col_SN"=>$form_col['form_col_SN'],
+						"col_value"=>$app_col['col_value']
+					));
+				}
 			}
 		}
 		
 		return $app_SN;
 	}
-	public function update($app_SN,$description,$app_cols,$app_type = 'normal')
-	{
-		
-	}
+//	public function update($app_SN,$form_SN,$description,$app_cols,$app_type = 'normal')
+//	{
+//		
+//	}
 //	public function save($app_SN,$description)
 //	{
 //		//for user
@@ -189,6 +284,28 @@ class App_model extends Oem_Model {
 					throw new Exception("權限不足",ERROR_CODE);
 				}
 				break;
+			case 'education_research_section_chief':
+//				$this->load->model('admin_model');
+//				$privilege = $this->admin_model->get_org_chart_list(array(
+//					"admin_ID"=>$this->session->userdata('ID'),
+//					"team_ID"=>"common_lab",
+//					"status_ID"=>"section_chief"
+//				))->row_array();
+//				if(!$privilege){
+//					throw new Exception("權限不足",ERROR_CODE);
+//				}
+//				break;
+			case 'technology_promotion_section_chief':
+//				$this->load->model('admin_model');
+//				$privilege = $this->admin_model->get_org_chart_list(array(
+//					"admin_ID"=>$this->session->userdata('ID'),
+//					"team_ID"=>"common_lab",
+//					"status_ID"=>"section_chief"
+//				))->row_array();
+//				if(!$privilege){
+//					throw new Exception("權限不足",ERROR_CODE);
+//				}
+//				break;
 			default:
 				throw new Exception("未知的狀態",ERROR_CODE);
 		}
@@ -210,6 +327,14 @@ class App_model extends Oem_Model {
 				"common_lab_section_chief"=>"facility_admin_final"
 //				"facility_admin_final"=>"customer_final",
 			);
+			if($app['app_type']=="research")
+			{
+				$next_cp['common_lab_deputy_section_chief'] = "education_research_section_chief";
+			}
+			else if($app['app_type']=="testing")
+			{
+				$next_cp['common_lab_deputy_section_chief'] = "technology_promotion_section_chief";
+			}
 			$this->oem_model->update_app(array(
 				"app_checkpoint"=>$next_cp[$app['app_checkpoint']],
 				"app_SN"=>$app['app_SN']
@@ -352,6 +477,48 @@ class App_model extends Oem_Model {
 					{$chief['admin_name']} 您好<br>
 					代工編號 {$app['app_SN']} {$app['form_cht_name']} ({$app['form_eng_name']}) 之代工服務被儀器管理員申請代工重做<br>
 					理由為：{$checkpoint['checkpoint_comment']}<br>
+					請上本系統審核，<br>
+					或<a href='".site_url('oem/app/edit/'.$app['app_SN'])."'>點此連結審核</a>，謝謝。
+				");
+				$this->email->send();
+			}
+		}else if($app['app_checkpoint']=='education_research_section_chief'){
+			
+			//通知組長上去審核
+			$this->load->model('admin_model');
+			$chiefs = $this->admin_model->get_org_chart_list(array(
+				"team_ID"=>"education_research",
+				"status_ID"=>"section_chief"
+			))->result_array();
+			
+			foreach($chiefs as $chief)
+			{
+				$this->email->to($chief['admin_email']);
+				$this->email->subject("成大微奈米科技研究中心");
+				$this->email->message("
+					{$chief['admin_name']} 您好<br>
+					代工編號 {$app['app_SN']} {$app['form_cht_name']} ({$app['form_eng_name']}) 之代工服務已被申請<br>
+					請上本系統審核，<br>
+					或<a href='".site_url('oem/app/edit/'.$app['app_SN'])."'>點此連結審核</a>，謝謝。
+				");
+				$this->email->send();
+			}
+		}else if($app['app_checkpoint']=='technology_promotion_section_chief'){
+			
+			//通知組長上去審核
+			$this->load->model('admin_model');
+			$chiefs = $this->admin_model->get_org_chart_list(array(
+				"team_ID"=>"technology_promotion",
+				"status_ID"=>"section_chief"
+			))->result_array();
+			
+			foreach($chiefs as $chief)
+			{
+				$this->email->to($chief['admin_email']);
+				$this->email->subject("成大微奈米科技研究中心");
+				$this->email->message("
+					{$chief['admin_name']} 您好<br>
+					代工編號 {$app['app_SN']} {$app['form_cht_name']} ({$app['form_eng_name']}) 之代工服務已被申請<br>
 					請上本系統審核，<br>
 					或<a href='".site_url('oem/app/edit/'.$app['app_SN'])."'>點此連結審核</a>，謝謝。
 				");

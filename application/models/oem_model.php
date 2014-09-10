@@ -170,9 +170,10 @@ class Oem_model extends MY_Model {
 		$this->oem_db->where("app_col_SN",$data['app_col_SN']);
 		$this->oem_db->update("oem_application_col");
 	}
-	public function del_app_col()
+	public function del_app_col($data)
 	{
-		
+		$this->oem_db->where("app_col_SN",$data['app_col_SN']);
+		$this->oem_db->delete("oem_application_col");
 	}
 	//--------------------FORM FACILITY MAP-----------------------
 	public function get_form_facility_map_list($options = array())

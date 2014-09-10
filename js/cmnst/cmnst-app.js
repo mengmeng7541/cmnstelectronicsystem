@@ -637,13 +637,13 @@ cmnstApp
 	{
 		bootstrap_modal_service.reset_info_modal();
 		if($scope.app.app_SN){
-			//已有資料
-			$http.post(site_url+'oem/app/update',{data:$scope.app,action:'submit'})
-			.success(function(data){
-				bootstrap_modal_service.set_info_modal(data);
-			});
-		}else{
-			//未有資料
+//			//已有資料
+//			$http.post(site_url+'oem/app/update',{data:$scope.app,action:'submit'})
+//			.success(function(data){
+//				bootstrap_modal_service.set_info_modal(data);
+//			});
+//		}else{
+//			//未有資料
 			$http.post(site_url+'oem/app/add',{data:$scope.app,action:'submit'})
 			.success(function(data){
 				bootstrap_modal_service.set_info_modal(data);

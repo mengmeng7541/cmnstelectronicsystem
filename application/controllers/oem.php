@@ -260,15 +260,17 @@ class Oem extends MY_Controller {
 			
 			$_POST = $input['data'];
 			$this->form_validation->set_rules("form_SN","表單編號","required");
+			$this->form_validation->set_rules("app_type","表單類別","required");
 			if(!$this->form_validation->run())
 			{
 				throw new Exception(validation_errors(),WARNING_CODE);
 			}
 			
 			$this->load->model('oem/app_model');
-			$app_SN = $this->app_model->add($input['data']['form_SN'],$input['data']['app_description'],$input['data']['app_cols'],$input['data']['app_type']);
+			$app_SN = $this->app_model->add($input['data']['form_SN'],$input['data']['app_description'],$input['data']['app_cols'],$input['data']['app_type'],$input['data']['app_SN']);
 			if($input['action']=="submit")
 			{
+				
 				$this->oem_model->update_app(array("app_checkpoint"=>"facility_admin_init","app_SN"=>$app_SN));
 				$this->app_model->send_email($app_SN);
 				echo json_encode($this->get_info_modal_array("申請成功","oem/app/list"));
@@ -340,8 +342,6 @@ class Oem extends MY_Controller {
 					}
 					
 					$this->app_model->confirm($input['data']['app_SN'],$this->session->userdata('ID'),$app_checkpoint['checkpoint_comment'],$input['action']);
-					break;
-				case 'submit':
 					break;
 				default:
 					throw new Exception("未知的動作",ERROR_CODE);

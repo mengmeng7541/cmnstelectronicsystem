@@ -181,7 +181,17 @@ class MY_Model extends CI_Model
 		
 		return json_encode( $output );
 	}
-	
+	//common function
+	public function is_admin_login()
+	{
+		if($this->session->userdata('status')=="admin")
+		{
+			return TRUE;
+			
+		}else{	
+			return FALSE;
+		}
+	}
 }
 
 ?>

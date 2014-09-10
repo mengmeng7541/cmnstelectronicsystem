@@ -82,6 +82,14 @@
 								</div>
                      		</div>
 							<h4>代工服務</h4>
+							<div class="control-group" ng-if="user.group=='admin'">
+					            <label class="control-label">代工類別</label>
+					            <div class="controls">
+					            	<label class="radio"><input uniform type="radio" ng-model="app.app_type" name="app_type" value="normal" ng-disabled="app.app_checkpoint!='user_init'"/>一般代工</label>
+					            	<label class="radio"><input uniform type="radio" ng-model="app.app_type" name="app_type" value="research" ng-disabled="app.app_checkpoint!='user_init'"/>研究代工</label>
+					            	<label class="radio"><input uniform type="radio" ng-model="app.app_type" name="app_type" value="testing" ng-disabled="app.app_checkpoint!='user_init'"/>測試代工</label>
+								</div>
+							</div>
 							<div class="control-group">
 					            <label class="control-label">代工服務名稱</label>
 					            <div class="controls">
